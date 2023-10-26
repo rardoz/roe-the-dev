@@ -9,7 +9,8 @@
     "lint": "next lint",
     "prepare": "husky install",
     "lint-staged": "lint-staged",
-    "test": "jest"
+    "test": "jest --watch",
+    "coverage": "nyc jest"
   },
   "lint-staged": {
     "*.ts": "eslint --fix",
@@ -21,6 +22,9 @@
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^14.0.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -28,7 +32,10 @@
     "eslint": "^8",
     "eslint-config-next": "14.0.0",
     "husky": "^8.0.3",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "lint-staged": "^15.0.2",
+    "nyc": "^15.1.0",
     "postcss": "^8",
     "prettier": "^3.0.3",
     "tailwindcss": "^3",
