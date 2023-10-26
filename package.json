@@ -13,7 +13,7 @@
     "coverage": "nyc jest"
   },
   "lint-staged": {
-    "*.ts": "eslint --fix",
+    "*.(ts|tsx|js|jsx)": "eslint --fix",
     "*.(md|json|html)": "prettier --write"
   },
   "dependencies": {
