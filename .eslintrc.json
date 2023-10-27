@@ -1,6 +1,8 @@
 {
-  "extends": "next/core-web-vitals",
+  "extends": ["eslint:recommended", "prettier", "next/core-web-vitals"],
+  "plugins": ["prettier"],
   "rules": {
+    "prettier/prettier": ["error", { "semi": false, "singleQuote": true }],
     "react/jsx-wrap-multilines": [
       "error",
       {
