@@ -11,6 +11,7 @@
     "next.config.js",
     "next-env.d.ts",
     "jest.config.js",
-    "tailwind.config.ts"
+    "tailwind.config.ts",
+    ".lintstagedrc.js"
   ]
 }
