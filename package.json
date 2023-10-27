@@ -6,13 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "lint:ci": "next lint --fix --file",
+    "lint": "npm run lint:scripts && npm run lint:styles",
+    "lint:styles": "stylelint ./app/*.css",
+    "lint:scripts": "next lint",
     "prepare": "husky install",
     "lint-staged": "lint-staged",
     "test": "jest --watch",
-    "coverage": "nyc jest",
-    "lint:css": "stylelint ./app/*.css"
+    "coverage": "nyc jest"
   },
   "dependencies": {
     "next": "14.0.0",
