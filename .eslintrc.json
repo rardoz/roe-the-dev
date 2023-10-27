@@ -2,18 +2,6 @@
   "extends": ["eslint:recommended", "prettier", "next/core-web-vitals"],
   "plugins": ["prettier"],
   "rules": {
-    "prettier/prettier": ["error", { "semi": false, "singleQuote": true }],
-    "react/jsx-wrap-multilines": [
-      "error",
-      {
-        "declaration": "parens-new-line",
-        "assignment": "parens-new-line",
-        "return": "parens-new-line",
-        "arrow": "parens-new-line",
-        "condition": "parens-new-line",
-        "logical": "parens-new-line",
-        "prop": "parens-new-line"
-      }
-    ]
+    "prettier/prettier": ["error", { "semi": false, "singleQuote": true }]
   }
 }
