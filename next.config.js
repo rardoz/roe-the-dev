@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 
-const il8n = require('./il8n/config.js')
+const i18n = require('./i18n/config.js')
 
 const nextConfig = {
-  il8n,
+  i18n,
   async rewrites() {
     return [
       {
