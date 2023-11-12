@@ -50,11 +50,18 @@ Learn more about how the component library works with [storybook](https://storyb
 - Components in the `app/_components` directory contain `story.ts` files that are used for component documentation
 - Start storybook with `npm run storybook`
 
+## API Documentation
+
+This app uses swagger and jsdoc in order to document the API. Learn more about it here:
+
+- (Swagger Spec)[https://swagger.io/specification/]
+- (Swagger JSDoc)[https://github.com/Surnet/swagger-jsdoc]
+- (Next Swagger Doc)[https://www.npmjs.com/package/next-swagger-doc]
+
 ## TODO:
 
 [] Connect SF
 [] Deploy to vercel
-[] Create Swagger API Documentation
 [] Authentication
 [] GTM
 [] Add Next JS Headless SFCC quick setup script
