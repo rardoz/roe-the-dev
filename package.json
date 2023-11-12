@@ -28,6 +28,7 @@
     "next-intl": "^3.0.0-beta.19",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.11.0",
     "swagger-ui-react": "^5.9.3"
   },
   "devDependencies": {

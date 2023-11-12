@@ -1,0 +1,12 @@
+{
+  "Home": {
+    "title": "Roe the Dev. Hola!"
+  },
+  "Nav": {
+    "portfolio": "Cartera",
+    "blog": "Blog",
+    "experiments": "Experimentación",
+    "menuIconAltText": "Haga clic para ver más enlaces",
+    "logoAltText": "Logotipo de Roe the Dev"
+  }
+}
