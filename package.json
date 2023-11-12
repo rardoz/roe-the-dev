@@ -15,9 +15,12 @@
     "test": "jest --watch"
   },
   "dependencies": {
+    "@formatjs/intl-localematcher": "^0.5.0",
     "flowbite": "^2.0.0",
     "flowbite-react": "^0.7.0-beta.4",
+    "negotiator": "^0.6.3",
     "next": "14.0.0",
+    "next-translate": "^2.6.2",
     "react": "^18",
     "react-dom": "^18"
   },
@@ -25,6 +28,7 @@
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.0.0",
+    "@types/negotiator": "^0.6.3",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -37,6 +41,7 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "lint-staged": "^15.0.2",
+    "next-translate-plugin": "^2.6.2",
     "nyc": "^15.1.0",
     "postcss": "^8",
     "prettier": "^3.0.3",
