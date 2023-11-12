@@ -43,12 +43,18 @@ This is achieved by using [next-intl](https://next-intl-docs.vercel.app/docs/get
 - Additional messages can be configured in `/messages/config.ts`
 - Components can be overriden per locale via the locale parameter which can be accessed via next router
 
+## Storybook
+
+Learn more about how the component library works with [storybook](https://storybook.js.org/docs/react/writing-stories/introduction).
+
+- Components in the `app/_components` directory contain `story.ts` files that are used for component documentation
+- Start storybook with `npm run storybook`
+
 ## TODO:
 
 [] Connect SF
 [] Deploy to vercel
 [] Create Swagger API Documentation
-[] Create Storybook
 [] Authentication
 [] GTM
 [] Add Next JS Headless SFCC quick setup script
