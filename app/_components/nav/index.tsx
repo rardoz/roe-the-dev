@@ -4,6 +4,10 @@ import React, { PropsWithChildren } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { FaBars, FaX } from 'react-icons/fa6'
+import { Badge } from 'flowbite-react'
+import config from '../../../messages/config'
+import localeIcons from './locale-icons.json'
+
 const Nav: React.FC<
   PropsWithChildren<{
     messages: {
@@ -37,6 +41,21 @@ const Nav: React.FC<
             alt={messages.logoAltText}
           />
         </Link>
+        <div className="flex-grow flex justify-end mx-3">
+          <Badge color="light" className="p-1.5 rounded-full">
+            {config.locales.map((locale, index) => {
+              return (
+                <span key={locale}>
+                  {index > 0 && ' | '}
+                  <Link href={`/${locale}`} hrefLang={locale}>
+                    <span className="sr-only">{locale}</span>
+                    {(localeIcons as Record<string, string>)[locale]}
+                  </Link>
+                </span>
+              )
+            })}
+          </Badge>
+        </div>
         <button
           onClick={() => setMenuActive(!isMenuActive)}
           type="button"
