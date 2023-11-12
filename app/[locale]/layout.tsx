@@ -25,7 +25,6 @@ export default async function RootLayout({
   children: React.ReactNode
   params: { locale: string }
 }) {
-  console.log(locale)
   const isValidLocale = config.locales.some((cur) => cur === locale)
   if (!isValidLocale) notFound()
 

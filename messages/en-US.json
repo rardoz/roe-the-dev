@@ -1,5 +1,12 @@
 {
   "Home": {
     "title": "Roe the Dev"
+  },
+  "Nav": {
+    "portfolio": "Porfolio",
+    "blog": "Blog",
+    "experiments": "Experiments",
+    "menuIconAltText": "Click for additional menu links",
+    "logoAltText": "Roe the Dev logo"
   }
 }
