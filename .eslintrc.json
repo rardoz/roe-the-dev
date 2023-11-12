@@ -5,9 +5,7 @@
     "next/core-web-vitals",
     "plugin:storybook/recommended"
   ],
-  "plugins": [
-    "prettier"
-  ],
+  "plugins": ["prettier"],
   "rules": {
     "prettier/prettier": [
       "error",
@@ -16,5 +14,25 @@
         "singleQuote": true
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["app/api/**/*.ts"],
+      "plugins": ["jsdoc"],
+      "rules": {
+        "jsdoc/no-missing-syntax": [
+          "error",
+          {
+            "contexts": [
+              {
+                "comment": "JsdocBlock:has(JsdocTag[tag=swagger])",
+                "context": "any",
+                "message": "@swagger documentation is required on each API. Check this out for syntax info: https://github.com/jellydn/next-swagger-doc"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }
