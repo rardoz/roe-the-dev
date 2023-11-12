@@ -64,4 +64,3 @@ This app uses swagger and jsdoc in order to document the API. Learn more about i
 [] Deploy to vercel
 [] Authentication
 [] GTM
-[] Add Next JS Headless SFCC quick setup script
