@@ -1,6 +1,13 @@
 {
-  "extends": ["eslint:recommended", "prettier", "next/core-web-vitals"],
-  "plugins": ["prettier"],
+  "extends": [
+    "eslint:recommended",
+    "prettier",
+    "next/core-web-vitals",
+    "plugin:storybook/recommended"
+  ],
+  "plugins": [
+    "prettier"
+  ],
   "rules": {
     "prettier/prettier": [
       "error",
