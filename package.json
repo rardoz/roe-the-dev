@@ -14,12 +14,18 @@
     "start": "next start",
     "test": "jest --watch"
   },
+  "overrides": {
+    "next-intl": {
+      "next": "^14.0.0"
+    }
+  },
   "dependencies": {
     "flowbite": "^2.0.0",
     "flowbite-react": "^0.7.0-beta.4",
-    "next": "14.0.0",
-    "react": "^18",
-    "react-dom": "^18"
+    "next": "^14.0.2",
+    "next-intl": "^3.0.0-beta.19",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
@@ -30,7 +36,7 @@
     "@types/react-dom": "^18",
     "autoprefixer": "^10",
     "eslint": "^8",
-    "eslint-config-next": "14.0.0",
+    "eslint-config-next": "^14.0.2",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
     "husky": "^8.0.3",
