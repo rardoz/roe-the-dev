@@ -12,6 +12,9 @@
     "next-env.d.ts",
     "jest.config.js",
     "tailwind.config.ts",
-    ".lintstagedrc.js"
+    ".lintstagedrc.js",
+    "messages",
+    "**/story.ts",
+    ".storybook"
   ]
 }
