@@ -27,7 +27,7 @@ const Nav: React.FC<
     status === 'preExit' || status === 'exiting' || !isMenuActive
 
   return (
-    <nav className="border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700 sticky top-0">
+    <nav className="z-20 border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700 sticky top-0">
       <div className="flex flex-wrap items-center justify-between mx-auto p-4 relative">
         <Link
           href="/"

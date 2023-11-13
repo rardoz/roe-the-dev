@@ -52,7 +52,7 @@ const DefaultLayout: React.FC<
           })}
         </NavLinks>
       </Nav>
-      <main className="h-100 flex flex-col items-center justify-between p-4">
+      <main className="h-100 flex flex-col items-center justify-between py-2">
         {children}
       </main>
     </>
