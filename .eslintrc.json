@@ -33,6 +33,14 @@
           }
         ]
       }
+    },
+    {
+      "files": ["app/**/test.tsx"],
+      "plugins": ["jest"],
+      "rules": {},
+      "env": {
+        "jest/globals": true
+      }
     }
   ]
 }
