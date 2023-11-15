@@ -1,4 +1,5 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This Next 14 application includes full VSCode setup, gitpod integration, a storybook, swagger api documentation, localization, jest unit testing, eslint, prettier, tailwindcss, typescript, react, and stylelint built for Node 20+.
 
 ## Getting Started
 
