@@ -1,7 +1,9 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 This Next 14 application includes full VSCode setup, gitpod integration, a storybook, swagger api documentation, localization, jest unit testing, eslint, prettier, tailwindcss, typescript, react, and stylelint built for Node 20+.
 
-If you want to use this project as a starting point for your own project, you have my permission. In order to do that simply delete everything IN these folders:
+If you want to use this project as a starting point for your own project, you have my permission. A stable base version of the application can be found [here](https://github.com/rardoz/roe-the-dev/releases/tag/v1.0.0) and is a good starting point for getting your application going.
+
+If you prefer to take what I have in the main branch instead and manually clean out the example simply delete everything IN these folders:
 
 - `app/_services`
 - `app/api/`
