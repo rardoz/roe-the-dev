@@ -41,8 +41,7 @@ Gitpod provides a VSCode editor + full environment with zero configuration neede
 
 - Go to [gitpod.io](https://gitpod.io)
 - Create a free account
-- Give access to github
-- Start the project
+- Give access to github and select the project from the list of repositories
 - VSCode will spin up (browser or local instance of VSCode supported)
 - Open VSCode > Extensions and type `@extensions` into the search bar
 - Install each extension in the list
