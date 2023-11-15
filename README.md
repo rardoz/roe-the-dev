@@ -4,7 +4,7 @@ This Next 14 application includes full VSCode setup, gitpod integration, a story
 If you want to use this project as a starting point for your own project, you have my permission. In order to do that simply delete everything IN these folders:
 
 - `app/_services`
-- `api/`
+- `app/api/`
 - `app/_components`
 - `app/[locale]/`
 - `messages/*.json`
