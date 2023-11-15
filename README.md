@@ -83,8 +83,6 @@ Testing is provided through (Jest)[https://jestjs.io/docs/getting-started].
 
 ## TODO:
 
-[ ] Connect SF
-
 [ ] Deploy to vercel
 
 [ ] Authentication
