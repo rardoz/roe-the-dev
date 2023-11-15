@@ -1,6 +1,22 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 This Next 14 application includes full VSCode setup, gitpod integration, a storybook, swagger api documentation, localization, jest unit testing, eslint, prettier, tailwindcss, typescript, react, and stylelint built for Node 20+.
 
+If you want to use this project as a starting point for your own project, you have my permission. In order to do that simply delete everything IN these folders:
+
+- `app/_services`
+- `api/`
+- `app/_components`
+- `app/[locale]/`
+- `messages/*.json`
+
+Then you can configure your app:
+
+- Add a page to `app/[locale]`
+- Adjust the theme in `app/_theme`
+- Adjust global styles in `app/globals.css`
+- Add dictionaries under `messages`
+- Setup locales under `messages/config.ts`
+
 ## Getting Started
 
 First, run the development server:
@@ -59,7 +75,7 @@ This is achieved by using [next-intl](https://next-intl-docs.vercel.app/docs/get
 
 Learn more about how the component library works with [storybook](https://storybook.js.org/docs/react/writing-stories/introduction).
 
-- Components in the `app/_components` directory contain `story.ts` files that are used for component documentation
+- Components in the `app/_components` directory contain `story.tsx` files that are used for component documentation
 - Start storybook with `npm run storybook`
 
 ## API Documentation
