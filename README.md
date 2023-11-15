@@ -35,6 +35,18 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
+## Local Environment Setup with Gitpod
+
+Gitpod provides a VSCode editor + full environment with zero configuration needed. To setup your development environment follow these steps:
+
+- Go to [gitpod.io](https://gitpod.io)
+- Create a free account
+- Give access to github
+- Start the project
+- VSCode will spin up (browser or local instance of VSCode supported)
+- Open VSCode > Extensions and type `@extensions` into the search bar
+- Install each extension in the list
+
 ## Internationalization
 
 This is achieved by using [next-intl](https://next-intl-docs.vercel.app/docs/getting-started/app-router-server-components).
