@@ -9,6 +9,7 @@ const Carousel: React.FC<React.PropsWithChildren<{ className?: string }>> = ({
   return (
     <div className={`${className ?? ''}`}>
       <FCarousel
+        slideInterval={5000}
         theme={{
           control: {
             base: theme.carousel.control.base + ' hidden sm:inline-flex',

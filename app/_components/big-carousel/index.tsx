@@ -8,6 +8,7 @@ const BigCarousel: React.FC<
   return (
     <div className={`h-screen border-white flex w-full ${className ?? ''}`}>
       <Carousel
+        slideInterval={5000}
         theme={{
           control: { base: 'hidden' },
           scrollContainer: {
