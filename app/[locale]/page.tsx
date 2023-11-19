@@ -3,6 +3,7 @@ import BigCarousel from '../_components/big-carousel'
 import { useEntries } from '../_services/contentful'
 import CarouselSlide from '../_components/big-carousel/slide'
 import AboutSection from './_home/components/about-section'
+import PortfolioSection from './_home/components/portfolio-section'
 
 export default async function Home(props: { params?: { locale: string } }) {
   const entries = await useEntries({
@@ -20,6 +21,7 @@ export default async function Home(props: { params?: { locale: string } }) {
         </BigCarousel>
       </div>
       <AboutSection />
+      <PortfolioSection />
     </DefaultLayout>
   )
 }
