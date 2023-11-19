@@ -2,6 +2,7 @@ import DefaultLayout from '../_components/layout'
 import BigCarousel from '../_components/big-carousel'
 import { useEntries } from '../_services/contentful'
 import CarouselSlide from '../_components/big-carousel/slide'
+import AboutSection from './_home/components/about-section'
 
 export default async function Home(props: { params?: { locale: string } }) {
   const entries = await useEntries({
@@ -11,11 +12,14 @@ export default async function Home(props: { params?: { locale: string } }) {
 
   return (
     <DefaultLayout params={props.params}>
-      <BigCarousel className="absolute top-0 left-0">
-        {entries.items?.map((item) => (
-          <CarouselSlide key={item.title} {...item}></CarouselSlide>
-        ))}
-      </BigCarousel>
+      <div className="flex flex-col items-center justify-center w-full h-screen">
+        <BigCarousel className="absolute top-0 left-0">
+          {entries.items?.map((item) => (
+            <CarouselSlide key={item.title} {...item}></CarouselSlide>
+          ))}
+        </BigCarousel>
+      </div>
+      <AboutSection />
     </DefaultLayout>
   )
 }
