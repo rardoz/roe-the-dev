@@ -9,7 +9,7 @@ const AboutSection = () => {
       <h2 className="text-center text-purple-700 text-4xl font-bold">
         {t('title')}
       </h2>
-      <hr className="my-5 border-dotted border-spacing-8 border-8 border-t-0 border-purple-300" />
+      <hr className="mt-5 mb-16 border-dotted border-spacing-8 border-8 border-t-0 border-purple-300" />
       <div className="flex justify-center items-start flex-wrap sm:flex-nowrap">
         <div className="flex-shrink-0 px-4 mb-4">
           <Image

@@ -12,7 +12,7 @@ const PortfolioSection = async () => {
   })
 
   return (
-    <div className="bg-purple-900 p-5 w-full my-8">
+    <div className="bg-purple-900 p-5 w-full mt-24">
       <SectionTitle />
       <Carousel>
         {[0, 1].map((slide) => (
