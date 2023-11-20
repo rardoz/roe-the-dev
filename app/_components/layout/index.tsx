@@ -7,6 +7,7 @@ import { GiEvilBook } from 'react-icons/gi'
 import { SiTestinglibrary } from 'react-icons/si'
 import Link from 'next/link'
 import { PropsWithChildren } from 'react'
+import Footer from '../footer'
 
 const DefaultLayout: React.FC<
   PropsWithChildren<{ params?: { locale: string } }>
@@ -55,6 +56,7 @@ const DefaultLayout: React.FC<
       <main className="h-100 flex flex-col items-center justify-between py-2">
         {children}
       </main>
+      <Footer />
     </>
   )
 }
