@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import Card from '.'
 
 const meta = {
-  title: 'Components/Card',
+  title: 'Components/Cards/Base',
   component: Card,
   // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/react/writing-docs/autodocs
   tags: ['autodocs'],

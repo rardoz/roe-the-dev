@@ -1,3 +1,4 @@
+import LinkButton from '../../../../_components/link-button'
 import { useTranslations } from 'next-intl'
 import Link from 'next-intl/link'
 import Image from 'next/image'
@@ -33,12 +34,7 @@ const AboutSection = () => {
           <p>{t('description1')}</p>
           <p className="my-4">{t('description2')}</p>
           <div className="hidden lg:block mt-8">
-            <Link
-              href="/about"
-              className="bg-purple-700 text-white font-bold py-2 px-4 rounded-full hover:bg-pink-600 transition-all duration-500 ease-in-out"
-            >
-              {t('cta')}
-            </Link>
+            <LinkButton href="/about">{t('cta')}</LinkButton>
           </div>
         </div>
       </div>

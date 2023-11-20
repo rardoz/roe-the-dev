@@ -3,7 +3,7 @@ import Nav from '.'
 import NavLinks from './nav-links'
 
 const meta = {
-  title: 'Components/Nav',
+  title: 'Components/App/Nav',
   component: Nav,
   // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/react/writing-docs/autodocs
   tags: ['autodocs'],
