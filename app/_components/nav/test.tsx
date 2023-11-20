@@ -1,6 +1,8 @@
 import Nav from '.'
 import { render } from '@testing-library/react'
 import NavLinks from './nav-links'
+import { mockIntersectionObserver } from 'jsdom-testing-mocks'
+mockIntersectionObserver()
 
 describe('Nav', () => {
   it('should render', () => {

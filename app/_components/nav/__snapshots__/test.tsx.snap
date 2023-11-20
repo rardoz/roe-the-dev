@@ -2,8 +2,11 @@
 
 exports[`Nav should render 1`] = `
 <div>
+  <span
+    class="nav-observer"
+  />
   <nav
-    class="z-20 border-gray-200 bg-transparent sticky top-0"
+    class="bg-white z-20 border-gray-200 bg-transparent sticky top-0 transition-color duration-500"
   >
     <div
       class="flex flex-wrap items-center justify-between mx-auto p-4 relative"
@@ -19,7 +22,7 @@ exports[`Nav should render 1`] = `
           height="60"
           loading="eager"
           src="/logo.svg"
-          style="color: transparent;"
+          style="color: transparent; transition: transform 0.25s ease-in-out;"
           width="60"
         />
       </a>
@@ -63,7 +66,7 @@ exports[`Nav should render 1`] = `
       </div>
       <button
         aria-expanded="false"
-        class="inline-flex items-center justify-center p-2 w-10 h-10 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+        class="text-gray-500 transition-all duration-500 inline-flex items-center justify-center p-2 w-10 h-10 text-sm  rounded-lg  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
         type="button"
       >
         <span
