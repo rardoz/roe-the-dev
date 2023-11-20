@@ -6,6 +6,7 @@ import {
   FaTwitch,
   FaXTwitter,
 } from 'react-icons/fa6'
+import Link from '../link'
 
 const FOOTER_LINKS = [
   {
@@ -59,14 +60,13 @@ const Footer: FC = () => {
         </div>
         <p className="text-sm py-1">
           &copy; {currentYear}
-          <a
+          <Link
             href="https://byrojo.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-2 text-sm py-1 transition-colors duration-500 text-pink-500 hover:text-pink-400"
           >
             byrojo.com
-          </a>
+          </Link>
         </p>
       </div>
     </footer>

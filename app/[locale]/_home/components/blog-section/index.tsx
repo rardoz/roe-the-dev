@@ -2,8 +2,8 @@ import React, { FC } from 'react'
 import Card from '../../../../_components/card'
 import SectionTitle from '../../../../_components/section-title'
 import { useEntries } from '../../../../_services/contentful'
-import SectionFooter from './components/section-footer'
 import { getTranslator } from 'next-intl/server'
+import LinkButton from '../../../../_components/link-button'
 
 const BlogSection: FC<{ locale?: string }> = async (props) => {
   const entries = await useEntries({
@@ -31,7 +31,9 @@ const BlogSection: FC<{ locale?: string }> = async (props) => {
           )
         })}
       </div>
-      <SectionFooter />
+      <div className="flex justify-center my-10">
+        <LinkButton href="/blog">{messages('cta')}</LinkButton>
+      </div>
     </div>
   )
 }

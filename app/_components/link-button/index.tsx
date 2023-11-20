@@ -1,9 +1,8 @@
-import React, { PropsWithChildren } from 'react'
-import Link, { LinkProps } from 'next/link'
-
-const LinkButton: React.FC<
-  PropsWithChildren<LinkProps & { className?: string }>
-> = ({ className, ...props }) => {
+import React from 'react'
+import Link from 'next-intl/link'
+import { NextIntlLinkProps } from '../link/types'
+1
+const LinkButton: React.FC<NextIntlLinkProps> = ({ className, ...props }) => {
   return (
     <Link
       {...props}
