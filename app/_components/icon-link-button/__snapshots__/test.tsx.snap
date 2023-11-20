@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`IconLinkButton should include a className if set 1`] = `
+<div>
+  <a
+    class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 test"
+    href="/en-US#"
+  >
+    <div
+      class="sr-only"
+    />
+    Test 123
+  </a>
+</div>
+`;
+
+exports[`IconLinkButton should render with default locale set 1`] = `
+<div>
+  <a
+    class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
+    href="/en-US#"
+  >
+    <div
+      class="sr-only"
+    />
+    Test 123
+  </a>
+</div>
+`;

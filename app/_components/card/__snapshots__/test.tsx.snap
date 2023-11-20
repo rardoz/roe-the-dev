@@ -1,0 +1,124 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Carousel should not have a link or image set if not provided 1`] = `
+<div>
+  <a
+    href="/en-US"
+  >
+    <div
+      class="flex rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 flex-col max-w-sm hover:scale-105 relative hover:z-10 transition-all duration-500 overflow-hidden m-auto w-full h-full"
+      data-testid="flowbite-card"
+    >
+      <div
+        class="flex h-full flex-col justify-center gap-4 p-6"
+      >
+        <div
+          class="h-full"
+        >
+          <h5
+            class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+          >
+            Test title
+          </h5>
+          <p
+            class="font-normal text-gray-700 dark:text-gray-400"
+          >
+            Test description goes here...
+          </p>
+        </div>
+      </div>
+    </div>
+  </a>
+</div>
+`;
+
+exports[`Carousel should render 1`] = `
+<div>
+  <a
+    href="https://roethedev.com"
+    target="_blank"
+  >
+    <div
+      class="flex rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 flex-col max-w-sm hover:scale-105 relative hover:z-10 transition-all duration-500 overflow-hidden m-auto w-full h-full"
+      data-testid="flowbite-card"
+    >
+      <div
+        class="relative min-h-96 min-h-[24rem]"
+      >
+        <img
+          alt="alt text goes here"
+          class="object-cover"
+          data-nimg="fill"
+          decoding="async"
+          loading="lazy"
+          src="https://flowbite.com/docs/images/carousel/carousel-1.svg"
+          style="position: absolute; height: 100%; width: 100%; left: 0px; top: 0px; right: 0px; bottom: 0px; color: transparent;"
+        />
+      </div>
+      <div
+        class="flex h-full flex-col justify-center gap-4 p-6"
+      >
+        <div
+          class="h-full"
+        >
+          <h5
+            class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+          >
+            Test title
+          </h5>
+          <p
+            class="font-normal text-gray-700 dark:text-gray-400"
+          >
+            Test description goes here...
+          </p>
+        </div>
+      </div>
+    </div>
+  </a>
+</div>
+`;
+
+exports[`Carousel should render the card with image but without a link and without an alt text 1`] = `
+<div>
+  <a
+    href="/en-US"
+  >
+    <div
+      class="flex rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 flex-col max-w-sm hover:scale-105 relative hover:z-10 transition-all duration-500 overflow-hidden m-auto w-full h-full"
+      data-testid="flowbite-card"
+    >
+      <div
+        class="relative min-h-96 min-h-[24rem]"
+      >
+        <img
+          alt=""
+          class="object-cover"
+          data-nimg="fill"
+          decoding="async"
+          loading="lazy"
+          src="https://flowbite.com/docs/images/carousel/carousel-1.svg"
+          style="position: absolute; height: 100%; width: 100%; left: 0px; top: 0px; right: 0px; bottom: 0px; color: transparent;"
+        />
+      </div>
+      <div
+        class="flex h-full flex-col justify-center gap-4 p-6"
+      >
+        <div
+          class="h-full"
+        >
+          <h5
+            class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+          >
+            Test title
+          </h5>
+          <p
+            class="font-normal text-gray-700 dark:text-gray-400"
+          >
+            Test description goes here...
+          </p>
+        </div>
+      </div>
+    </div>
+  </a>
+</div>
+`;

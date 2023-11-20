@@ -3,14 +3,14 @@
 exports[`Big Carousel should render 1`] = `
 <div>
   <div
-    class="h-screen flex w-full "
+    class="h-screen border-white flex w-full "
   >
     <div
       class="relative h-full w-full"
       data-testid="carousel"
     >
       <div
-        class="flex h-full snap-mandatory overflow-y-hidden overflow-x-scroll scroll-smooth rounded-lg snap-x indiana-scroll-container indiana-scroll-container--hide-scrollbars"
+        class="flex h-full snap-mandatory overflow-y-hidden overflow-x-scroll scroll-smooth rounded-none snap-x indiana-scroll-container indiana-scroll-container--hide-scrollbars"
       >
         <div
           class="w-full flex-shrink-0 transform cursor-grab snap-center"

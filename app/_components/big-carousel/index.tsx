@@ -1,14 +1,20 @@
 'use client'
-import { Carousel } from 'flowbite-react'
+import { Carousel, theme } from 'flowbite-react'
 import React from 'react'
 
 const BigCarousel: React.FC<
   React.PropsWithChildren<{ className?: string }>
 > = ({ className, children }) => {
   return (
-    <div className={`h-screen flex w-full ${className ?? ''}`}>
+    <div className={`h-screen border-white flex w-full ${className ?? ''}`}>
       <Carousel
-        theme={{ control: { base: 'hidden' } }}
+        slideInterval={5000}
+        theme={{
+          control: { base: 'hidden' },
+          scrollContainer: {
+            base: theme.carousel.scrollContainer.base + ' rounded-none',
+          },
+        }}
         leftControl=""
         rightControl=""
       >

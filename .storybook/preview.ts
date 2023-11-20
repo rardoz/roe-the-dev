@@ -1,6 +1,6 @@
 import type { Preview } from "@storybook/react";
 import '../app/globals.css'
-
+import I18Decorator from "./i18n-decorator";
 
 const preview: Preview = {
   parameters: {
@@ -12,6 +12,13 @@ const preview: Preview = {
       },
     },
   },
+  decorators: [I18Decorator],
+  globals: {
+    locale: 'en-US',
+    locales: {
+        "en-US": 'Amercan English'
+    },
+}
 };
 
 export default preview;
