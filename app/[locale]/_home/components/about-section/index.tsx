@@ -8,7 +8,7 @@ const AboutSection = () => {
   const t = useTranslations('About')
   return (
     <>
-      <SectionTitle>{t.raw('title')}</SectionTitle>
+      <SectionTitle>{t('title')}</SectionTitle>
       <div className="w-3/4 lg:w-1/2">
         <div className="flex justify-center items-start flex-wrap sm:flex-nowrap">
           <div className="flex-shrink-0 px-4 mb-4">

@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`About Section should render with default locale set 1`] = `
+<div>
+  <div
+    class="w-3/4 lg:w-1/2 mx-auto mt-8 -mb-4"
+  >
+    <h2
+      class="text-center text-4xl font-bold text-purple-700"
+    >
+      About Roe
+    </h2>
+    <hr
+      class="mt-5 mb-16 border-dotted border-spacing-8 border-8 border-t-0 border-purple-300"
+    />
+  </div>
+  <div
+    class="w-3/4 lg:w-1/2"
+  >
+    <div
+      class="flex justify-center items-start flex-wrap sm:flex-nowrap"
+    >
+      <div
+        class="flex-shrink-0 px-4 mb-4"
+      >
+        <img
+          alt="about"
+          class="rounded-full border-8 border-white drop-shadow-lg hover:drop-shadow-xl hover:scale-105 transition-all duration-500 ease-in-out"
+          data-nimg="1"
+          decoding="async"
+          height="250"
+          loading="lazy"
+          src="/_next/image?url=%2Froe-profile-pic.png&w=640&q=75"
+          srcset="/_next/image?url=%2Froe-profile-pic.png&w=256&q=75 1x, /_next/image?url=%2Froe-profile-pic.png&w=640&q=75 2x"
+          style="color: transparent;"
+          width="250"
+        />
+        <div
+          class=" flex lg:hidden justify-center items-center mt-5"
+        >
+          <a
+            class="bg-purple-700 text-white font-bold py-2 px-4 rounded-full hover:bg-pink-600 transition-all duration-500 ease-in-out"
+            href="/en-US/about"
+          >
+            Learn more
+          </a>
+        </div>
+      </div>
+      <div
+        class="flex-shrink flex-grow px-4 text-center sm:text-left"
+      >
+        <h3
+          class="font-semibold pb-4 text-lg"
+        >
+          Tech Lead, Software Engineer, Mentor And Artist
+        </h3>
+        <p>
+          I am a versatile digital nomad and innovative creative technologist assuming the role of a tech lead while embracing a nomadic lifestyle, dedicated to bringing creative ideas to fruition.
+        </p>
+        <p
+          class="my-4"
+        >
+          I pursued my education at Black Hawk College and The Illinois Institute of Art in Chicago, achieving an associate's degree in visual communications. With a professional tenure of over a decade, I have accumulated substantial experience in software development.
+        </p>
+        <div
+          class="hidden lg:block mt-8"
+        >
+          <a
+            class="bg-purple-700 text-white font-bold py-2 px-4 rounded-full hover:bg-pink-600 transition-all duration-500 ease-in-out "
+            href="/en-US/about"
+          >
+            Learn more
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
