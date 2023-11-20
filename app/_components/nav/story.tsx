@@ -24,5 +24,6 @@ export const NavExample: Story = {
       </NavLinks>
     ),
     messages: { logoAltText: 'Logo', menuIconAltText: 'Menu Icon' },
+    forceInView: true,
   },
 }
