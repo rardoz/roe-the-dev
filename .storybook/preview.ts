@@ -1,10 +1,9 @@
 import type { Preview } from "@storybook/react";
 import '../app/globals.css'
-import i18n from './i18next';
+import I18Decorator from "./i18n-decorator";
 
 const preview: Preview = {
   parameters: {
-    i18n,
     actions: { argTypesRegex: "^on[A-Z].*" },
     controls: {
       matchers: {
@@ -13,13 +12,7 @@ const preview: Preview = {
       },
     },
   },
-  globals: {
-    locale: 'en-US',
-    locales: {
-        "en-US": 'Amercan English',
-        "es-US": 'Mexican Spanish'
-    },
-}
+  decorators: [I18Decorator]
 };
 
 export default preview;
