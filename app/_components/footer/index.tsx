@@ -40,7 +40,7 @@ const Footer: FC = () => {
 
   return (
     <footer className="bg-purple-900 text-white py-20">
-      <div className="flex flex-col justify-center items-center max-w-screen-2xl px-4">
+      <div className="flex flex-col justify-center items-center max-w-screen-2xl px-4 mx-auto">
         <div className="flex justify-center items-center flex-wrap mb-4">
           {FOOTER_LINKS.map(({ icon, url, alt }, index) => {
             return (

@@ -2,6 +2,7 @@ import { useEntries } from '../../../../_services/contentful'
 import Card from '../../../../_components/card'
 import Carousel from '../../../../_components/carousel'
 import SectionTitle from './components/section-title'
+import SectionFooter from './components/section-footer'
 const CONTENTFUL_PORTFOLIO_ID =
   process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
 
@@ -39,6 +40,7 @@ const PortfolioSection = async () => {
           </div>
         ))}
       </Carousel>
+      <SectionFooter />
     </div>
   )
 }
