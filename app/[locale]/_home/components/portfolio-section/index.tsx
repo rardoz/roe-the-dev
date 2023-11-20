@@ -1,20 +1,23 @@
 import { useEntries } from '../../../../_services/contentful'
 import Card from '../../../../_components/card'
 import Carousel from '../../../../_components/carousel'
-import SectionTitle from './components/section-title'
+import SectionTitle from '../../../../_components/section-title'
 import SectionFooter from './components/section-footer'
+import { getTranslator } from 'next-intl/server'
+import { FC } from 'react'
 const CONTENTFUL_PORTFOLIO_ID =
   process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
 
-const PortfolioSection = async () => {
+const PortfolioSection: FC<{ locale?: string }> = async (props) => {
   const entries = await useEntries({
     limit: 6,
     contentType: CONTENTFUL_PORTFOLIO_ID,
   })
+  const messages = await getTranslator(props.locale || '', 'Portfolio')
 
   return (
     <div className="bg-purple-900 p-5 w-full mt-24">
-      <SectionTitle />
+      <SectionTitle light>{messages.raw('title')}</SectionTitle>
       <Carousel>
         {[0, 1].map((slide) => (
           <div key={slide} className="px-5 relative pb-5 max-w-screen-2xl">

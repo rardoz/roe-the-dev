@@ -1,5 +1,6 @@
 import type { FC } from 'react'
 import { useTranslations } from 'next-intl'
+import HR from '../../../../../../_components/hr'
 
 const SectionTitle: FC = () => {
   const t = useTranslations('Blog')
@@ -9,7 +10,7 @@ const SectionTitle: FC = () => {
       <h2 className=" text-center text-purple-700 text-4xl font-bold">
         {t('title')}
       </h2>
-      <hr className="mt-5 mb-16 border-dotted border-spacing-8 border-8 border-t-0 border-purple-300" />
+      <HR />
     </div>
   )
 }

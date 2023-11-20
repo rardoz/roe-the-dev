@@ -22,8 +22,8 @@ export default async function Home(props: { params?: { locale: string } }) {
         </BigCarousel>
       </div>
       <AboutSection />
-      <PortfolioSection />
-      <BlogSection />
+      <PortfolioSection locale={props.params?.locale} />
+      <BlogSection locale={props.params?.locale} />
     </DefaultLayout>
   )
 }
