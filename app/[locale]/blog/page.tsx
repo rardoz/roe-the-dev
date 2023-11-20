@@ -3,8 +3,12 @@ import { useEntries } from '../../_services/contentful'
 import { getTranslator } from 'next-intl/server'
 import SectionTitle from '../../_components/section-title'
 import Card from '../../_components/card'
+import VideoBackground from '../../_components/video-bg'
+import Link from '../../_components/link'
+
 const CONTENTFUL_BLOG_ID = process.env.CONTENTFUL_BLOG_ID || 'blog'
 const LIMIT = 9
+
 export default async function Blog(props: {
   params?: { locale: string; page?: string }
 }) {
@@ -17,25 +21,33 @@ export default async function Blog(props: {
   const messages = await getTranslator(props.params?.locale || '', 'Blog')
 
   return (
-    <DefaultLayout navForcedInView params={props.params}>
-      <div className="w-full max-w-screen-2xl mb-16 -mt-8">
-        <SectionTitle>{messages.raw('title')}</SectionTitle>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4">
-          {entries?.items?.map((entry) => {
-            return (
-              <Card
-                key={entry?.slug}
-                imageAlt={entry?.featuredImage?.description}
-                imageSrc={entry?.featuredImage?.url}
-                title={entry?.title}
-                description={entry?.description}
-                hardRoute={entry?.hardRoute}
-                link={entry?.hardRoute ? entry?.slug : `/blog/${entry?.slug}`}
-              />
-            )
-          })}
+    <>
+      <DefaultLayout params={props.params}>
+        <VideoBackground videoSrc="/blog-video-720.mp4" fixed />
+        <div className="w-full max-w-screen-2xl mb-16 -mt-8">
+          <SectionTitle>{messages.raw('title')}</SectionTitle>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-12 px-4">
+            {entries?.items?.map((entry) => {
+              return (
+                <Card
+                  key={entry?.slug}
+                  imageAlt={entry?.featuredImage?.description}
+                  imageSrc={entry?.featuredImage?.url}
+                  title={entry?.title}
+                  description={entry?.description}
+                  hardRoute={entry?.hardRoute}
+                  link={entry?.hardRoute ? entry?.slug : `/blog/${entry?.slug}`}
+                />
+              )
+            })}
+          </div>
         </div>
-      </div>
-    </DefaultLayout>
+        <p className="text-slate-50 text-sm pb-8 w-full text-center">
+          {messages.raw('footerMessage')}
+          <br className="inline sm:hidden" />
+          <Link href="https://deepmind.google/">Google Deepmind</Link>
+        </p>
+      </DefaultLayout>
+    </>
   )
 }

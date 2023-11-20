@@ -6,7 +6,8 @@ import Card from '../../_components/card'
 import VideoBackground from '../../_components/video-bg'
 import Link from '../../_components/link'
 
-const CONTENTFUL_PORTFOLIO_ID = process.env.CONTENTFUL_PORTFOLIO_ID || 'blog'
+const CONTENTFUL_PORTFOLIO_ID =
+  process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
 const LIMIT = 9
 export default async function Portfolio(props: {
   params?: { locale: string; page?: string }

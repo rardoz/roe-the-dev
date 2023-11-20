@@ -7,7 +7,7 @@ exports[`VideoBG should render with absolute position 1`] = `
   >
     <video
       autoplay=""
-      class=" object-cover w-full h-full"
+      class="bg-gradient-to-b from-purple-950 to-black object-cover w-full h-full"
       loop=""
     >
       <source
@@ -26,7 +26,7 @@ exports[`VideoBG should render with fixed position 1`] = `
   >
     <video
       autoplay=""
-      class=" object-cover w-full h-full"
+      class="bg-gradient-to-b from-purple-950 to-black object-cover w-full h-full"
       loop=""
     >
       <source

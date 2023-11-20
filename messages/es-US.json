@@ -24,6 +24,7 @@
   },
   "Blog": {
     "title": "Desde mi escritorio",
-    "cta": "Leer blogs"
+    "cta": "Leer blogs",
+    "footerMessage": "Fondo generado por inteligencia artificial con"
   }
 }

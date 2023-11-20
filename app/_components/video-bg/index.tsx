@@ -12,7 +12,12 @@ const VideoBG: React.FC<VideoBGProps> = ({ videoSrc, fixed }) => {
         fixed ? 'fixed' : 'absolute'
       }`}
     >
-      <video autoPlay muted loop className=" object-cover w-full h-full">
+      <video
+        autoPlay
+        muted
+        loop
+        className="bg-gradient-to-b from-purple-950 to-black object-cover w-full h-full"
+      >
         <source src={videoSrc} type="video/mp4" />
       </video>
     </div>
