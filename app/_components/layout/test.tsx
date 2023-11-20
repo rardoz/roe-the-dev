@@ -6,8 +6,18 @@ import messages from '../../../messages/en-US.json'
 import { mockIntersectionObserver } from 'jsdom-testing-mocks'
 mockIntersectionObserver()
 
-describe('Nav', () => {
-  it('should render', () => {
+describe('Layout', () => {
+  it('should render with default locale set', () => {
+    expect(
+      render(
+        <NextIntlClientProvider locale="en-US" messages={messages}>
+          <Layout params={{ locale: 'en-US' }} />
+        </NextIntlClientProvider>,
+      ).container,
+    ).toMatchSnapshot()
+  })
+
+  it('should render with no locale set', () => {
     expect(
       render(
         <NextIntlClientProvider locale="en-US" messages={messages}>
