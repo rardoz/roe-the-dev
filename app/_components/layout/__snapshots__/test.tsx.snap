@@ -220,7 +220,7 @@ exports[`Layout should render with default locale set 1`] = `
         class="flex justify-center items-center flex-wrap mb-4"
       >
         <a
-          class="mx-1 my-1 py-3 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
+          class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://github.com/rardoz"
           rel="noopener noreferrer"
           target="_blank"
@@ -245,7 +245,7 @@ exports[`Layout should render with default locale set 1`] = `
           </svg>
         </a>
         <a
-          class="mx-1 my-1 py-3 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
+          class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://linkedin.com/in/rardoz"
           rel="noopener noreferrer"
           target="_blank"
@@ -270,7 +270,7 @@ exports[`Layout should render with default locale set 1`] = `
           </svg>
         </a>
         <a
-          class="mx-1 my-1 py-3 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
+          class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://twitter.com/roe_the_dev"
           rel="noopener noreferrer"
           target="_blank"
@@ -295,7 +295,7 @@ exports[`Layout should render with default locale set 1`] = `
           </svg>
         </a>
         <a
-          class="mx-1 my-1 py-3 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
+          class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://twitch.tv/roe_the_dev"
           rel="noopener noreferrer"
           target="_blank"
@@ -320,7 +320,7 @@ exports[`Layout should render with default locale set 1`] = `
           </svg>
         </a>
         <a
-          class="mx-1 my-1 py-3 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
+          class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="mailto:roethedev@gmail.com"
           rel="noopener noreferrer"
           target="_blank"
@@ -584,7 +584,7 @@ exports[`Layout should render with no locale set 1`] = `
         class="flex justify-center items-center flex-wrap mb-4"
       >
         <a
-          class="mx-1 my-1 py-3 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
+          class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://github.com/rardoz"
           rel="noopener noreferrer"
           target="_blank"
@@ -609,7 +609,7 @@ exports[`Layout should render with no locale set 1`] = `
           </svg>
         </a>
         <a
-          class="mx-1 my-1 py-3 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
+          class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://linkedin.com/in/rardoz"
           rel="noopener noreferrer"
           target="_blank"
@@ -634,7 +634,7 @@ exports[`Layout should render with no locale set 1`] = `
           </svg>
         </a>
         <a
-          class="mx-1 my-1 py-3 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
+          class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://twitter.com/roe_the_dev"
           rel="noopener noreferrer"
           target="_blank"
@@ -659,7 +659,7 @@ exports[`Layout should render with no locale set 1`] = `
           </svg>
         </a>
         <a
-          class="mx-1 my-1 py-3 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
+          class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://twitch.tv/roe_the_dev"
           rel="noopener noreferrer"
           target="_blank"
@@ -684,7 +684,7 @@ exports[`Layout should render with no locale set 1`] = `
           </svg>
         </a>
         <a
-          class="mx-1 my-1 py-3 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
+          class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="mailto:roethedev@gmail.com"
           rel="noopener noreferrer"
           target="_blank"

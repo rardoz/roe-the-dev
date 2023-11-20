@@ -7,6 +7,7 @@ import {
   FaXTwitter,
 } from 'react-icons/fa6'
 import Link from '../link'
+import IconLinkButton from '../icon-link-button'
 
 const FOOTER_LINKS = [
   {
@@ -45,16 +46,15 @@ const Footer: FC = () => {
         <div className="flex justify-center items-center flex-wrap mb-4">
           {FOOTER_LINKS.map(({ icon, url, alt }, index) => {
             return (
-              <a
+              <IconLinkButton
                 key={index}
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mx-1 my-1 py-3 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
+                altText={alt}
               >
-                <div className="sr-only">{alt}</div>
                 {icon}
-              </a>
+              </IconLinkButton>
             )
           })}
         </div>
