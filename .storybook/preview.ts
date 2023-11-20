@@ -12,7 +12,13 @@ const preview: Preview = {
       },
     },
   },
-  decorators: [I18Decorator]
+  decorators: [I18Decorator],
+  globals: {
+    locale: 'en-US',
+    locales: {
+        "en-US": 'Amercan English'
+    },
+}
 };
 
 export default preview;
