@@ -26,7 +26,12 @@ const PortfolioSection = async () => {
                     imageSrc={entry?.featuredImage?.url}
                     title={entry?.title}
                     description={entry?.description}
-                    link={`/portfolio/${entry?.slug}`}
+                    hardRoute={entry?.hardRoute}
+                    link={
+                      entry?.hardRoute
+                        ? entry?.slug
+                        : `/portfolio/${entry?.slug}`
+                    }
                   />
                 )
               })}

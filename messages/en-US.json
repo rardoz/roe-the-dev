@@ -20,6 +20,7 @@
     "title": "Portfolio"
   },
   "Blog": {
-    "title": "From my desk"
+    "title": "From my desk",
+    "cta": "Read blogs"
   }
 }

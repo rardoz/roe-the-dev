@@ -20,6 +20,7 @@
     "title": "Portafolio"
   },
   "Blog": {
-    "title": "Desde mi escritorio"
+    "title": "Desde mi escritorio",
+    "cta": "Leer blogs"
   }
 }
