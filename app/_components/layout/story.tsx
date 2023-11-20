@@ -18,5 +18,6 @@ type Story = StoryObj<typeof meta>
 export const LayoutExample: Story = {
   args: {
     children: <div>Hello</div>,
+    navForcedInView: true,
   },
 }
