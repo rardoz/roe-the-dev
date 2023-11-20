@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`VideoBG should render with absolute position 1`] = `
+<div>
+  <div
+    class="top-0 left-0 w-full h-full -z-10 absolute"
+  >
+    <video
+      autoplay=""
+      class=" object-cover w-full h-full"
+      loop=""
+    >
+      <source
+        src="test.mp4"
+        type="video/mp4"
+      />
+    </video>
+  </div>
+</div>
+`;
+
+exports[`VideoBG should render with fixed position 1`] = `
+<div>
+  <div
+    class="top-0 left-0 w-full h-full -z-10 fixed"
+  >
+    <video
+      autoplay=""
+      class=" object-cover w-full h-full"
+      loop=""
+    >
+      <source
+        src="test.mp4"
+        type="video/mp4"
+      />
+    </video>
+  </div>
+</div>
+`;

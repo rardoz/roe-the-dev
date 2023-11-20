@@ -19,7 +19,8 @@
   },
   "Portfolio": {
     "title": "Portafolio",
-    "cta": "Ver mi trabajo"
+    "cta": "Ver mi trabajo",
+    "footerMessage": "Fondo generado por inteligencia artificial con"
   },
   "Blog": {
     "title": "Desde mi escritorio",

@@ -19,7 +19,8 @@
   },
   "Portfolio": {
     "title": "Portfolio",
-    "cta": "See my work"
+    "cta": "See my work",
+    "footerMessage": "Background AI generated with"
   },
   "Blog": {
     "title": "From my desk",

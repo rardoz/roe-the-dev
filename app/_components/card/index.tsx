@@ -16,7 +16,7 @@ const Card: FC<{
   return (
     <Link href={link || ''} target={hardRoute ? '_blank' : undefined}>
       <FCard
-        className="max-w-sm hover:scale-105 relative hover:z-10 transition-all duration-500 overflow-hidden m-auto w-full h-full"
+        className="hover:scale-105 relative hover:z-10 transition-all duration-500 overflow-hidden m-auto w-full h-full"
         renderImage={
           imageSrc
             ? () => <CardImage src={imageSrc} alt={imageAlt || ''} />
