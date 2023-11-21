@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { EditorView, basicSetup } from 'codemirror'
 import { EditorState, Compartment } from '@codemirror/state'
 import { javascript } from '@codemirror/lang-javascript'
+import CodeButtonGroup from '../code-button-group'
 const tabSize = new Compartment()
 
 function decodeHtml(html: string): string {
@@ -65,49 +66,39 @@ const Code: React.FC<React.PropsWithChildren> = ({ children }) => {
       <div className="mt-10 mb-6">
         <div ref={codeRef}>{children}</div>
       </div>
-      <div className="flex items-center h-20 mb-10">
-        <div className="flex flex-col justify-start h-full">
-          <button
-            onClick={() => {
-              const escapedString = encodeURIComponent(
-                editorRef?.current?.state.doc as unknown as string,
-              )
-              iFrameRef.current?.contentDocument?.write(`
-            <script type="text/javascript">
-         
-              try {
-                const retVal = eval(decodeURIComponent("${escapedString}"));
-  
-                if(retVal) {
-                  document.getElementsByTagName('body')[0].innerText += ">> " + JSON.stringify(retVal);
-                  document.getElementsByTagName('body')[0].innerText += \`
-                  \`;
-                } else if(retVal === undefined) {
-                  console.log('undefined')
-                }
-                
-              } catch(e) {
-                
-                document.getElementsByTagName('body')[0].innerText +=  ">> "  + (e.message || JSON.stringify(e.message)) + \`\r\n\`;
-              }
-              window.scrollTo(window.scrollX, window.outerHeight * 10)
-            </script>
-            `)
-            }}
-            className="bg-purple-700 text-white font-bold py-1.5 px-4 rounded-full hover:bg-pink-600 transition-all duration-500 ease-in-out "
-          >
-            run
-          </button>
-          <button
-            onClick={() => iFrameRef?.current?.contentWindow?.location.reload()}
-            className="mt-2 border-purple-700 border text-purple-700 font-bold py-1.5 px-4 rounded-full hover:text-pink-600 hover:border-pink-600 transition-all duration-500 ease-in-out "
-          >
-            reset
-          </button>
-        </div>
+      <div className="mb-10">
         <iframe
-          className="bg-slate-50 w-full h-full border-dashed border-purple-400 border-2 flex-grow flex-shrink ml-4"
+          className="h-20 bg-slate-50 w-full border-dashed border-purple-400 border-2"
           ref={iFrameRef}
+        />
+        <CodeButtonGroup
+          onPlay={() => {
+            const escapedString = encodeURIComponent(
+              editorRef?.current?.state.doc as unknown as string,
+            )
+            iFrameRef.current?.contentDocument?.write(`
+          <script type="text/javascript">
+       
+            try {
+              const retVal = eval(decodeURIComponent("${escapedString}"));
+
+              if(retVal) {
+                document.getElementsByTagName('body')[0].innerText += ">> " + JSON.stringify(retVal);
+                document.getElementsByTagName('body')[0].innerText += \`
+                \`;
+              } else if(retVal === undefined) {
+                console.log('undefined')
+              }
+              
+            } catch(e) {
+              
+              document.getElementsByTagName('body')[0].innerText +=  ">> "  + (e.message || JSON.stringify(e.message)) + \`\r\n\`;
+            }
+            window.scrollTo(window.scrollX, window.outerHeight * 10)
+          </script>
+          `)
+          }}
+          onReset={() => iFrameRef?.current?.contentWindow?.location.reload()}
         />
       </div>
     </div>

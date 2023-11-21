@@ -138,7 +138,7 @@ const ContentfulToReact: React.FC<{ content: Document }> = ({ content }) => {
   const ref = useRef() as MutableRefObject<HTMLDivElement>
 
   return (
-    <div ref={ref}>
+    <div ref={ref} className="break-words">
       {documentToReactComponents(selectWithCodeWrapper(content), options)}
     </div>
   )

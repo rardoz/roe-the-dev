@@ -6,6 +6,7 @@ import { Flowbite } from 'flowbite-react'
 import theme from '../_theme'
 import { notFound } from 'next/navigation'
 import config from '../../messages/config'
+import { NextIntlClientProvider } from 'next-intl'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -25,13 +26,24 @@ export default async function RootLayout({
   children: React.ReactNode
   params: { locale: string }
 }) {
+  let messages
+  try {
+    messages = (await import(`../../messages/${locale}.json`)).default
+  } catch (error) {
+    notFound()
+  }
+
   const isValidLocale = config.locales.some((cur) => cur === locale)
   if (!isValidLocale) notFound()
 
   return (
     <html lang={locale}>
       <body className={inter.className}>
-        <Flowbite theme={{ theme }}>{children}</Flowbite>
+        <Flowbite theme={{ theme }}>
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            {children}
+          </NextIntlClientProvider>
+        </Flowbite>
       </body>
     </html>
   )

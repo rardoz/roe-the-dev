@@ -25,6 +25,8 @@
   "Blog": {
     "title": "From my desk",
     "cta": "Read blogs",
-    "footerMessage": "Background AI generated with"
+    "footerMessage": "Background AI generated with",
+    "clear": "Clear",
+    "run": "Run"
   }
 }
