@@ -47,7 +47,7 @@ const Nav: React.FC<
       <nav
         className={`${
           !isSticky ? '' : 'bg-white '
-        }z-20 border-gray-200 bg-transparent sticky top-0 transition-color duration-500`}
+        }z-20 border-gray-200 bg-transparent fixed top-0 w-full transition-color duration-500`}
       >
         <div className="flex flex-wrap items-center justify-between mx-auto p-4 relative">
           <Link

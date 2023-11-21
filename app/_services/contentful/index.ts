@@ -104,7 +104,7 @@ export const useEntries = async ({
     order: order || '-sys.createdAt',
   }
 
-  if (slug) queryData['field.slug[is]'] = slug
+  if (slug) queryData['fields.slug'] = slug
 
   return await getClient()
     .getEntries(queryData)

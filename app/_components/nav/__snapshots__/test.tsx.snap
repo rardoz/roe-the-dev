@@ -6,7 +6,7 @@ exports[`Nav should render 1`] = `
     class="nav-observer"
   />
   <nav
-    class="bg-white z-20 border-gray-200 bg-transparent sticky top-0 transition-color duration-500"
+    class="bg-white z-20 border-gray-200 bg-transparent fixed top-0 w-full transition-color duration-500"
   >
     <div
       class="flex flex-wrap items-center justify-between mx-auto p-4 relative"

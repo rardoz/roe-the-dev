@@ -24,7 +24,7 @@ export default async function Portfolio(props: {
     <>
       <DefaultLayout params={props.params}>
         <VideoBackground videoSrc="/portfolio-video-720.mp4" fixed />
-        <div className="w-full max-w-screen-2xl mb-16 -mt-8">
+        <div className="w-full max-w-screen-2xl mb-16 mt-10">
           <SectionTitle>{messages.raw('title')}</SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-12 px-4">
             {entries?.items?.map((entry) => {
