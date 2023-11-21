@@ -7,7 +7,8 @@
     "blog": "Blog",
     "experiments": "Experimentación",
     "menuIconAltText": "Haga clic para ver más enlaces",
-    "logoAltText": "Logotipo de Roe the Dev"
+    "logoAltText": "Logotipo de Roe the Dev",
+    "about": "Sobre Roe"
   },
   "About": {
     "title": "Sobre Roe",
@@ -18,10 +19,12 @@
   },
   "Portfolio": {
     "title": "Portafolio",
-    "cta": "Ver mi trabajo"
+    "cta": "Ver mi trabajo",
+    "footerMessage": "Fondo generado por inteligencia artificial con"
   },
   "Blog": {
     "title": "Desde mi escritorio",
-    "cta": "Leer blogs"
+    "cta": "Leer blogs",
+    "footerMessage": "Fondo generado por inteligencia artificial con"
   }
 }

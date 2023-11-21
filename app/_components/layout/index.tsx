@@ -5,34 +5,41 @@ import NavLinks from '../nav/nav-links'
 import { PiTelevisionBold } from 'react-icons/pi'
 import { GiEvilBook } from 'react-icons/gi'
 import { SiTestinglibrary } from 'react-icons/si'
-import Link from 'next/link'
+import { FaRegAddressCard } from 'react-icons/fa6'
+import Link from 'next-intl/link'
 import { PropsWithChildren } from 'react'
 import Footer from '../footer'
 
 const DefaultLayout: React.FC<
-  PropsWithChildren<{ params?: { locale: string } }>
-> = ({ params, children }) => {
+  PropsWithChildren<{ params?: { locale: string }; navForcedInView?: boolean }>
+> = ({ children, navForcedInView }) => {
   const navTranslations = useTranslations('Nav')
   const links = [
     {
       label: navTranslations('portfolio'),
       icon: <PiTelevisionBold className="mr-1.5" />,
-      url: `/${params?.locale || ''}/portfolio`,
+      url: `/portfolio`,
     },
     {
       label: navTranslations('blog'),
       icon: <GiEvilBook className="mr-1.5" />,
-      url: `/${params?.locale || ''}/blog`,
+      url: `/blog`,
     },
     {
       label: navTranslations('experiments'),
       icon: <SiTestinglibrary className="mr-1.5" />,
-      url: `/${params?.locale || ''}/experiments`,
+      url: `/experiments`,
+    },
+    {
+      label: navTranslations('about'),
+      icon: <FaRegAddressCard className="mr-1.5" />,
+      url: `/about`,
     },
   ]
   return (
     <>
       <Nav
+        forceInView={navForcedInView}
         messages={{
           logoAltText: navTranslations('logoAltText'),
           menuIconAltText: navTranslations('menuIconAltText'),
