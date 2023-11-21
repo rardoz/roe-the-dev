@@ -45,7 +45,13 @@ export default async function Blog(props: {
         <p className="text-slate-50 text-sm pb-8 w-full text-center">
           {messages.raw('footerMessage')}
           <br className="inline sm:hidden" />
-          <Link href="https://deepmind.google/">Google Deepmind</Link>
+          <Link
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://deepmind.google/"
+          >
+            Google Deepmind
+          </Link>
         </p>
       </DefaultLayout>
     </>
