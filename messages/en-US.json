@@ -5,7 +5,7 @@
   "Nav": {
     "portfolio": "Porfolio",
     "blog": "Blog",
-    "experiments": "Experiments",
+    "experiment": "Experiments",
     "menuIconAltText": "Click for additional menu links",
     "logoAltText": "Roe the Dev logo",
     "about": "About Roe"
@@ -31,5 +31,10 @@
     "clear": "Clear",
     "run": "Run",
     "lastUpdated": "Leave a comment"
+  },
+  "Experiment": {
+    "title": "Experiments",
+    "footerMessage": "Background AI generated with",
+    "comingSoon": "Coming soon"
   }
 }

@@ -25,9 +25,9 @@ const DefaultLayout: React.FC<
       url: `/blog`,
     },
     {
-      label: navTranslations('experiments'),
+      label: navTranslations('experiment'),
       icon: <SiTestinglibrary className="mr-1.5" />,
-      url: `/experiments`,
+      url: `/experiment`,
     },
   ]
   return (

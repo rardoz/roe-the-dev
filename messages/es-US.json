@@ -5,7 +5,7 @@
   "Nav": {
     "portfolio": "Cartera",
     "blog": "Blog",
-    "experiments": "Experimentación",
+    "experiment": "Experimentación",
     "menuIconAltText": "Haga clic para ver más enlaces",
     "logoAltText": "Logotipo de Roe the Dev",
     "about": "Sobre Roe"
@@ -32,5 +32,10 @@
     "clear": "Borrar",
     "run": "Correr",
     "commentLabel": "Dejar un comentario"
+  },
+  "Experiment": {
+    "title": "Experimentación",
+    "footerMessage": "Fondo generado por inteligencia artificial con",
+    "comingSoon": "Próximamente"
   }
 }
