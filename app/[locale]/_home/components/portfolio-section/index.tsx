@@ -5,6 +5,7 @@ import SectionTitle from '../../../../_components/section-title'
 import { getTranslator } from 'next-intl/server'
 import { FC } from 'react'
 import LinkButton from '../../../../_components/link-button'
+import { PiTelevisionBold } from 'react-icons/pi'
 
 const CONTENTFUL_PORTFOLIO_ID =
   process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
@@ -45,7 +46,10 @@ const PortfolioSection: FC<{ locale?: string }> = async (props) => {
         ))}
       </Carousel>
       <div className="flex justify-center mb-10 mt-3">
-        <LinkButton href="/portfolio">{messages('cta')}</LinkButton>
+        <LinkButton href="/portfolio">
+          <PiTelevisionBold className="inline-block mr-2" />
+          {messages('cta')}
+        </LinkButton>
       </div>
     </div>
   )

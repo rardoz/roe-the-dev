@@ -5,7 +5,6 @@ import NavLinks from '../nav/nav-links'
 import { PiTelevisionBold } from 'react-icons/pi'
 import { GiEvilBook } from 'react-icons/gi'
 import { SiTestinglibrary } from 'react-icons/si'
-import { FaRegAddressCard } from 'react-icons/fa6'
 import Link from 'next-intl/link'
 import { PropsWithChildren } from 'react'
 import Footer from '../footer'
@@ -29,11 +28,6 @@ const DefaultLayout: React.FC<
       label: navTranslations('experiments'),
       icon: <SiTestinglibrary className="mr-1.5" />,
       url: `/experiments`,
-    },
-    {
-      label: navTranslations('about'),
-      icon: <FaRegAddressCard className="mr-1.5" />,
-      url: `/about`,
     },
   ]
   return (

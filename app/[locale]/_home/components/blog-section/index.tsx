@@ -4,6 +4,7 @@ import SectionTitle from '../../../../_components/section-title'
 import { useEntries } from '../../../../_services/contentful'
 import { getTranslator } from 'next-intl/server'
 import LinkButton from '../../../../_components/link-button'
+import { GiEvilBook } from 'react-icons/gi'
 
 const BlogSection: FC<{ locale?: string }> = async (props) => {
   const entries = await useEntries({
@@ -15,7 +16,7 @@ const BlogSection: FC<{ locale?: string }> = async (props) => {
 
   return (
     <div className="w-full max-w-screen-2xl mt-10">
-      <SectionTitle>{messages.raw('title')}</SectionTitle>
+      <SectionTitle>{messages('title')}</SectionTitle>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4">
         {entries?.items?.map((entry) => {
           return (
@@ -32,7 +33,10 @@ const BlogSection: FC<{ locale?: string }> = async (props) => {
         })}
       </div>
       <div className="flex justify-center my-10">
-        <LinkButton href="/blog">{messages('cta')}</LinkButton>
+        <LinkButton href="/blog">
+          <GiEvilBook className="inline-block mr-2" />
+          {messages('cta')}
+        </LinkButton>
       </div>
     </div>
   )
