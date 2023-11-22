@@ -9,6 +9,7 @@ import BreadCrumbs from '../../../_components/breadcrumbs'
 import dayjs from 'dayjs'
 import type { Metadata } from 'next'
 import { NormalizedBlogState } from '../../../_services/contentful/types'
+import config from '../../../../messages/config'
 
 const CONTENTFUL_BLOG_ID = process.env.CONTENTFUL_BLOG_ID || 'blog'
 
@@ -36,6 +37,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${messages('title')} | ${entry?.title}`,
     description: entry?.description,
+    alternates: {
+      canonical: `/blog/${entry?.slug}`,
+      languages: Object.fromEntries(
+        config.locales.map((cur) => [cur, `/${cur}/blog/${entry?.slug}`]),
+      ),
+    },
     openGraph: {
       images: entry?.socialPhoto?.url ? [entry.socialPhoto.url] : undefined,
     },

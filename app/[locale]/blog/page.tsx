@@ -7,6 +7,7 @@ import VideoBackground from '../../_components/video-bg'
 import Link from '../../_components/link'
 import BreadCrumbs from '../../_components/breadcrumbs'
 import type { Metadata } from 'next'
+import config from '../../../messages/config'
 
 const CONTENTFUL_BLOG_ID = process.env.CONTENTFUL_BLOG_ID || 'blog'
 const LIMIT = 9
@@ -21,6 +22,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: messages('title'),
     description: messages('description'),
+    alternates: {
+      canonical: `/blog`,
+      languages: Object.fromEntries(
+        config.locales.map((cur) => [cur, `/${cur}/blog`]),
+      ),
+    },
   }
 }
 

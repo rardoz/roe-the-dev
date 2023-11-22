@@ -7,6 +7,7 @@ import Link from '../../_components/link'
 import BreadCrumbs from '../../_components/breadcrumbs'
 import type { Metadata } from 'next'
 import { getTranslator } from 'next-intl/server'
+import config from '../../../messages/config'
 
 const CONTENTFUL_PORTFOLIO_ID =
   process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
@@ -22,6 +23,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: messages('title'),
     description: messages('description'),
+    alternates: {
+      canonical: `/porfolio`,
+      languages: Object.fromEntries(
+        config.locales.map((cur) => [cur, `/${cur}/portfolio`]),
+      ),
+    },
   }
 }
 

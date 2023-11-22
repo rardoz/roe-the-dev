@@ -10,6 +10,7 @@ import BreadCrumbs from '../../../_components/breadcrumbs'
 import dayjs from 'dayjs'
 import type { Metadata } from 'next'
 import { NormalizedBlogState } from '../../../_services/contentful/types'
+import config from '../../../../messages/config'
 
 const CONTENTFUL_PORTFOLIO_ID =
   process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
@@ -38,6 +39,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${messages('title')} | ${entry?.title}`,
     description: entry?.description,
+    alternates: {
+      canonical: `/porfolio/${entry?.slug}`,
+      languages: Object.fromEntries(
+        config.locales.map((cur) => [cur, `/${cur}/portfolio/${entry?.slug}`]),
+      ),
+    },
+    category: 'technology',
     openGraph: {
       images: entry?.socialPhoto?.url ? [entry.socialPhoto.url] : undefined,
     },

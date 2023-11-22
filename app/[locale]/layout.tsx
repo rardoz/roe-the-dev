@@ -19,6 +19,9 @@ export const metadata: Metadata = {
     ),
   },
   category: 'technology',
+  authors: [{ name: 'Roe Greene' }],
+  creator: 'Roe Greene',
+  publisher: 'Roe Greene',
   openGraph: {
     images: ['/default-social-image.png'],
   },
