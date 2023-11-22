@@ -4,6 +4,9 @@ import { useEntries } from '../../../_services/contentful'
 import Discussion from '../../../_components/discussion'
 import SectionTitle from '../../../_components/section-title'
 import Hero from '../../../_components/hero'
+import { getTranslator } from 'next-intl/server'
+import BreadCrumbs from '../../../_components/breadcrumbs'
+import dayjs from 'dayjs'
 
 const CONTENTFUL_BLOG_ID = process.env.CONTENTFUL_BLOG_ID || 'blog'
 
@@ -17,6 +20,7 @@ export default async function BlogDetail(props: {
 
   const entry = entries?.items?.[0]
 
+  const messages = await getTranslator(props.params?.locale || '', 'Blog')
   return (
     <DefaultLayout params={props.params}>
       <div className="w-full -my-2">
@@ -28,8 +32,31 @@ export default async function BlogDetail(props: {
             imageSrc={entry?.blogPhoto?.url}
           />
           <div className="max-w-screen-lg mx-auto pt-1" id="main-section">
-            <div className="px-4 pt-16">
+            <div className="px-4">
+              <div className="pb-12 pt-4">
+                <BreadCrumbs
+                  links={[
+                    {
+                      label: messages.raw('title'),
+                      href: '/blog',
+                    },
+                    {
+                      label: entry?.title,
+                      href: `/blog/${entry?.slug}`,
+                    },
+                  ]}
+                />
+              </div>
+
               {entry?.content && <ContentfulToReact content={entry?.content} />}
+              <div className="opacity-70 text-sm">
+                <em>
+                  <strong className="text-purple-800">
+                    Last updated: &nbsp;
+                  </strong>
+                  {dayjs(entry?.dateUpdated).format('MMMM DD, YYYY @ hh:mm A')}
+                </em>
+              </div>
             </div>
             {entry && (
               <>

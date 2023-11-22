@@ -7,25 +7,25 @@ const BreadCrumbs: FC<{
 }> = ({ links }) => {
   return (
     <div className="flex" aria-label="Breadcrumb">
-      <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+      <ol className="inline-flex flex-wrap items-start space-x-1 md:space-x-2 rtl:space-x-reverse">
         <li className="inline-flex items-center">
           <Link
             href="/"
             className="inline-flex items-center text-sm font-medium"
           >
-            <FaHouseChimney className="w-3 h-3 me-2.5 text-pink-600" />
+            <FaHouseChimney className="w-3 h-3 me-1 text-pink-500" />
             Home
           </Link>
         </li>
         {links.map((link, i) => (
-          <li className="inline-flex items-center" key={i}>
-            <FaChevronRight className={`mx-1 w-3 h-3 text-pink-600`} />
+          <li className="inline-flex items-center me-1" key={i}>
+            <FaChevronRight className={`me-1 w-3 h-3 text-pink-500`} />
             {i === links.length - 1 ? (
-              <span className="ms-1 text-sm font-medium text-purple-600">
+              <span className="text-sm font-medium text-purple-500">
                 {link.label}
               </span>
             ) : (
-              <Link href={link.href} className="ms-1 text-sm font-medium">
+              <Link href={link.href} className="text-sm font-medium">
                 {link.label}
               </Link>
             )}
