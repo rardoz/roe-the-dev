@@ -11,6 +11,14 @@ import { NextIntlClientProvider } from 'next-intl'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.SITE_BASE_URL || 'http://localhost:3000'),
+  alternates: {
+    canonical: '/',
+    languages: Object.fromEntries(
+      config.locales.map((cur) => [cur, `/${cur}`]),
+    ),
+  },
+  category: 'technology',
   openGraph: {
     images: ['/default-social-image.png'],
   },
