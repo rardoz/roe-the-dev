@@ -27,7 +27,7 @@ export default async function Experiment(props: {
   return (
     <>
       <DefaultLayout params={props.params}>
-        <VideoBackground videoSrc="/blog-video-720.mp4" fixed />
+        <VideoBackground videoSrc="/experiment-video-720.mp4" fixed />
         <div className="w-full max-w-screen-2xl mb-16 mt-16">
           <SectionTitle>{messages('title')}</SectionTitle>
           <div className="px-4 mb-4">

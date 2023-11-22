@@ -30,7 +30,8 @@
     "footerMessage": "Background AI generated with",
     "clear": "Clear",
     "run": "Run",
-    "lastUpdated": "Leave a comment"
+    "lastUpdated": "Last updated",
+    "commentLabel": "Leave a comment"
   },
   "Experiment": {
     "title": "Experiments",
