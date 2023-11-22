@@ -84,7 +84,7 @@ const normalizeData = (
   return normalizedFields
 }
 
-export const useEntries = async ({
+export const getEntries = async ({
   limit = 10,
   skip = 0,
   contentType,

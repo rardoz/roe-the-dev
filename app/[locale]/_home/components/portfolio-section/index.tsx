@@ -1,4 +1,4 @@
-import { useEntries } from '../../../../_services/contentful'
+import { getEntries } from '../../../../_services/contentful'
 import Card from '../../../../_components/card'
 import Carousel from '../../../../_components/carousel'
 import SectionTitle from '../../../../_components/section-title'
@@ -11,7 +11,7 @@ const CONTENTFUL_PORTFOLIO_ID =
   process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
 
 const PortfolioSection: FC<{ locale?: string }> = async (props) => {
-  const entries = await useEntries({
+  const entries = await getEntries({
     limit: 6,
     contentType: CONTENTFUL_PORTFOLIO_ID,
   })

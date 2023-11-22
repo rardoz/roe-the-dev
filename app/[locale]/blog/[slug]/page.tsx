@@ -1,6 +1,6 @@
 import ContentfulToReact from '../../../_components/contentful-to-react'
 import DefaultLayout from '../../../_components/layout'
-import { useEntries } from '../../../_services/contentful'
+import { getEntries } from '../../../_services/contentful'
 import Discussion from '../../../_components/discussion'
 import SectionTitle from '../../../_components/section-title'
 import Hero from '../../../_components/hero'
@@ -13,7 +13,7 @@ const CONTENTFUL_BLOG_ID = process.env.CONTENTFUL_BLOG_ID || 'blog'
 export default async function BlogDetail(props: {
   params?: { locale: string; slug?: string }
 }) {
-  const entries = await useEntries({
+  const entries = await getEntries({
     contentType: CONTENTFUL_BLOG_ID,
     slug: props.params?.slug,
   })

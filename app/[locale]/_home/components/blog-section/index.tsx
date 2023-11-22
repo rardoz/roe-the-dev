@@ -1,13 +1,13 @@
 import React, { FC } from 'react'
 import Card from '../../../../_components/card'
 import SectionTitle from '../../../../_components/section-title'
-import { useEntries } from '../../../../_services/contentful'
+import { getEntries } from '../../../../_services/contentful'
 import { getTranslator } from 'next-intl/server'
 import LinkButton from '../../../../_components/link-button'
 import { GiEvilBook } from 'react-icons/gi'
 
 const BlogSection: FC<{ locale?: string }> = async (props) => {
-  const entries = await useEntries({
+  const entries = await getEntries({
     limit: 3,
     contentType: 'linkBank',
   })

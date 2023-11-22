@@ -1,6 +1,6 @@
 import ContentfulToReact from '../../../_components/contentful-to-react'
 import DefaultLayout from '../../../_components/layout'
-import { useEntries } from '../../../_services/contentful'
+import { getEntries } from '../../../_services/contentful'
 import Discussion from '../../../_components/discussion'
 import SectionTitle from '../../../_components/section-title'
 import VideoPlayer from '../../../_components/video-player'
@@ -15,7 +15,7 @@ const CONTENTFUL_PORTFOLIO_ID =
 export default async function PortfolioDetail(props: {
   params?: { locale: string; slug?: string }
 }) {
-  const entries = await useEntries({
+  const entries = await getEntries({
     contentType: CONTENTFUL_PORTFOLIO_ID,
     slug: props.params?.slug,
   })

@@ -1,5 +1,5 @@
 import DefaultLayout from '../../_components/layout'
-import { useEntries } from '../../_services/contentful'
+import { getEntries } from '../../_services/contentful'
 import { getTranslator } from 'next-intl/server'
 import SectionTitle from '../../_components/section-title'
 import Card from '../../_components/card'
@@ -14,7 +14,7 @@ const LIMIT = 9
 export default async function Experiment(props: {
   params?: { locale: string; page?: string }
 }) {
-  const entries = await useEntries({
+  const entries = await getEntries({
     limit: LIMIT,
     contentType: CONTENTFUL_EXPERIMENT_ID,
     skip: parseInt(props.params?.page || '0', 10) * LIMIT,
