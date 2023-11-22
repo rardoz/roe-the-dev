@@ -20,13 +20,17 @@
   "Portfolio": {
     "title": "Portafolio",
     "cta": "Ver mi trabajo",
-    "footerMessage": "Fondo generado por inteligencia artificial con"
+    "footerMessage": "Fondo generado por inteligencia artificial con",
+    "lastUpdated": "Última actualización",
+    "commentLabel": "Critica mi trabajo"
   },
   "Blog": {
     "title": "Desde mi escritorio",
     "cta": "Leer blogs",
     "footerMessage": "Fondo generado por inteligencia artificial con",
+    "lastUpdated": "Última actualización",
     "clear": "Borrar",
-    "run": "Correr"
+    "run": "Correr",
+    "commentLabel": "Dejar un comentario"
   }
 }

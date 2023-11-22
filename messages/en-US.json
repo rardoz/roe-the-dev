@@ -20,13 +20,16 @@
   "Portfolio": {
     "title": "Portfolio",
     "cta": "See my work",
-    "footerMessage": "Background AI generated with"
+    "footerMessage": "Background AI generated with",
+    "lastUpdated": "Last updated",
+    "commentLabel": "Critique my work"
   },
   "Blog": {
     "title": "From my desk",
     "cta": "Read blogs",
     "footerMessage": "Background AI generated with",
     "clear": "Clear",
-    "run": "Run"
+    "run": "Run",
+    "lastUpdated": "Leave a comment"
   }
 }

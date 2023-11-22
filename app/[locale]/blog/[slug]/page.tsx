@@ -52,16 +52,16 @@ export default async function BlogDetail(props: {
               <div className="opacity-70 text-sm">
                 <em>
                   <strong className="text-purple-800">
-                    Last updated: &nbsp;
+                    {messages.raw('lastUpdated')}: &nbsp;
                   </strong>
-                  {dayjs(entry?.dateUpdated).format('MMMM DD, YYYY @ hh:mm A')}
+                  {dayjs(entry?.dateUpdated).format('MM/DD/YYYY @ hh:mm A')}
                 </em>
               </div>
             </div>
             {entry && (
               <>
                 <div className="px-4 pb-10 w-full">
-                  <SectionTitle>Leave a comment</SectionTitle>
+                  <SectionTitle>{messages.raw('commentLabel')}</SectionTitle>
                   <Discussion
                     slug={entry.slug!}
                     title={entry.title!}
