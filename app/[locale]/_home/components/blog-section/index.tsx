@@ -15,7 +15,7 @@ const BlogSection: FC<{ locale?: string }> = async (props) => {
   const messages = await getTranslator(props.locale || '', 'Blog')
 
   return (
-    <div className="w-full max-w-screen-2xl mt-10">
+    <div className="w-full max-w-screen-2xl my-10">
       <SectionTitle>{messages('title')}</SectionTitle>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4">
         {entries?.items?.map((entry) => {

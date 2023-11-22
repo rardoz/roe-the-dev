@@ -208,7 +208,7 @@ exports[`Layout should render with default locale set 1`] = `
     </div>
   </nav>
   <main
-    class="h-100 flex flex-col items-center justify-between py-2"
+    class="flex flex-col items-center justify-between"
   />
   <footer
     class="bg-purple-900 text-white py-20"
@@ -572,7 +572,7 @@ exports[`Layout should render with no locale set 1`] = `
     </div>
   </nav>
   <main
-    class="h-100 flex flex-col items-center justify-between py-2"
+    class="flex flex-col items-center justify-between"
   />
   <footer
     class="bg-purple-900 text-white py-20"

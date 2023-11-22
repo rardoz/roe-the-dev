@@ -30,13 +30,11 @@ export default async function Home(props: Props) {
 
   return (
     <DefaultLayout params={props.params}>
-      <div className="flex flex-col items-center justify-center w-full h-screen">
-        <BigCarousel className="absolute top-0 left-0">
-          {entries.items?.map((item) => (
-            <CarouselSlide key={item.title} {...item}></CarouselSlide>
-          ))}
-        </BigCarousel>
-      </div>
+      <BigCarousel className="mb-10">
+        {entries.items?.map((item) => (
+          <CarouselSlide key={item.title} {...item}></CarouselSlide>
+        ))}
+      </BigCarousel>
       <AboutSection />
       <PortfolioSection locale={props.params?.locale} />
       <BlogSection locale={props.params?.locale} />

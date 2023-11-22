@@ -54,7 +54,7 @@ const DefaultLayout: React.FC<
           })}
         </NavLinks>
       </Nav>
-      <main className="h-100 flex flex-col items-center justify-between py-2">
+      <main className="flex flex-col items-center justify-between">
         {children}
       </main>
       <Footer />

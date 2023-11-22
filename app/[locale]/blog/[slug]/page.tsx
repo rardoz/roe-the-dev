@@ -49,55 +49,53 @@ export default async function BlogDetail(props: Props) {
   const messages = await getTranslator(props.params?.locale || '', 'Blog')
   return (
     <DefaultLayout params={{ locale: props.params.locale || '' }}>
-      <div className="w-full -my-2">
-        <div>
-          <Hero
-            description={entry?.description}
-            title={entry?.title}
-            imageDescription={entry?.blogPhoto?.description}
-            imageSrc={entry?.blogPhoto?.url}
-          />
-          <div className="max-w-screen-lg mx-auto pt-1" id="main-section">
-            <div className="px-4">
-              <div className="pb-12 pt-4">
-                <BreadCrumbs
-                  links={[
-                    {
-                      label: messages.raw('title'),
-                      href: '/blog',
-                    },
-                    {
-                      label: entry?.title,
-                      href: `/blog/${entry?.slug}`,
-                    },
-                  ]}
+      <div className="w-full">
+        <Hero
+          description={entry?.description}
+          title={entry?.title}
+          imageDescription={entry?.blogPhoto?.description}
+          imageSrc={entry?.blogPhoto?.url}
+        />
+        <div className="max-w-screen-lg mx-auto pt-1" id="main-section">
+          <div className="px-4">
+            <div className="pb-12 pt-4">
+              <BreadCrumbs
+                links={[
+                  {
+                    label: messages.raw('title'),
+                    href: '/blog',
+                  },
+                  {
+                    label: entry?.title,
+                    href: `/blog/${entry?.slug}`,
+                  },
+                ]}
+              />
+            </div>
+
+            {entry?.content && <ContentfulToReact content={entry?.content} />}
+            <div className="opacity-70 text-sm">
+              <em>
+                <strong className="text-purple-800">
+                  {messages('lastUpdated')}: &nbsp;
+                </strong>
+                {dayjs(entry?.dateUpdated).format('MM/DD/YYYY @ hh:mm A')}
+              </em>
+            </div>
+          </div>
+          {entry && (
+            <>
+              <div className="px-4 pb-10 w-full">
+                <SectionTitle>{messages('commentLabel')}</SectionTitle>
+                <Discussion
+                  slug={entry.slug!}
+                  title={entry.title!}
+                  contentType="blog"
+                  locale={props.params?.locale}
                 />
               </div>
-
-              {entry?.content && <ContentfulToReact content={entry?.content} />}
-              <div className="opacity-70 text-sm">
-                <em>
-                  <strong className="text-purple-800">
-                    {messages('lastUpdated')}: &nbsp;
-                  </strong>
-                  {dayjs(entry?.dateUpdated).format('MM/DD/YYYY @ hh:mm A')}
-                </em>
-              </div>
-            </div>
-            {entry && (
-              <>
-                <div className="px-4 pb-10 w-full">
-                  <SectionTitle>{messages('commentLabel')}</SectionTitle>
-                  <Discussion
-                    slug={entry.slug!}
-                    title={entry.title!}
-                    contentType="blog"
-                    locale={props.params?.locale}
-                  />
-                </div>
-              </>
-            )}
-          </div>
+            </>
+          )}
         </div>
       </div>
     </DefaultLayout>
