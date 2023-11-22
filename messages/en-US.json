@@ -1,6 +1,7 @@
 {
   "Home": {
-    "title": "Roe the Dev"
+    "title": "Roe the Dev",
+    "description": "Roe is a creative technologist and artist. Read his blog, view their portfolio, and see their experiments."
   },
   "Nav": {
     "portfolio": "Porfolio",
@@ -22,7 +23,8 @@
     "cta": "See my work",
     "footerMessage": "Background AI generated with",
     "lastUpdated": "Last updated",
-    "commentLabel": "Critique my work"
+    "commentLabel": "Critique my work",
+    "description": "A sample of professional work by Roe Greene, a creative technologist and artist."
   },
   "Blog": {
     "title": "From my desk",
@@ -31,11 +33,13 @@
     "clear": "Clear",
     "run": "Run",
     "lastUpdated": "Last updated",
-    "commentLabel": "Leave a comment"
+    "commentLabel": "Leave a comment",
+    "description": "A collection of blogs by Roe Greene, a creative technologist and artist."
   },
   "Experiment": {
     "title": "Experiments",
     "footerMessage": "Background AI generated with",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "description": "Comming soon: A collection of experiments by Roe Greene, a creative technologist and artist."
   }
 }

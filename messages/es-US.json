@@ -1,6 +1,7 @@
 {
   "Home": {
-    "title": "Roe the Dev. Hola!"
+    "title": "Roe the Dev. Hola!",
+    "description": "Roe es un tecnólogo creativo y artista. Lee su blog, consulta su portafolio y descubre sus experimentos."
   },
   "Nav": {
     "portfolio": "Cartera",
@@ -22,7 +23,8 @@
     "cta": "Ver mi trabajo",
     "footerMessage": "Fondo generado por inteligencia artificial con",
     "lastUpdated": "Última actualización",
-    "commentLabel": "Critica mi trabajo"
+    "commentLabel": "Critica mi trabajo",
+    "description": "Una muestra del trabajo profesional de Roe Greene, un tecnólogo creativo y artista."
   },
   "Blog": {
     "title": "Desde mi escritorio",
@@ -31,11 +33,13 @@
     "lastUpdated": "Última actualización",
     "clear": "Borrar",
     "run": "Correr",
-    "commentLabel": "Dejar un comentario"
+    "commentLabel": "Dejar un comentario",
+    "description": "Una colección de blogs de Roe Greene, un tecnólogo creativo y artista."
   },
   "Experiment": {
     "title": "Experimentación",
     "footerMessage": "Fondo generado por inteligencia artificial con",
-    "comingSoon": "Próximamente"
+    "comingSoon": "Próximamente",
+    "description": "Próximamente: Una colección de experimentos de Roe Greene, un tecnólogo creativo y artista."
   }
 }

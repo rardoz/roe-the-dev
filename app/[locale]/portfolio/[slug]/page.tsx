@@ -8,23 +8,49 @@ import Hero from '../../../_components/hero'
 import { getTranslator } from 'next-intl/server'
 import BreadCrumbs from '../../../_components/breadcrumbs'
 import dayjs from 'dayjs'
+import type { Metadata } from 'next'
+import { NormalizedBlogState } from '../../../_services/contentful/types'
 
 const CONTENTFUL_PORTFOLIO_ID =
   process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
 
-export default async function PortfolioDetail(props: {
-  params?: { locale: string; slug?: string }
-}) {
-  const entries = await getEntries({
-    contentType: CONTENTFUL_PORTFOLIO_ID,
-    slug: props.params?.slug,
-  })
+type Props = {
+  params: { locale?: string; slug: string }
+}
 
-  const entry = entries?.items?.[0]
+let porfolioEntries: NormalizedBlogState | undefined
 
+async function getEntry(slug: string) {
+  porfolioEntries =
+    porfolioEntries ||
+    (await getEntries({
+      contentType: CONTENTFUL_PORTFOLIO_ID,
+      slug,
+    }))
+
+  return porfolioEntries?.items?.[0]
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const messages = await getTranslator(params?.locale || '', 'Portfolio')
+  const entry = await getEntry(params.slug)
+
+  return {
+    title: `${messages('title')} | ${entry?.title}`,
+    description: entry?.description,
+    openGraph: {
+      images: entry?.socialPhoto?.url ? [entry.socialPhoto.url] : undefined,
+    },
+    keywords: entry?.keywords,
+  }
+}
+
+export default async function PortfolioDetail(props: Props) {
+  const entry = await getEntry(props.params.slug)
   const messages = await getTranslator(props.params?.locale || '', 'Portfolio')
+
   return (
-    <DefaultLayout params={props.params}>
+    <DefaultLayout params={{ locale: props.params.locale || '' }}>
       <div className="w-full -my-2">
         <div>
           <Hero
@@ -61,7 +87,7 @@ export default async function PortfolioDetail(props: {
               <div className="opacity-70 text-sm">
                 <em>
                   <strong className="text-purple-800">
-                    {messages.raw('lastUpdated')}: &nbsp;
+                    {messages('lastUpdated')}: &nbsp;
                   </strong>
                   {dayjs(entry?.dateUpdated).format('MM/DD/YYYY @ hh:mm A')}
                 </em>
@@ -70,13 +96,13 @@ export default async function PortfolioDetail(props: {
             {entry && (
               <>
                 <div className="px-4 pb-10 w-full">
-                  <SectionTitle>{messages.raw('commentLabel')}</SectionTitle>
+                  <SectionTitle>{messages('commentLabel')}</SectionTitle>
 
                   <Discussion
                     slug={entry.slug!}
                     title={entry.title!}
                     contentType="portfolio"
-                    locale={props.params?.locale}
+                    locale={props.params.locale}
                   />
                 </div>
               </>

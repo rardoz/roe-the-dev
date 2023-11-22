@@ -6,13 +6,25 @@ import Card from '../../_components/card'
 import VideoBackground from '../../_components/video-bg'
 import Link from '../../_components/link'
 import BreadCrumbs from '../../_components/breadcrumbs'
+import type { Metadata } from 'next'
 
 const CONTENTFUL_BLOG_ID = process.env.CONTENTFUL_BLOG_ID || 'blog'
 const LIMIT = 9
 
-export default async function Blog(props: {
+type Props = {
   params?: { locale: string; page?: string }
-}) {
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const messages = await getTranslator(params?.locale || '', 'Blog')
+
+  return {
+    title: messages('title'),
+    description: messages('description'),
+  }
+}
+
+export default async function Blog(props: Props) {
   const entries = await getEntries({
     limit: LIMIT,
     contentType: CONTENTFUL_BLOG_ID,

@@ -1,18 +1,31 @@
 import DefaultLayout from '../../_components/layout'
 import { getEntries } from '../../_services/contentful'
-import { getTranslator } from 'next-intl/server'
 import SectionTitle from '../../_components/section-title'
 import Card from '../../_components/card'
 import VideoBackground from '../../_components/video-bg'
 import Link from '../../_components/link'
 import BreadCrumbs from '../../_components/breadcrumbs'
+import type { Metadata } from 'next'
+import { getTranslator } from 'next-intl/server'
 
 const CONTENTFUL_PORTFOLIO_ID =
   process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
 const LIMIT = 9
-export default async function Portfolio(props: {
+
+type Props = {
   params?: { locale: string; page?: string }
-}) {
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const messages = await getTranslator(params?.locale || '', 'Portfolio')
+
+  return {
+    title: messages('title'),
+    description: messages('description'),
+  }
+}
+
+export default async function Portfolio(props: Props) {
   const entries = await getEntries({
     limit: LIMIT,
     contentType: CONTENTFUL_PORTFOLIO_ID,

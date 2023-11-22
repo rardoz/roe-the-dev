@@ -7,22 +7,48 @@ import Hero from '../../../_components/hero'
 import { getTranslator } from 'next-intl/server'
 import BreadCrumbs from '../../../_components/breadcrumbs'
 import dayjs from 'dayjs'
+import type { Metadata } from 'next'
+import { NormalizedBlogState } from '../../../_services/contentful/types'
 
 const CONTENTFUL_BLOG_ID = process.env.CONTENTFUL_BLOG_ID || 'blog'
 
-export default async function BlogDetail(props: {
-  params?: { locale: string; slug?: string }
-}) {
-  const entries = await getEntries({
-    contentType: CONTENTFUL_BLOG_ID,
-    slug: props.params?.slug,
-  })
+type Props = {
+  params: { locale?: string; slug: string }
+}
 
-  const entry = entries?.items?.[0]
+let blogEntries: NormalizedBlogState | undefined
+
+async function getEntry(slug: string) {
+  blogEntries =
+    blogEntries ||
+    (await getEntries({
+      contentType: CONTENTFUL_BLOG_ID,
+      slug,
+    }))
+
+  return blogEntries?.items?.[0]
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const messages = await getTranslator(params?.locale || '', 'Portfolio')
+  const entry = await getEntry(params.slug)
+
+  return {
+    title: `${messages('title')} | ${entry?.title}`,
+    description: entry?.description,
+    openGraph: {
+      images: entry?.socialPhoto?.url ? [entry.socialPhoto.url] : undefined,
+    },
+    keywords: entry?.keywords,
+  }
+}
+
+export default async function BlogDetail(props: Props) {
+  const entry = await getEntry(props.params.slug)
 
   const messages = await getTranslator(props.params?.locale || '', 'Blog')
   return (
-    <DefaultLayout params={props.params}>
+    <DefaultLayout params={{ locale: props.params.locale || '' }}>
       <div className="w-full -my-2">
         <div>
           <Hero
@@ -52,7 +78,7 @@ export default async function BlogDetail(props: {
               <div className="opacity-70 text-sm">
                 <em>
                   <strong className="text-purple-800">
-                    {messages.raw('lastUpdated')}: &nbsp;
+                    {messages('lastUpdated')}: &nbsp;
                   </strong>
                   {dayjs(entry?.dateUpdated).format('MM/DD/YYYY @ hh:mm A')}
                 </em>
@@ -61,7 +87,7 @@ export default async function BlogDetail(props: {
             {entry && (
               <>
                 <div className="px-4 pb-10 w-full">
-                  <SectionTitle>{messages.raw('commentLabel')}</SectionTitle>
+                  <SectionTitle>{messages('commentLabel')}</SectionTitle>
                   <Discussion
                     slug={entry.slug!}
                     title={entry.title!}
