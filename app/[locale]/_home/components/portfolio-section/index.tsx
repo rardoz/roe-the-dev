@@ -1,16 +1,17 @@
-import { useEntries } from '../../../../_services/contentful'
+import { getEntries } from '../../../../_services/contentful'
 import Card from '../../../../_components/card'
 import Carousel from '../../../../_components/carousel'
 import SectionTitle from '../../../../_components/section-title'
 import { getTranslator } from 'next-intl/server'
 import { FC } from 'react'
 import LinkButton from '../../../../_components/link-button'
+import { PiTelevisionBold } from 'react-icons/pi'
 
 const CONTENTFUL_PORTFOLIO_ID =
   process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
 
 const PortfolioSection: FC<{ locale?: string }> = async (props) => {
-  const entries = await useEntries({
+  const entries = await getEntries({
     limit: 6,
     contentType: CONTENTFUL_PORTFOLIO_ID,
   })
@@ -45,7 +46,10 @@ const PortfolioSection: FC<{ locale?: string }> = async (props) => {
         ))}
       </Carousel>
       <div className="flex justify-center mb-10 mt-3">
-        <LinkButton href="/portfolio">{messages('cta')}</LinkButton>
+        <LinkButton href="/portfolio">
+          <PiTelevisionBold className="inline-block mr-2" />
+          {messages('cta')}
+        </LinkButton>
       </div>
     </div>
   )

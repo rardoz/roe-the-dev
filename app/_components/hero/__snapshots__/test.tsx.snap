@@ -1,0 +1,112 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Hero should render not have chevron 1`] = `
+<div>
+  <div
+    class="h-screen w-full relative bg-opacity-30 bg-black items-center"
+  >
+    <div
+      class="h-full flex justify-center items-center"
+    >
+      <div
+        class="flex justify-center px-2 flex-col md:items-center max-w-screen-2xl mx-2 md:mx-auto py-5"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Hero should render with default values 1`] = `
+<div>
+  <div
+    class="h-screen w-full relative bg-opacity-30 bg-black items-center"
+  >
+    <div
+      class="h-full flex justify-center items-center"
+    >
+      <div
+        class="flex justify-center px-2 flex-col md:items-center max-w-screen-2xl mx-2 md:mx-auto py-5"
+      >
+        <a
+          class="-ml-2 md:ml-0"
+          href="#main-section"
+        >
+          <svg
+            class="animate-bounce text-white text-4xl"
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 512 512"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Hero should render with prop values set 1`] = `
+<div>
+  <div
+    class="h-screen w-full relative bg-opacity-30 bg-black items-center"
+  >
+    <img
+      alt="this is an image test description"
+      class="bg-purple-950 object-cover absolute top-0 -z-10"
+      data-nimg="fill"
+      decoding="async"
+      loading="eager"
+      sizes="100vw"
+      src="/_next/image?url=%2Ftest.png&w=3840&q=75"
+      srcset="/_next/image?url=%2Ftest.png&w=640&q=75 640w, /_next/image?url=%2Ftest.png&w=750&q=75 750w, /_next/image?url=%2Ftest.png&w=828&q=75 828w, /_next/image?url=%2Ftest.png&w=1080&q=75 1080w, /_next/image?url=%2Ftest.png&w=1200&q=75 1200w, /_next/image?url=%2Ftest.png&w=1920&q=75 1920w, /_next/image?url=%2Ftest.png&w=2048&q=75 2048w, /_next/image?url=%2Ftest.png&w=3840&q=75 3840w"
+      style="position: absolute; height: 100%; width: 100%; left: 0px; top: 0px; right: 0px; bottom: 0px; color: transparent;"
+    />
+    <div
+      class="h-full flex justify-center items-center"
+    >
+      <div
+        class="flex justify-center px-2 flex-col md:items-center max-w-screen-2xl mx-2 md:mx-auto py-5"
+      >
+        <h1
+          class="text-left md:text-center text-white font-extrabold text-5xl sm:text-7xl md:text-8xl"
+        >
+          this is a test title
+        </h1>
+        <p
+          class="border-l-white border-l-8 ps-8 ml-2 my-6 text-white font-bold text-2xl md:text-3xl text-left md:text-center"
+        >
+          <span>
+            This is a test description
+          </span>
+        </p>
+        <a
+          class="-ml-2 md:ml-0"
+          href="#main-section"
+        >
+          <svg
+            class="animate-bounce text-white text-4xl"
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 512 512"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;

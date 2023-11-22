@@ -15,7 +15,9 @@ const Carousel: React.FC<React.PropsWithChildren<{ className?: string }>> = ({
             base: theme.carousel.control.base + ' hidden sm:inline-flex',
           },
           scrollContainer: {
-            base: theme.carousel.scrollContainer.base + ' rounded-none',
+            base:
+              theme.carousel.scrollContainer.base +
+              ' rounded-none overflow-hidden',
           },
         }}
       >

@@ -1,11 +1,12 @@
 {
   "Home": {
-    "title": "Roe the Dev. Hola!"
+    "title": "Roe the Dev. Hola!",
+    "description": "Roe es un tecnólogo creativo y artista. Lee su blog, consulta su portafolio y descubre sus experimentos."
   },
   "Nav": {
     "portfolio": "Cartera",
     "blog": "Blog",
-    "experiments": "Experimentación",
+    "experiment": "Experimentación",
     "menuIconAltText": "Haga clic para ver más enlaces",
     "logoAltText": "Logotipo de Roe the Dev",
     "about": "Sobre Roe"
@@ -15,18 +16,30 @@
     "subtitle": "Líder Tecnológico, Ingeniero de Software, Mentor y Artista",
     "description1": "Soy un nómada digital versátil e innovador tecnólogo creativo, asumiendo el rol de líder tecnológico mientras abrazo un estilo de vida nómada, dedicado a llevar a cabo ideas creativas.",
     "description2": "Cursé mis estudios en Black Hawk College y en The Illinois Institute of Art en Chicago, obteniendo un título de asociado en comunicación visual. Con una experiencia profesional de más de una década, he acumulado una considerable experiencia en desarrollo de software.",
-    "cta": "Aprender más"
+    "cta": "Email Roe"
   },
   "Portfolio": {
     "title": "Portafolio",
     "cta": "Ver mi trabajo",
-    "footerMessage": "Fondo generado por inteligencia artificial con"
+    "footerMessage": "Fondo generado por inteligencia artificial con",
+    "lastUpdated": "Última actualización",
+    "commentLabel": "Critica mi trabajo",
+    "description": "Una muestra del trabajo profesional de Roe Greene, un tecnólogo creativo y artista."
   },
   "Blog": {
     "title": "Desde mi escritorio",
     "cta": "Leer blogs",
     "footerMessage": "Fondo generado por inteligencia artificial con",
+    "lastUpdated": "Última actualización",
     "clear": "Borrar",
-    "run": "Correr"
+    "run": "Correr",
+    "commentLabel": "Dejar un comentario",
+    "description": "Una colección de blogs de Roe Greene, un tecnólogo creativo y artista."
+  },
+  "Experiment": {
+    "title": "Experimentación",
+    "footerMessage": "Fondo generado por inteligencia artificial con",
+    "comingSoon": "Próximamente",
+    "description": "Próximamente: Una colección de experimentos de Roe Greene, un tecnólogo creativo y artista."
   }
 }

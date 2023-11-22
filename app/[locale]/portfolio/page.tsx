@@ -1,18 +1,39 @@
 import DefaultLayout from '../../_components/layout'
-import { useEntries } from '../../_services/contentful'
-import { getTranslator } from 'next-intl/server'
+import { getEntries } from '../../_services/contentful'
 import SectionTitle from '../../_components/section-title'
 import Card from '../../_components/card'
 import VideoBackground from '../../_components/video-bg'
 import Link from '../../_components/link'
+import BreadCrumbs from '../../_components/breadcrumbs'
+import type { Metadata } from 'next'
+import { getTranslator } from 'next-intl/server'
+import config from '../../../messages/config'
 
 const CONTENTFUL_PORTFOLIO_ID =
   process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
 const LIMIT = 9
-export default async function Portfolio(props: {
+
+type Props = {
   params?: { locale: string; page?: string }
-}) {
-  const entries = await useEntries({
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const messages = await getTranslator(params?.locale || '', 'Portfolio')
+
+  return {
+    title: messages('title'),
+    description: messages('description'),
+    alternates: {
+      canonical: `/porfolio`,
+      languages: Object.fromEntries(
+        config.locales.map((cur) => [cur, `/${cur}/portfolio`]),
+      ),
+    },
+  }
+}
+
+export default async function Portfolio(props: Props) {
+  const entries = await getEntries({
     limit: LIMIT,
     contentType: CONTENTFUL_PORTFOLIO_ID,
     skip: parseInt(props.params?.page || '0', 10) * LIMIT,
@@ -24,8 +45,13 @@ export default async function Portfolio(props: {
     <>
       <DefaultLayout params={props.params}>
         <VideoBackground videoSrc="/portfolio-video-720.mp4" fixed />
-        <div className="w-full max-w-screen-2xl mb-16 mt-10">
+        <div className="w-full max-w-screen-2xl mb-16 mt-16">
           <SectionTitle>{messages.raw('title')}</SectionTitle>
+          <div className="px-4 mb-4">
+            <BreadCrumbs
+              links={[{ label: messages.raw('title'), href: '/portfolio' }]}
+            />
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-12 px-4">
             {entries?.items?.map((entry) => {
               return (

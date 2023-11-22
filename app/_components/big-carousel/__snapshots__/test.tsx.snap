@@ -3,14 +3,14 @@
 exports[`Big Carousel should render 1`] = `
 <div>
   <div
-    class="h-screen border-white flex w-full "
+    class="h-screen flex w-full "
   >
     <div
       class="relative h-full w-full"
       data-testid="carousel"
     >
       <div
-        class="flex h-full snap-mandatory overflow-y-hidden overflow-x-scroll scroll-smooth rounded-none snap-x indiana-scroll-container indiana-scroll-container--hide-scrollbars"
+        class="flex h-full snap-mandatory scroll-smooth rounded-none overflow-hidden snap-x indiana-scroll-container indiana-scroll-container--hide-scrollbars"
       >
         <div
           class="w-full flex-shrink-0 transform cursor-grab snap-center"
@@ -43,7 +43,7 @@ exports[`Big Carousel should render 1`] = `
           type="button"
         >
           <span
-            class="hidden"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/30 group-hover:bg-white/50 group-focus:outline-none group-focus:ring-4 group-focus:ring-white dark:bg-gray-800/30 dark:group-hover:bg-gray-800/60 dark:group-focus:ring-gray-800/70 sm:h-10 sm:w-10 hidden sm:inline-flex"
           >
             <svg
               aria-hidden="true"
@@ -75,7 +75,7 @@ exports[`Big Carousel should render 1`] = `
           type="button"
         >
           <span
-            class="hidden"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/30 group-hover:bg-white/50 group-focus:outline-none group-focus:ring-4 group-focus:ring-white dark:bg-gray-800/30 dark:group-hover:bg-gray-800/60 dark:group-focus:ring-gray-800/70 sm:h-10 sm:w-10 hidden sm:inline-flex"
           >
             <svg
               aria-hidden="true"

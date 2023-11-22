@@ -10,7 +10,7 @@ exports[`Carousel should render 1`] = `
       data-testid="carousel"
     >
       <div
-        class="flex h-full snap-mandatory overflow-y-hidden overflow-x-scroll scroll-smooth rounded-none snap-x indiana-scroll-container indiana-scroll-container--hide-scrollbars"
+        class="flex h-full snap-mandatory scroll-smooth rounded-none overflow-hidden snap-x indiana-scroll-container indiana-scroll-container--hide-scrollbars"
       >
         <div
           class="w-full flex-shrink-0 transform cursor-grab snap-center"

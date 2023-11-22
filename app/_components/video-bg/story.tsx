@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import VideoBG from './'
 
 const meta = {
-  title: 'Components/Layouts/Video Background',
+  title: 'Components/App/Video Background',
   component: VideoBG,
   // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/react/writing-docs/autodocs
   tags: ['autodocs'],

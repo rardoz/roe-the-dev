@@ -1,11 +1,12 @@
 {
   "Home": {
-    "title": "Roe the Dev"
+    "title": "Roe the Dev",
+    "description": "Roe is a creative technologist and artist. Read his blog, view their portfolio, and see their experiments."
   },
   "Nav": {
     "portfolio": "Porfolio",
     "blog": "Blog",
-    "experiments": "Experiments",
+    "experiment": "Experiments",
     "menuIconAltText": "Click for additional menu links",
     "logoAltText": "Roe the Dev logo",
     "about": "About Roe"
@@ -15,18 +16,30 @@
     "subtitle": "Tech Lead, Software Engineer, Mentor And Artist",
     "description1": "I am a versatile digital nomad and innovative creative technologist assuming the role of a tech lead while embracing a nomadic lifestyle, dedicated to bringing creative ideas to fruition.",
     "description2": "I pursued my education at Black Hawk College and The Illinois Institute of Art in Chicago, achieving an associate's degree in visual communications. With a professional tenure of over a decade, I have accumulated substantial experience in software development.",
-    "cta": "Learn more"
+    "cta": "Email Roe"
   },
   "Portfolio": {
     "title": "Portfolio",
     "cta": "See my work",
-    "footerMessage": "Background AI generated with"
+    "footerMessage": "Background AI generated with",
+    "lastUpdated": "Last updated",
+    "commentLabel": "Critique my work",
+    "description": "A sample of professional work by Roe Greene, a creative technologist and artist."
   },
   "Blog": {
     "title": "From my desk",
     "cta": "Read blogs",
     "footerMessage": "Background AI generated with",
     "clear": "Clear",
-    "run": "Run"
+    "run": "Run",
+    "lastUpdated": "Last updated",
+    "commentLabel": "Leave a comment",
+    "description": "A collection of blogs by Roe Greene, a creative technologist and artist."
+  },
+  "Experiment": {
+    "title": "Experiments",
+    "footerMessage": "Background AI generated with",
+    "comingSoon": "Coming soon",
+    "description": "Comming soon: A collection of experiments by Roe Greene, a creative technologist and artist."
   }
 }

@@ -5,7 +5,6 @@ import NavLinks from '../nav/nav-links'
 import { PiTelevisionBold } from 'react-icons/pi'
 import { GiEvilBook } from 'react-icons/gi'
 import { SiTestinglibrary } from 'react-icons/si'
-import { FaRegAddressCard } from 'react-icons/fa6'
 import Link from 'next-intl/link'
 import { PropsWithChildren } from 'react'
 import Footer from '../footer'
@@ -26,14 +25,9 @@ const DefaultLayout: React.FC<
       url: `/blog`,
     },
     {
-      label: navTranslations('experiments'),
+      label: navTranslations('experiment'),
       icon: <SiTestinglibrary className="mr-1.5" />,
-      url: `/experiments`,
-    },
-    {
-      label: navTranslations('about'),
-      icon: <FaRegAddressCard className="mr-1.5" />,
-      url: `/about`,
+      url: `/experiment`,
     },
   ]
   return (
@@ -60,7 +54,7 @@ const DefaultLayout: React.FC<
           })}
         </NavLinks>
       </Nav>
-      <main className="h-100 flex flex-col items-center justify-between py-2">
+      <main className="flex flex-col items-center justify-between">
         {children}
       </main>
       <Footer />

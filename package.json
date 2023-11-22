@@ -27,6 +27,7 @@
     "@contentful/rich-text-react-renderer": "^15.19.0",
     "codemirror": "^6.0.1",
     "contentful": "^10.6.10",
+    "dayjs": "^1.11.10",
     "disqus-react": "^1.1.5",
     "flowbite": "^2.0.0",
     "flowbite-react": "^0.7.0-beta.4",
