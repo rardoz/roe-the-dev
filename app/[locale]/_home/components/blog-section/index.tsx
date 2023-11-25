@@ -2,17 +2,17 @@ import React, { FC } from 'react'
 import Card from '../../../../_components/card'
 import SectionTitle from '../../../../_components/section-title'
 import { getEntries } from '../../../../_services/contentful'
-import { getTranslator } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 import LinkButton from '../../../../_components/link-button'
 import { GiEvilBook } from 'react-icons/gi'
 
-const BlogSection: FC<{ locale?: string }> = async (props) => {
+const BlogSection: FC<{ locale?: string }> = async () => {
   const entries = await getEntries({
     limit: 3,
     contentType: 'linkBank',
   })
 
-  const messages = await getTranslator(props.locale || '', 'Blog')
+  const messages = await getTranslations('Blog')
 
   return (
     <div className="w-full max-w-screen-2xl my-10">

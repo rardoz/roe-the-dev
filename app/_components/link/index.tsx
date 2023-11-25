@@ -1,13 +1,14 @@
-import React from 'react'
-import NextIntlLink from 'next-intl/link'
-import type { NextIntlLinkProps } from './types'
+import React, { AnchorHTMLAttributes } from 'react'
+import NextlLink, { LinkProps } from 'next/link'
 
-const Link: React.FC<NextIntlLinkProps> = ({
+type AppLinkProps = LinkProps & AnchorHTMLAttributes<HTMLAnchorElement>
+
+const Link: React.FC<AppLinkProps> = ({
   className = 'ml-2 text-sm py-1',
   ...props
 }) => {
   return (
-    <NextIntlLink
+    <NextlLink
       {...props}
       className={`transition-colors duration-500 text-pink-500 hover:text-pink-400 ${
         className || ''

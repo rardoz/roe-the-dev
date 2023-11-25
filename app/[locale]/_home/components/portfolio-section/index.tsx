@@ -2,7 +2,7 @@ import { getEntries } from '../../../../_services/contentful'
 import Card from '../../../../_components/card'
 import Carousel from '../../../../_components/carousel'
 import SectionTitle from '../../../../_components/section-title'
-import { getTranslator } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 import { FC } from 'react'
 import LinkButton from '../../../../_components/link-button'
 import { PiTelevisionBold } from 'react-icons/pi'
@@ -10,12 +10,12 @@ import { PiTelevisionBold } from 'react-icons/pi'
 const CONTENTFUL_PORTFOLIO_ID =
   process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
 
-const PortfolioSection: FC<{ locale?: string }> = async (props) => {
+const PortfolioSection: FC<{ locale?: string }> = async () => {
   const entries = await getEntries({
     limit: 6,
     contentType: CONTENTFUL_PORTFOLIO_ID,
   })
-  const messages = await getTranslator(props.locale || '', 'Portfolio')
+  const messages = await getTranslations('Portfolio')
 
   return (
     <div className="bg-purple-900 p-5 w-full mt-24">

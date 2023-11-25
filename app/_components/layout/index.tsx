@@ -5,7 +5,7 @@ import NavLinks from '../nav/nav-links'
 import { PiTelevisionBold } from 'react-icons/pi'
 import { GiEvilBook } from 'react-icons/gi'
 import { SiTestinglibrary } from 'react-icons/si'
-import Link from 'next-intl/link'
+import Link from 'next/link'
 import { PropsWithChildren } from 'react'
 import Footer from '../footer'
 

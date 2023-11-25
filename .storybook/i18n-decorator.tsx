@@ -3,7 +3,7 @@ import {NextIntlClientProvider} from "next-intl"
 import messages from '../messages/en-US.json'
 
 const I18Decorator = (Story) => (
-    <NextIntlClientProvider messages={messages}>
+    <NextIntlClientProvider messages={messages} locale="en-US">
       <Story />
     </NextIntlClientProvider>)
 

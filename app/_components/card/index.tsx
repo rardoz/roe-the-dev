@@ -3,7 +3,7 @@
 import { Card as FCard } from 'flowbite-react'
 import { FC } from 'react'
 import CardImage from './card-image'
-import Link from 'next-intl/link'
+import Link from 'next/link'
 
 const Card: FC<{
   imageSrc?: string

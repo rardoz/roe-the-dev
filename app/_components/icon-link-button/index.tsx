@@ -1,13 +1,8 @@
 import React from 'react'
-import Link from 'next-intl/link'
-import { NextIntlLinkProps } from '../link/types'
-1
-const IconLinkButton: React.FC<NextIntlLinkProps & { altText: string }> = ({
-  className,
-  children,
-  altText,
-  ...props
-}) => {
+import Link, { LinkProps } from 'next/link'
+const IconLinkButton: React.FC<
+  React.PropsWithChildren<LinkProps & { className?: string; altText: string }>
+> = ({ className, children, altText, ...props }) => {
   return (
     <Link
       {...props}
