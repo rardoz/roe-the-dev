@@ -17,7 +17,7 @@
     "build-storybook": "storybook build",
     "test:fun": "jest --reporters=jest-nyancat-reporter --silent --coverage=false --noStackTrace",
     "snapshots": "jest -u",
-    "tsc": "tsc",
+    "tsc": "tsc -p tsconfig.json --noEmit  --skipLibCheck",
     "upgrade": "npm i next@latest react@latest react-dom@latest eslint-config-next@latest next-intl@latest jest@latest react-icons@latest disqus-react@latest dayjs@latest contentful@latest codemirror@latest @contentful/rich-text-react-renderer@latest @codemirror/lang-javascript@latest react-intersection-observer@latest react-transition-state@latest swagger-ui-react@latest tailwindcss@latest prettier@latest husky@latest storybook@latest next-swagger-doc@latest stylelint@latest typescript@latest tailwindcss-animate@latest stylelint-prettier@latest"
   },
   "dependencies": {
