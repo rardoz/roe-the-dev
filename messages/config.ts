@@ -2,7 +2,7 @@ import { Pathnames } from 'next-intl/navigation'
 
 const localePrefix: 'as-needed' | 'always' | 'never' | undefined = 'as-needed'
 
-export const locales = ['en-US', 'es-US']
+export const locales = ['en-US', 'es-US'] as const
 
 export type AppPathname = Pathnames<typeof locales>
 
