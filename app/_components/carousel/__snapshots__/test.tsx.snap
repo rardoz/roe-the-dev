@@ -13,7 +13,7 @@ exports[`Carousel should render 1`] = `
         class="flex h-full snap-mandatory scroll-smooth rounded-none overflow-hidden snap-x indiana-scroll-container indiana-scroll-container--hide-scrollbars"
       >
         <div
-          class="w-full flex-shrink-0 transform cursor-grab snap-center"
+          class="w-full flex-shrink-0 transform cursor-default snap-center"
           data-active="true"
           data-testid="carousel-item"
         >
