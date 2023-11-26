@@ -6,9 +6,8 @@ import VideoBackground from '../../_components/video-bg'
 import Link from '../../_components/link'
 import BreadCrumbs from '../../_components/breadcrumbs'
 import type { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 import config from '../../../messages/config'
-
 const CONTENTFUL_PORTFOLIO_ID =
   process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
 const LIMIT = 9
@@ -33,6 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Portfolio(props: Props) {
+  unstable_setRequestLocale(props.params?.locale || 'en-US')
   const entries = await getEntries({
     limit: LIMIT,
     contentType: CONTENTFUL_PORTFOLIO_ID,

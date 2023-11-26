@@ -4,7 +4,7 @@ import { getEntries } from '../../../_services/contentful'
 import Discussion from '../../../_components/discussion'
 import SectionTitle from '../../../_components/section-title'
 import Hero from '../../../_components/hero'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 import BreadCrumbs from '../../../_components/breadcrumbs'
 import dayjs from 'dayjs'
 import type { Metadata } from 'next'
@@ -51,6 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogDetail(props: Props) {
+  unstable_setRequestLocale(props.params?.locale || 'en-US')
   const entry = await getEntry(props.params.slug)
 
   const messages = await getTranslations('Blog')

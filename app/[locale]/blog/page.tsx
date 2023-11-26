@@ -1,6 +1,6 @@
 import DefaultLayout from '../../_components/layout'
 import { getEntries } from '../../_services/contentful'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 import SectionTitle from '../../_components/section-title'
 import Card from '../../_components/card'
 import VideoBackground from '../../_components/video-bg'
@@ -32,6 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Blog(props: Props) {
+  unstable_setRequestLocale(props.params?.locale || 'en-US')
   const entries = await getEntries({
     limit: LIMIT,
     contentType: CONTENTFUL_BLOG_ID,

@@ -7,7 +7,7 @@ import PortfolioSection from './_home/components/portfolio-section'
 import BlogSection from './_home/components/blog-section'
 
 import type { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 
 type Props = {
   params?: { locale: string }
@@ -23,11 +23,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home(props: Props) {
+  unstable_setRequestLocale(props.params?.locale || 'en-US')
+
   const entries = await getEntries({
     order: 'fields.orderOverride',
     contentType: 'featuredContent',
   })
-
   return (
     <DefaultLayout params={props.params}>
       <BigCarousel className="mb-10">
