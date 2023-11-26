@@ -10,6 +10,7 @@ import BreadCrumbs from '../../../_components/breadcrumbs'
 import dayjs from 'dayjs'
 import type { Metadata } from 'next'
 import config from '../../../../messages/config'
+import BlogSchema from '../../../_components/schema'
 
 const CONTENTFUL_PORTFOLIO_ID =
   process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
@@ -59,64 +60,67 @@ export default async function PortfolioDetail(props: Props) {
   const messages = await getTranslations('Portfolio')
 
   return (
-    <DefaultLayout params={{ locale: props.params.locale || '' }}>
-      <div className="w-full">
-        <Hero
-          description={entry?.description}
-          title={entry?.title}
-          imageDescription={entry?.blogPhoto?.description}
-          imageSrc={entry?.blogPhoto?.url}
-        />
+    <>
+      <DefaultLayout params={{ locale: props.params.locale || '' }}>
+        <div className="w-full">
+          <Hero
+            description={entry?.description}
+            title={entry?.title}
+            imageDescription={entry?.blogPhoto?.description}
+            imageSrc={entry?.blogPhoto?.url}
+          />
 
-        <div className="max-w-screen-lg mx-auto pt-1" id="main-section">
-          <div className="px-4">
-            <div className="pb-12 pt-4">
-              <BreadCrumbs
-                links={[
-                  {
-                    label: messages.raw('title'),
-                    href: '/portfolio',
-                  },
-                  {
-                    label: entry?.title,
-                    href: `/portfolio/${entry?.slug}`,
-                  },
-                ]}
-              />
-            </div>
-            {entry?.content && <ContentfulToReact content={entry?.content} />}
-
-            <div className="my-5 sm:my-10">
-              <VideoPlayer
-                posterSrc={entry?.blogPhoto?.url}
-                videoSrc={entry?.video?.url || ''}
-              />
-            </div>
-            <div className="opacity-70 text-sm">
-              <em>
-                <strong className="text-purple-800">
-                  {messages('lastUpdated')}: &nbsp;
-                </strong>
-                {dayjs(entry?.dateUpdated).format('MM/DD/YYYY @ hh:mm A')}
-              </em>
-            </div>
-          </div>
-          {entry && (
-            <>
-              <div className="px-4 pb-10 w-full">
-                <SectionTitle>{messages('commentLabel')}</SectionTitle>
-
-                <Discussion
-                  slug={entry.slug!}
-                  title={entry.title!}
-                  contentType="portfolio"
-                  locale={props.params.locale}
+          <div className="max-w-screen-lg mx-auto pt-1" id="main-section">
+            <div className="px-4">
+              <div className="pb-12 pt-4">
+                <BreadCrumbs
+                  links={[
+                    {
+                      label: messages('title'),
+                      href: '/portfolio',
+                    },
+                    {
+                      label: `${entry?.title}`,
+                      href: `/portfolio/${entry?.slug}`,
+                    },
+                  ]}
                 />
               </div>
-            </>
-          )}
+              {entry?.content && <ContentfulToReact content={entry?.content} />}
+
+              <div className="my-5 sm:my-10">
+                <VideoPlayer
+                  posterSrc={entry?.blogPhoto?.url}
+                  videoSrc={entry?.video?.url || ''}
+                />
+              </div>
+              <div className="opacity-70 text-sm">
+                <em>
+                  <strong className="text-purple-800">
+                    {messages('lastUpdated')}: &nbsp;
+                  </strong>
+                  {dayjs(entry?.dateUpdated).format('MM/DD/YYYY @ hh:mm A')}
+                </em>
+              </div>
+            </div>
+            {entry && (
+              <>
+                <div className="px-4 pb-10 w-full">
+                  <SectionTitle>{messages('commentLabel')}</SectionTitle>
+
+                  <Discussion
+                    slug={entry.slug!}
+                    title={entry.title!}
+                    contentType="portfolio"
+                    locale={props.params.locale}
+                  />
+                </div>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    </DefaultLayout>
+      </DefaultLayout>
+      {entry && <BlogSchema entry={entry} />}
+    </>
   )
 }
