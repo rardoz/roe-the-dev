@@ -9,7 +9,6 @@ import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 import BreadCrumbs from '../../../_components/breadcrumbs'
 import dayjs from 'dayjs'
 import type { Metadata } from 'next'
-import { NormalizedBlogState } from '../../../_services/contentful/types'
 import config from '../../../../messages/config'
 
 const CONTENTFUL_PORTFOLIO_ID =
@@ -19,19 +18,15 @@ type Props = {
   params: { locale?: string; slug: string }
 }
 
-let porfolioEntries: NormalizedBlogState | undefined
-
 export function generateStaticParams() {
   return config.locales.map((locale) => ({ locale }))
 }
 
 async function getEntry(slug: string) {
-  porfolioEntries =
-    porfolioEntries ||
-    (await getEntries({
-      contentType: CONTENTFUL_PORTFOLIO_ID,
-      slug,
-    }))
+  const porfolioEntries = await getEntries({
+    contentType: CONTENTFUL_PORTFOLIO_ID,
+    slug,
+  })
 
   return porfolioEntries?.items?.[0]
 }

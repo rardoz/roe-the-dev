@@ -8,7 +8,6 @@ import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 import BreadCrumbs from '../../../_components/breadcrumbs'
 import dayjs from 'dayjs'
 import type { Metadata } from 'next'
-import { NormalizedBlogState } from '../../../_services/contentful/types'
 import config from '../../../../messages/config'
 
 const CONTENTFUL_BLOG_ID = process.env.CONTENTFUL_BLOG_ID || 'blog'
@@ -17,15 +16,11 @@ type Props = {
   params: { locale?: string; slug: string }
 }
 
-let blogEntries: NormalizedBlogState | undefined
-
 async function getEntry(slug: string) {
-  blogEntries =
-    blogEntries ||
-    (await getEntries({
-      contentType: CONTENTFUL_BLOG_ID,
-      slug,
-    }))
+  const blogEntries = await getEntries({
+    contentType: CONTENTFUL_BLOG_ID,
+    slug,
+  })
 
   return blogEntries?.items?.[0]
 }
@@ -35,7 +30,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const messages = await getTranslations('Portfolio')
+  const messages = await getTranslations('Blog')
   const entry = await getEntry(params.slug)
 
   return {
