@@ -8,6 +8,7 @@ export default createMiddleware({
   defaultLocale: messagesConfig.defaultLocale,
   localePrefix: messagesConfig.localePrefix,
   pathnames: messagesConfig.pathnames,
+  localeDetection: false,
 })
 
 export const config = {
