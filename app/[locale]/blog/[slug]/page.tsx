@@ -44,6 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     openGraph: {
       images: entry?.socialPhoto?.url ? [entry.socialPhoto.url] : undefined,
+      url: `/blog/${entry?.slug}`,
     },
     keywords: entry?.keywords,
   }

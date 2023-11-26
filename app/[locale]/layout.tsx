@@ -25,6 +25,7 @@ export const metadata: Metadata = {
   publisher: 'Roe Greene',
   openGraph: {
     images: ['/default-social-image.jpg'],
+    url: '/',
   },
 }
 

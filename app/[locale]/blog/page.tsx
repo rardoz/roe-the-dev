@@ -32,6 +32,10 @@ export async function generateMetadata(): Promise<Metadata> {
         config.locales.map((cur) => [cur, `/${cur}/blog`]),
       ),
     },
+    openGraph: {
+      images: ['/default-social-image.jpg'],
+      url: `/blog`,
+    },
   }
 }
 
