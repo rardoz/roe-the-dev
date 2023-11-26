@@ -87,7 +87,7 @@ export default async function Experiment(props: Props) {
           </div>
         )}
         <p className="text-slate-50 text-sm pb-8 w-full text-center">
-          {messages.raw('footerMessage')}&nsbp;
+          {messages.raw('footerMessage')}&nbsp;
           <br className="inline sm:hidden" />
           <Link
             target="_blank"
