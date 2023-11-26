@@ -101,18 +101,16 @@ const Nav: React.FC<
               setMenuActive(!isMenuActive)
             }}
             className={`${
-              isMenuActive ? 'visible' : 'hidden'
+              isMenuActive || status === 'preEnter' ? 'block ' : 'hidden'
             } fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-40`}
           >
             <ul
               className={`
-          ${
-            isExiting
-              ? 'animate-out slide-out-from-right -right-56'
-              : 'animate-in slide-in-from-right right-0'
-          }
+              ${status === 'entered' || status === 'entering' ? 'right-0' : ''}
+              ${isExiting || status === 'preEnter' ? '-right-56' : ''}
           duration-300
-          w-56 absolute
+          w-56
+          absolute
           h-full
           flex
           flex-col

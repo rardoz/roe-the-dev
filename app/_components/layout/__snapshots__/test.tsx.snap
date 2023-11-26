@@ -95,9 +95,11 @@ exports[`Layout should render with default locale set 1`] = `
       >
         <ul
           class="
-          animate-out slide-out-from-right -right-56
+              
+              -right-56
           duration-300
-          w-56 absolute
+          w-56
+          absolute
           h-full
           flex
           flex-col
@@ -470,9 +472,11 @@ exports[`Layout should render with no locale set 1`] = `
       >
         <ul
           class="
-          animate-out slide-out-from-right -right-56
+              
+              -right-56
           duration-300
-          w-56 absolute
+          w-56
+          absolute
           h-full
           flex
           flex-col
