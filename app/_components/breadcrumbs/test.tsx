@@ -10,7 +10,7 @@ describe('Breadcrumbs', () => {
     expect(
       render(
         <NextIntlClientProvider locale="en-US" messages={messages}>
-          <Breadcrumbs links={[{ href: '#test1', label: 'test1' }]} />
+          <Breadcrumbs links={[{ href: '/blog', label: 'test1' }]} />
         </NextIntlClientProvider>,
       ).container,
     ).toMatchSnapshot()
@@ -22,8 +22,8 @@ describe('Breadcrumbs', () => {
         <NextIntlClientProvider locale="en-US" messages={messages}>
           <Breadcrumbs
             links={[
-              { href: '#test1', label: 'test1' },
-              { href: '#test2', label: 'test2' },
+              { href: '/blog', label: 'test1' },
+              { href: '/blog', label: 'test2' },
             ]}
           />
         </NextIntlClientProvider>,

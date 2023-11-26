@@ -3,7 +3,7 @@
 import { Card as FCard } from 'flowbite-react'
 import { FC } from 'react'
 import CardImage from './card-image'
-import Link from 'next/link'
+import { UnstyledLink } from '../next-intl'
 
 const Card: FC<{
   imageSrc?: string
@@ -14,7 +14,12 @@ const Card: FC<{
   hardRoute?: boolean
 }> = ({ imageSrc, imageAlt, title, description, link, hardRoute }) => {
   return (
-    <Link href={link || ''} target={hardRoute ? '_blank' : undefined}>
+    <UnstyledLink
+      // if we want to get strict with the urls we can go down this path by removing the type casting
+      // the fallback behavior when a page is not explicitly set in the config is good enough for now
+      href={link || ''}
+      target={hardRoute ? '_blank' : undefined}
+    >
       <FCard
         className="hover:scale-105 relative hover:z-10 transition-all duration-500 overflow-hidden m-auto w-full h-full"
         renderImage={
@@ -32,7 +37,7 @@ const Card: FC<{
           </p>
         </div>
       </FCard>
-    </Link>
+    </UnstyledLink>
   )
 }
 

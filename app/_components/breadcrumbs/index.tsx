@@ -1,9 +1,10 @@
 import { FC } from 'react'
 import Link from '../link'
 import { FaChevronRight, FaHouseChimney } from 'react-icons/fa6'
+import { AppPathnames } from '../../../messages/config'
 
 const BreadCrumbs: FC<{
-  links: { label: string; href: string }[]
+  links: ({ href: AppPathnames } & { label: string })[]
 }> = ({ links }) => {
   return (
     <div className="flex" aria-label="Breadcrumb">
