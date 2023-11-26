@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import * as contentful from 'contentful'
 import type {
   NormalizedBlogData,
@@ -84,33 +85,35 @@ const normalizeData = (
   return normalizedFields
 }
 
-export const getEntries = async ({
-  limit = 10,
-  skip = 0,
-  contentType,
-  order,
-  slug,
-}: {
-  limit?: number
-  skip?: number
-  contentType?: ContentType
-  order?: string
-  slug?: string
-}): Promise<NormalizedBlogState> => {
-  const queryData: Record<string, unknown> = {
-    content_type: contentType || process.env.CONTENTFUL_BLOG_ID,
-    limit,
-    skip,
-    order: order || '-sys.createdAt',
-  }
+export const getEntries = cache(
+  async ({
+    limit = 10,
+    skip = 0,
+    contentType,
+    order,
+    slug,
+  }: {
+    limit?: number
+    skip?: number
+    contentType?: ContentType
+    order?: string
+    slug?: string
+  }): Promise<NormalizedBlogState> => {
+    const queryData: Record<string, unknown> = {
+      content_type: contentType || process.env.CONTENTFUL_BLOG_ID,
+      limit,
+      skip,
+      order: order || '-sys.createdAt',
+    }
 
-  if (slug) queryData['fields.slug'] = slug
+    if (slug) queryData['fields.slug'] = slug
 
-  return await getClient()
-    .getEntries(queryData)
-    .then((entry) => {
-      return {
-        items: normalizeData(entry.items as contentful.Entry<BlogSkeleton>[]),
-      }
-    })
-}
+    return await getClient()
+      .getEntries(queryData)
+      .then((entry) => {
+        return {
+          items: normalizeData(entry.items as contentful.Entry<BlogSkeleton>[]),
+        }
+      })
+  },
+)
