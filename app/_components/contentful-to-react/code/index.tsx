@@ -98,7 +98,7 @@ const Code: React.FC<React.PropsWithChildren> = ({ children }) => {
           </script>
           `)
           }}
-          onReset={() => iFrameRef?.current?.contentWindow?.location.reload()}
+          onReset={() => iFrameRef?.current?.contentDocument?.location.reload()}
         />
       </div>
     </div>
