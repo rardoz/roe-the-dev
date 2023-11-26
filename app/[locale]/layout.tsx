@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   creator: 'Roe Greene',
   publisher: 'Roe Greene',
   openGraph: {
-    images: ['/default-social-image.png'],
+    images: ['/default-social-image.jpg'],
   },
 }
 
