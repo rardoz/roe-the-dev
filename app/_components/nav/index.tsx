@@ -63,7 +63,9 @@ const Nav: React.FC<
               style={{
                 transition: 'transform 0.25s ease-in-out',
                 transform: !isSticky ? 'scale(1.5)' : '',
-                filter: !isSticky ? 'brightness(100)' : '',
+                filter: !isSticky
+                  ? 'saturate(0) invert(1) contrast(1) brightness(2)'
+                  : '',
               }}
               alt={messages.logoAltText}
             />
