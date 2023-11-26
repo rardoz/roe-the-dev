@@ -14,6 +14,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoSrc, posterSrc }) => {
           muted
           autoPlay
           loop
+          playsInline
           className="object-cover w-full h-full"
         >
           <source src={videoSrc} type="video/mp4" />

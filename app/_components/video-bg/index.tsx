@@ -15,6 +15,7 @@ const VideoBG: React.FC<VideoBGProps> = ({ videoSrc, fixed }) => {
       <video
         autoPlay
         muted
+        playsInline
         loop
         className="bg-gradient-to-b from-purple-950 to-black object-cover w-full h-full"
       >
