@@ -98,9 +98,3 @@ Testing is provided through (Jest)[https://jestjs.io/docs/getting-started].
 
 - To generate a coverage report run `npm run coverage`
 - To run tests while coding run `npm run test`
-
-## TODO:
-
-[ ] Deploy to vercel
-
-[ ] Authentication
