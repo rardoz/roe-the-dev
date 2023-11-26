@@ -7,14 +7,14 @@ import PortfolioSection from './_home/components/portfolio-section'
 import BlogSection from './_home/components/blog-section'
 
 import type { Metadata } from 'next'
-import { getTranslator } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 
 type Props = {
   params?: { locale: string }
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const messages = await getTranslator(params?.locale || '', 'Home')
+export async function generateMetadata(): Promise<Metadata> {
+  const messages = await getTranslations('Home')
 
   return {
     title: messages('title'),

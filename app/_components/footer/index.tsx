@@ -59,7 +59,7 @@ const Footer: FC = () => {
           })}
         </div>
         <p className="text-sm py-1">
-          &copy; {currentYear}
+          &copy; {currentYear}&nbsp;
           <Link
             href="https://byrojo.com"
             target="_blank"

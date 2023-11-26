@@ -6,7 +6,7 @@ import VideoBackground from '../../_components/video-bg'
 import Link from '../../_components/link'
 import BreadCrumbs from '../../_components/breadcrumbs'
 import type { Metadata } from 'next'
-import { getTranslator } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 import config from '../../../messages/config'
 
 const CONTENTFUL_PORTFOLIO_ID =
@@ -17,8 +17,8 @@ type Props = {
   params?: { locale: string; page?: string }
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const messages = await getTranslator(params?.locale || '', 'Portfolio')
+export async function generateMetadata(): Promise<Metadata> {
+  const messages = await getTranslations('Portfolio')
 
   return {
     title: messages('title'),
@@ -39,7 +39,7 @@ export default async function Portfolio(props: Props) {
     skip: parseInt(props.params?.page || '0', 10) * LIMIT,
   })
 
-  const messages = await getTranslator(props.params?.locale || '', 'Portfolio')
+  const messages = await getTranslations('Portfolio')
 
   return (
     <>
@@ -71,7 +71,7 @@ export default async function Portfolio(props: Props) {
           </div>
         </div>
         <p className="text-slate-50 text-sm pb-8 w-full text-center">
-          {messages.raw('footerMessage')}
+          {messages('footerMessage')}&nbsp;
           <br className="inline sm:hidden" />
           <Link
             target="_blank"

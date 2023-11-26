@@ -5,7 +5,7 @@ import Discussion from '../../../_components/discussion'
 import SectionTitle from '../../../_components/section-title'
 import VideoPlayer from '../../../_components/video-player'
 import Hero from '../../../_components/hero'
-import { getTranslator } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 import BreadCrumbs from '../../../_components/breadcrumbs'
 import dayjs from 'dayjs'
 import type { Metadata } from 'next'
@@ -33,7 +33,7 @@ async function getEntry(slug: string) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const messages = await getTranslator(params?.locale || '', 'Portfolio')
+  const messages = await getTranslations('Portfolio')
   const entry = await getEntry(params.slug)
 
   return {
@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PortfolioDetail(props: Props) {
   const entry = await getEntry(props.params.slug)
-  const messages = await getTranslator(props.params?.locale || '', 'Portfolio')
+  const messages = await getTranslations('Portfolio')
 
   return (
     <DefaultLayout params={{ locale: props.params.locale || '' }}>

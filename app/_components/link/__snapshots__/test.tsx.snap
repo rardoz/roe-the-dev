@@ -5,6 +5,7 @@ exports[`Link should include a className if set 1`] = `
   <a
     class="transition-colors duration-500 text-pink-500 hover:text-pink-400 test"
     href="/en-US#"
+    hreflang="en-US"
   >
     Test 123
   </a>
@@ -14,8 +15,9 @@ exports[`Link should include a className if set 1`] = `
 exports[`Link should render with default locale set 1`] = `
 <div>
   <a
-    class="transition-colors duration-500 text-pink-500 hover:text-pink-400 ml-2 text-sm py-1"
+    class="transition-colors duration-500 text-pink-500 hover:text-pink-400 "
     href="/en-US#"
+    hreflang="en-US"
   >
     Test 123
   </a>

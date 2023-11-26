@@ -1,6 +1,6 @@
 import DefaultLayout from '../../_components/layout'
 import { getEntries } from '../../_services/contentful'
-import { getTranslator } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 import SectionTitle from '../../_components/section-title'
 import Card from '../../_components/card'
 import VideoBackground from '../../_components/video-bg'
@@ -17,8 +17,8 @@ type Props = {
   params?: { locale: string; page?: string }
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const messages = await getTranslator(params?.locale || '', 'Experiment')
+export async function generateMetadata(): Promise<Metadata> {
+  const messages = await getTranslations('Experiment')
 
   return {
     title: messages('title'),
@@ -41,7 +41,7 @@ export default async function Experiment(props: Props) {
     return { items: [] }
   })
 
-  const messages = await getTranslator(props.params?.locale || '', 'Experiment')
+  const messages = await getTranslations('Experiment')
 
   return (
     <>
@@ -82,7 +82,7 @@ export default async function Experiment(props: Props) {
           </div>
         )}
         <p className="text-slate-50 text-sm pb-8 w-full text-center">
-          {messages.raw('footerMessage')}
+          {messages.raw('footerMessage')}&nsbp;
           <br className="inline sm:hidden" />
           <Link
             target="_blank"

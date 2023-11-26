@@ -1,5 +1,5 @@
 import React from 'react'
-import Link from 'next/link'
+import { UnstyledLink } from '../../next-intl'
 import Image from 'next/image'
 import type { NormalizedBlogData } from '../../../_services/contentful/types'
 
@@ -24,14 +24,14 @@ const CarouselSlide: React.FC<NormalizedBlogData> = ({
         <h2 className="text-5xl font-extrabold text-pink-500">{title}</h2>
         <p className="text-6xl mt-2 text-slate-50">{description}</p>
         <div className="mt-4 text-right underline underline-offset-4 font-bold ">
-          <Link
+          <UnstyledLink
             className="text-xl text-pink-500 hover:bg-pink-500 duration-500 transition-colors p-2 hover:text-slate-50"
             target={hardRoute ? '_blank' : undefined}
             href={slug || ''}
           >
             See&nbsp;
             {title}
-          </Link>
+          </UnstyledLink>
         </div>
       </div>
     </div>

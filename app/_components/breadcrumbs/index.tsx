@@ -1,9 +1,10 @@
 import { FC } from 'react'
 import Link from '../link'
 import { FaChevronRight, FaHouseChimney } from 'react-icons/fa6'
+import { UnstyledLink } from '../next-intl'
 
 const BreadCrumbs: FC<{
-  links: { label: string; href: string }[]
+  links: ({ href: typeof UnstyledLink | string } & { label: string })[]
 }> = ({ links }) => {
   return (
     <div className="flex" aria-label="Breadcrumb">
