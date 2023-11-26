@@ -5,7 +5,7 @@ import NavLinks from '../nav/nav-links'
 import { PiTelevisionBold } from 'react-icons/pi'
 import { GiEvilBook } from 'react-icons/gi'
 import { SiTestinglibrary } from 'react-icons/si'
-import Link from 'next/link'
+import { UnstyledLink } from '../next-intl'
 import { PropsWithChildren } from 'react'
 import Footer from '../footer'
 
@@ -42,14 +42,14 @@ const DefaultLayout: React.FC<
         <NavLinks>
           {links.map(({ url, label, icon }, index) => {
             return (
-              <Link
+              <UnstyledLink
                 key={index}
                 href={url}
                 className="mx-4 mb-4 py-2 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
               >
                 {icon}
                 {label}
-              </Link>
+              </UnstyledLink>
             )
           })}
         </NavLinks>

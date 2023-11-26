@@ -71,7 +71,7 @@ export default async function Portfolio(props: Props) {
           </div>
         </div>
         <p className="text-slate-50 text-sm pb-8 w-full text-center">
-          {messages.raw('footerMessage')}
+          {messages('footerMessage')}&nbsp;
           <br className="inline sm:hidden" />
           <Link
             target="_blank"

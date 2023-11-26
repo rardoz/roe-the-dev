@@ -8,7 +8,9 @@ describe('IconLinkButton', () => {
     expect(
       render(
         <NextIntlClientProvider locale="en-US" messages={messages}>
-          <IconLinkButton href="#">Test 123</IconLinkButton>
+          <IconLinkButton href="/blog" altText="blog">
+            Blog
+          </IconLinkButton>
         </NextIntlClientProvider>,
       ).container,
     ).toMatchSnapshot()
@@ -18,8 +20,8 @@ describe('IconLinkButton', () => {
     expect(
       render(
         <NextIntlClientProvider locale="en-US" messages={messages}>
-          <IconLinkButton href="#" className="test">
-            Test 123
+          <IconLinkButton href="/blog" altText="blog" className="test">
+            Blog
           </IconLinkButton>
         </NextIntlClientProvider>,
       ).container,

@@ -2,15 +2,15 @@ import { Pathnames } from 'next-intl/navigation'
 
 const localePrefix: 'as-needed' | 'always' | 'never' | undefined = 'as-needed'
 
-export const locales = ['en-US', 'es-US'] as const
+export const locales = ['en-US', 'es-US']
 
 export type AppPathname = Pathnames<typeof locales>
 
 export const pathnames = {
   '/blog': '/blog',
   '/blog/[slug]': '/blog/[slug]',
-  '/porfolio': '/porfolio',
-  '/porfolio/[slug]': '/porfolio/[slug]',
+  '/portfolio': '/portfolio',
+  '/portfolio/[slug]': '/portfolio/[slug]',
   '/experiment': '/experiment',
   '/': { 'en-US': '/', 'es-US': '/' },
 } satisfies AppPathname

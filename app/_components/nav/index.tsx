@@ -2,6 +2,7 @@
 import { useTransition } from 'react-transition-state'
 import React, { PropsWithChildren, useEffect, useState } from 'react'
 import Image from 'next/image'
+import { UnstyledLink } from '../next-intl'
 import Link from 'next/link'
 import { FaBars, FaX } from 'react-icons/fa6'
 import { Badge } from 'flowbite-react'
@@ -50,7 +51,7 @@ const Nav: React.FC<
         }z-20 border-gray-200 bg-transparent fixed top-0 w-full transition-color duration-500`}
       >
         <div className="flex flex-wrap items-center justify-between mx-auto p-4 relative">
-          <Link
+          <UnstyledLink
             href="/"
             className="flex items-center space-x-3 rtl:space-x-reverse"
           >
@@ -66,7 +67,7 @@ const Nav: React.FC<
               }}
               alt={messages.logoAltText}
             />
-          </Link>
+          </UnstyledLink>
           <div className="flex-grow flex justify-end mx-3">
             <Badge color="light" className="p-1.5 rounded-full">
               {config.locales.map((locale, index) => {
