@@ -13,7 +13,6 @@ export const pathnames = {
   '/portfolio': '/portfolio',
   '/portfolio/[slug]': '/portfolio/[slug]',
   '/experiment': '/experiment',
-  '/': { 'en-US': '/', 'es-US': '/' },
 } satisfies AppPathname
 
 export type AppPathnames = keyof typeof pathnames
