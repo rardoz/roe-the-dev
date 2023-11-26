@@ -8,9 +8,14 @@ import BlogSection from './_home/components/blog-section'
 
 import type { Metadata } from 'next'
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
+import config from '../../messages/config'
 
 type Props = {
   params?: { locale: string }
+}
+
+export function generateStaticParams() {
+  return config.locales.map((locale) => ({ locale }))
 }
 
 export async function generateMetadata(): Promise<Metadata> {

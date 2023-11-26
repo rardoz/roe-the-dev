@@ -30,6 +30,10 @@ async function getEntry(slug: string) {
   return blogEntries?.items?.[0]
 }
 
+export function generateStaticParams() {
+  return config.locales.map((locale) => ({ locale }))
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const messages = await getTranslations('Portfolio')
   const entry = await getEntry(params.slug)

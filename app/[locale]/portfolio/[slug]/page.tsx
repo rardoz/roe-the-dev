@@ -21,6 +21,10 @@ type Props = {
 
 let porfolioEntries: NormalizedBlogState | undefined
 
+export function generateStaticParams() {
+  return config.locales.map((locale) => ({ locale }))
+}
+
 async function getEntry(slug: string) {
   porfolioEntries =
     porfolioEntries ||

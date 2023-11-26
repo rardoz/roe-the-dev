@@ -17,6 +17,10 @@ type Props = {
   params?: { locale: string; page?: string }
 }
 
+export function generateStaticParams() {
+  return config.locales.map((locale) => ({ locale }))
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const messages = await getTranslations('Experiment')
 
