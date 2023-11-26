@@ -7,6 +7,7 @@ import theme from '../_theme'
 import { notFound } from 'next/navigation'
 import config from '../../messages/config'
 import { NextIntlClientProvider } from 'next-intl'
+import { Analytics } from '@vercel/analytics/react'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -54,6 +55,7 @@ export default async function RootLayout({
         <Flowbite theme={{ theme }}>
           <NextIntlClientProvider locale={locale} messages={messages}>
             {children}
+            <Analytics />
           </NextIntlClientProvider>
         </Flowbite>
       </body>
