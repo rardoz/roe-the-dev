@@ -15,6 +15,7 @@
       }
     ]
   },
+  "ignorePatterns": ["public/*.loader.js"],
   "overrides": [
     {
       "files": ["app/api/**/*.ts"],
