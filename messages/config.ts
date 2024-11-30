@@ -13,6 +13,8 @@ export const pathnames = {
   '/portfolio': '/portfolio',
   '/portfolio/[slug]': '/portfolio/[slug]',
   '/experiment': '/experiment',
+  '/lottie-winters-kinky-salad-model-game':
+    '/lottie-winters-kinky-salad-model-game',
 } satisfies AppPathname
 
 export type AppPathnames = keyof typeof pathnames
