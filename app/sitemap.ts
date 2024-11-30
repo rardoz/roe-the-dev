@@ -22,7 +22,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const fullSiteMap: MetadataRoute.Sitemap = []
 
-  const pages = ['', 'blog', 'portfolio', 'experiment']
+  const pages = [
+    '',
+    'blog',
+    'portfolio',
+    'experiment',
+    'lottie-winters-kinky-salad-model-game',
+  ]
 
   pages.forEach((page, i) => {
     locales.forEach((locale) => {
