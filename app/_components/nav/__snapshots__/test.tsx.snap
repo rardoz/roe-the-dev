@@ -14,7 +14,6 @@ exports[`Nav should render 1`] = `
       <a
         class="flex items-center space-x-3 rtl:space-x-reverse"
         href="/en-US"
-        hreflang="en-US"
       >
         <img
           alt="logo"
@@ -31,7 +30,7 @@ exports[`Nav should render 1`] = `
         class="flex-grow flex justify-end mx-3"
       >
         <span
-          class="flex h-fit items-center gap-1 font-semibold bg-gray-200 text-gray-800 dark:bg-gray-400 dark:text-gray-900 group-hover:bg-gray-300 dark:group-hover:bg-gray-500 text-xs p-1.5 rounded-full"
+          class="flex h-fit items-center gap-1 font-semibold bg-gray-200 text-gray-800 group-hover:bg-gray-300 dark:bg-gray-400 dark:text-gray-900 dark:group-hover:bg-gray-500 text-xs p-1.5 rounded-full"
           data-testid="flowbite-badge"
         >
           <span>
