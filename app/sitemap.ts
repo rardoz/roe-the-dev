@@ -77,7 +77,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url:
           SITE_BASE_URL +
           (locale === defaultLocale ? '' : `/${locale}`) +
-          `/portfolio/${post.slug}`,
+          `/experiment/${post.slug}`,
         lastModified: new Date(post.dateUpdated || ''),
         changeFrequency: 'monthly',
         priority: 0.75,

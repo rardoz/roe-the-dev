@@ -19,6 +19,7 @@ import Image from 'next/image'
 import Link from '../link'
 import HR from '../hr'
 import SectionTitle from '../section-title'
+import VideoPlayer from '../video-player'
 
 const options: Options = {
   renderMark: {
@@ -28,13 +29,27 @@ const options: Options = {
   renderNode: {
     [BLOCKS.EMBEDDED_ASSET]: (node: Block | Inline) => {
       const fields = node.data?.target?.fields || {}
+      const contentType = fields.file?.contentType
+      const url = fields.file?.url
+      const description = fields.description
+
+      if (contentType?.includes('video')) {
+        return (
+          <div className="contentful-to-react-image-container py-5">
+            <VideoPlayer videoSrc={`https:${url}`} contentType={contentType} />
+            <p className="text-center text-sm pt-5">
+              <em>{description}</em>
+            </p>
+          </div>
+        )
+      }
       return (
         <div className="contentful-to-react-image-container py-5">
           <Image
             className="rounded-lg"
             width={fields.file?.details?.image?.width}
             height={fields.file?.details?.image?.height}
-            src={`https:${fields.file?.url}`}
+            src={`https:${url}`}
             alt={fields.title}
           />
           <p className="text-center text-sm pt-5">

@@ -40,10 +40,17 @@
     "title": "Experimentación",
     "footerMessage": "Fondo generado por inteligencia artificial con",
     "comingSoon": "Próximamente",
-    "description": "Próximamente: Una colección de experimentos de Roe Greene, un tecnólogo creativo y artista."
+    "description": "Próximamente: Una colección de experimentos de Roe Greene, un tecnólogo creativo y artista.",
+    "commentLabel": "Dejar un comentario",
+    "lastUpdated": "Última actualización"
   },
   "LottieGame": {
     "title": "Lottie Winters Kinky Salad Model Guego",
     "description": "Un juego para Lottie Winters de Roe Greene para la canción - Kinky Salad Model"
+  },
+  "SketchBook": {
+    "title": "Sketch Book Vol 1 Playground",
+    "description": "Explora el Sketch Book Vol 1 Playground de Roe Greene, un tecnólogo creativo y artista.",
+    "keywords": "sketch, book, playground, Roe Greene"
   }
 }

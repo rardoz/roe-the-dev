@@ -40,7 +40,14 @@
     "title": "Experiments",
     "footerMessage": "Background AI generated with",
     "comingSoon": "Coming soon",
-    "description": "Comming soon: A collection of experiments by Roe Greene, a creative technologist and artist."
+    "description": "Coming soon: A collection of experiments by Roe Greene, a creative technologist and artist.",
+    "lastUpdated": "Last updated",
+    "commentLabel": "Leave a comment"
+  },
+  "SketchBook": {
+    "title": "Sketch Book Vol 1 Playground",
+    "description": "Explore the Sketch Book Vol 1 Playground by Roe Greene, a creative technologist and artist.",
+    "keywords": "sketch, book, playground, Roe Greene"
   },
   "LottieGame": {
     "title": "Lottie Winters Kinky Salad Model Game",

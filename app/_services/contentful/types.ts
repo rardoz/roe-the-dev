@@ -6,6 +6,7 @@ export type ContentType =
   | 'portfolio'
   | 'linkBank'
   | 'featuredContent'
+  | 'experiment'
   | string
 
 export interface USE_BLOG_ARGS {
