@@ -72,7 +72,7 @@
     "jest-nyancat-reporter": "^2.0.0",
     "jsdom-testing-mocks": "^1.13.1",
     "lint-staged": "^15.2.11",
-    "next-swagger-doc": "^0.4.1",
+    "next-swagger-doc": "^0.4.0",
     "postcss": "^8.4.49",
     "prettier": "^3.4.2",
     "storybook": "^7.6.20",
