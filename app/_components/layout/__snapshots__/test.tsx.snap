@@ -14,7 +14,6 @@ exports[`Layout should render with default locale set 1`] = `
       <a
         class="flex items-center space-x-3 rtl:space-x-reverse"
         href="/en-US"
-        hreflang="en-US"
       >
         <img
           alt="Roe the Dev logo"
@@ -31,7 +30,7 @@ exports[`Layout should render with default locale set 1`] = `
         class="flex-grow flex justify-end mx-3"
       >
         <span
-          class="flex h-fit items-center gap-1 font-semibold bg-gray-200 text-gray-800 dark:bg-gray-400 dark:text-gray-900 group-hover:bg-gray-300 dark:group-hover:bg-gray-500 text-xs p-1.5 rounded-full"
+          class="flex h-fit items-center gap-1 font-semibold bg-gray-200 text-gray-800 group-hover:bg-gray-300 dark:bg-gray-400 dark:text-gray-900 dark:group-hover:bg-gray-500 text-xs p-1.5 rounded-full"
           data-testid="flowbite-badge"
         >
           <span>
@@ -142,7 +141,6 @@ exports[`Layout should render with default locale set 1`] = `
             <a
               class="mx-4 mb-4 py-2 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
               href="/en-US/portfolio"
-              hreflang="en-US"
             >
               <svg
                 class="mr-1.5"
@@ -165,7 +163,6 @@ exports[`Layout should render with default locale set 1`] = `
             <a
               class="mx-4 mb-4 py-2 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
               href="/en-US/blog"
-              hreflang="en-US"
             >
               <svg
                 class="mr-1.5"
@@ -188,7 +185,6 @@ exports[`Layout should render with default locale set 1`] = `
             <a
               class="mx-4 mb-4 py-2 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
               href="/en-US/experiment"
-              hreflang="en-US"
             >
               <svg
                 class="mr-1.5"
@@ -228,7 +224,6 @@ exports[`Layout should render with default locale set 1`] = `
         <a
           class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://github.com/rardoz"
-          hreflang="en-US"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -254,7 +249,6 @@ exports[`Layout should render with default locale set 1`] = `
         <a
           class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://linkedin.com/in/rardoz"
-          hreflang="en-US"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -280,7 +274,6 @@ exports[`Layout should render with default locale set 1`] = `
         <a
           class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://twitter.com/roe_the_dev"
-          hreflang="en-US"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -306,7 +299,6 @@ exports[`Layout should render with default locale set 1`] = `
         <a
           class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://twitch.tv/roe_the_dev"
-          hreflang="en-US"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -332,7 +324,6 @@ exports[`Layout should render with default locale set 1`] = `
         <a
           class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="mailto:roethedev@gmail.com"
-          hreflang="en-US"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -365,7 +356,6 @@ exports[`Layout should render with default locale set 1`] = `
         <a
           class="transition-colors duration-500 text-pink-500 hover:text-pink-400 "
           href="https://byrojo.com"
-          hreflang="en-US"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -391,7 +381,6 @@ exports[`Layout should render with no locale set 1`] = `
       <a
         class="flex items-center space-x-3 rtl:space-x-reverse"
         href="/en-US"
-        hreflang="en-US"
       >
         <img
           alt="Roe the Dev logo"
@@ -408,7 +397,7 @@ exports[`Layout should render with no locale set 1`] = `
         class="flex-grow flex justify-end mx-3"
       >
         <span
-          class="flex h-fit items-center gap-1 font-semibold bg-gray-200 text-gray-800 dark:bg-gray-400 dark:text-gray-900 group-hover:bg-gray-300 dark:group-hover:bg-gray-500 text-xs p-1.5 rounded-full"
+          class="flex h-fit items-center gap-1 font-semibold bg-gray-200 text-gray-800 group-hover:bg-gray-300 dark:bg-gray-400 dark:text-gray-900 dark:group-hover:bg-gray-500 text-xs p-1.5 rounded-full"
           data-testid="flowbite-badge"
         >
           <span>
@@ -519,7 +508,6 @@ exports[`Layout should render with no locale set 1`] = `
             <a
               class="mx-4 mb-4 py-2 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
               href="/en-US/portfolio"
-              hreflang="en-US"
             >
               <svg
                 class="mr-1.5"
@@ -542,7 +530,6 @@ exports[`Layout should render with no locale set 1`] = `
             <a
               class="mx-4 mb-4 py-2 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
               href="/en-US/blog"
-              hreflang="en-US"
             >
               <svg
                 class="mr-1.5"
@@ -565,7 +552,6 @@ exports[`Layout should render with no locale set 1`] = `
             <a
               class="mx-4 mb-4 py-2 px-3 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600"
               href="/en-US/experiment"
-              hreflang="en-US"
             >
               <svg
                 class="mr-1.5"
@@ -605,7 +591,6 @@ exports[`Layout should render with no locale set 1`] = `
         <a
           class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://github.com/rardoz"
-          hreflang="en-US"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -631,7 +616,6 @@ exports[`Layout should render with no locale set 1`] = `
         <a
           class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://linkedin.com/in/rardoz"
-          hreflang="en-US"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -657,7 +641,6 @@ exports[`Layout should render with no locale set 1`] = `
         <a
           class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://twitter.com/roe_the_dev"
-          hreflang="en-US"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -683,7 +666,6 @@ exports[`Layout should render with no locale set 1`] = `
         <a
           class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="https://twitch.tv/roe_the_dev"
-          hreflang="en-US"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -709,7 +691,6 @@ exports[`Layout should render with no locale set 1`] = `
         <a
           class="w-12 h-12 justify-center mx-1 my-1 flex items-center transition-colors duration-500 hover:bg-pink-600 text-white bg-purple-700 rounded-full dark:bg-blue-600 "
           href="mailto:roethedev@gmail.com"
-          hreflang="en-US"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -742,7 +723,6 @@ exports[`Layout should render with no locale set 1`] = `
         <a
           class="transition-colors duration-500 text-pink-500 hover:text-pink-400 "
           href="https://byrojo.com"
-          hreflang="en-US"
           rel="noopener noreferrer"
           target="_blank"
         >

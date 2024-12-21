@@ -3,8 +3,7 @@
 exports[`Carousel should not have a link or image set if not provided 1`] = `
 <div>
   <a
-    href="/en-US"
-    hreflang="en-US"
+    href=""
   >
     <div
       class="flex rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 flex-col hover:scale-105 relative hover:z-10 transition-all duration-500 overflow-hidden m-auto w-full h-full"
@@ -37,7 +36,6 @@ exports[`Carousel should render 1`] = `
 <div>
   <a
     href="https://roethedev.com"
-    hreflang="en-US"
     target="_blank"
   >
     <div
@@ -83,8 +81,7 @@ exports[`Carousel should render 1`] = `
 exports[`Carousel should render the card with image but without a link and without an alt text 1`] = `
 <div>
   <a
-    href="/en-US"
-    hreflang="en-US"
+    href=""
   >
     <div
       class="flex rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 flex-col hover:scale-105 relative hover:z-10 transition-all duration-500 overflow-hidden m-auto w-full h-full"

@@ -1,4 +1,4 @@
-import { CustomFlowbiteTheme } from 'flowbite-react/lib/esm/components/Flowbite/FlowbiteTheme'
+import { CustomFlowbiteTheme } from 'flowbite-react'
 
 const flowbiteTheme: CustomFlowbiteTheme = {}
 export default flowbiteTheme

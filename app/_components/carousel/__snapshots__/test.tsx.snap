@@ -10,7 +10,7 @@ exports[`Carousel should render 1`] = `
       data-testid="carousel"
     >
       <div
-        class="flex h-full snap-mandatory scroll-smooth rounded-none overflow-hidden snap-x indiana-scroll-container indiana-scroll-container--hide-scrollbars"
+        class="flex h-full snap-mandatory scroll-smooth rounded-none overflow-hidden snap-x overflow-hidden !overflow-x-hidden [overflow:-moz-scrollbars-none] [scrollbar-width:none] [&::-webkit-scrollbar]:[-webkit-appearance:none !important] [&::-webkit-scrollbar]:!hidden [&::-webkit-scrollbar]:!h-0 [&::-webkit-scrollbar]:!w-0 [&::-webkit-scrollbar]:!bg-transparent"
       >
         <div
           class="w-full flex-shrink-0 transform cursor-default snap-center"
@@ -18,7 +18,7 @@ exports[`Carousel should render 1`] = `
           data-testid="carousel-item"
         >
           <div
-            class="absolute top-1/2 left-1/2 block w-full -translate-x-1/2 -translate-y-1/2"
+            class="absolute left-1/2 top-1/2 block w-full -translate-x-1/2 -translate-y-1/2"
           >
             TEST
           </div>
@@ -34,7 +34,7 @@ exports[`Carousel should render 1`] = `
         />
       </div>
       <div
-        class="absolute top-0 left-0 flex h-full items-center justify-center px-4 focus:outline-none"
+        class="absolute left-0 top-0 flex h-full items-center justify-center px-4 focus:outline-none"
       >
         <button
           aria-label="Previous slide"
@@ -66,7 +66,7 @@ exports[`Carousel should render 1`] = `
         </button>
       </div>
       <div
-        class="absolute top-0 right-0 flex h-full items-center justify-center px-4 focus:outline-none"
+        class="absolute right-0 top-0 flex h-full items-center justify-center px-4 focus:outline-none"
       >
         <button
           aria-label="Next slide"
