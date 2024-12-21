@@ -13,7 +13,7 @@ exports[`Big Carousel should render 1`] = `
         class="flex h-full snap-mandatory scroll-smooth rounded-none overflow-hidden snap-x overflow-hidden !overflow-x-hidden [overflow:-moz-scrollbars-none] [scrollbar-width:none] [&::-webkit-scrollbar]:[-webkit-appearance:none !important] [&::-webkit-scrollbar]:!hidden [&::-webkit-scrollbar]:!h-0 [&::-webkit-scrollbar]:!w-0 [&::-webkit-scrollbar]:!bg-transparent"
       >
         <div
-          class="w-full flex-shrink-0 transform cursor-default snap-center"
+          class="w-full flex-shrink-0 transform cursor-grab snap-center"
           data-active="true"
           data-testid="carousel-item"
         >

@@ -10,7 +10,7 @@ const Carousel: React.FC<React.PropsWithChildren<{ className?: string }>> = ({
     <div className={`${className ?? ''}`}>
       <FCarousel
         slideInterval={5000}
-        draggable={false}
+        draggable
         theme={{
           control: {
             base: theme.carousel.control.base + ' hidden sm:inline-flex',
