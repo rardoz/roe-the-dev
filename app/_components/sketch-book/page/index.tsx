@@ -46,7 +46,7 @@ const Page = React.forwardRef<HTMLDivElement, PageProps>((props, ref) => {
       data-density={props.density || 'soft'}
     >
       <div className="h-full">{props.children}</div>
-      <div className="text-center text-xs w-full absolute bottom-0">
+      <div className="text-center text-xs w-full absolute bottom-0 text-gray-500">
         {intToRoman(props.number)}
       </div>
     </div>

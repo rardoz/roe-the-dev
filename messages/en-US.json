@@ -47,7 +47,20 @@
   "SketchBook": {
     "title": "Sketch Book Vol 1 Playground",
     "description": "Explore the Sketch Book Vol 1 Playground by Roe Greene, a creative technologist and artist.",
-    "keywords": "sketch, book, playground, Roe Greene"
+    "keywords": "sketch, book, playground, Roe Greene",
+    "cta": "Lock for 60 minutes",
+    "cta-notice": "Locking the scketchbook allows you to add to the pages.\r\n After 60 minutes, the lock will remove automatically and you will not be able to make any more changes until the sketchbook is available again.",
+    "eta": "Estimated wait time:",
+    "minutes": "minutes",
+    "faq-title": "How it works",
+    "faq-1": "The sketchbook is a shared space where you can draw on the pages. You can lock the sketchbook to prevent others from drawing on the pages. You can also unlock the sketchbook to allow others to draw on the pages. The sketchbook will automatically unlock after 60 minutes.",
+    "faq-2": " Everything is completely anonymous. No personal data is stored. If you want to mark your name on the sketchbook though, you are free to do so at your own risk.",
+    "faq-3": "I have the ability to edit what is in the sketchbook, so please keep it respectful. I will be monitoring the sketchbook to ensure that it is a safe and fun place for everyone.",
+    "faq-4": "There are only 10 pages available in the sketchbook. I am happy to add more pages if there is interest.",
+    "sta": "Find out more about",
+    "sta-link": "the project here.",
+    "farewell": "Happy sketching! 🎨",
+    "discussion-title": "Sketchbook Vol. 1 Playground Comments"
   },
   "LottieGame": {
     "title": "Lottie Winters Kinky Salad Model Game",

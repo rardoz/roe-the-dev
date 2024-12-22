@@ -34,7 +34,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SketchBookVol1Playground(props: Props) {
-  unstable_setRequestLocale(props.params?.locale || 'en-US')
+  const locale = props.params?.locale || 'en-US'
+  unstable_setRequestLocale(locale)
 
   return (
     <>
@@ -43,7 +44,7 @@ export default async function SketchBookVol1Playground(props: Props) {
         navForcedInView
       >
         <div className="w-full h-full overflow-hidden py-10">
-          <SketchBookPlayground />
+          <SketchBookPlayground locale={locale} />
         </div>
       </DefaultLayout>
     </>

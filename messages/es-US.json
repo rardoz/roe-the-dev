@@ -49,8 +49,21 @@
     "description": "Un juego para Lottie Winters de Roe Greene para la canción - Kinky Salad Model"
   },
   "SketchBook": {
-    "title": "Sketch Book Vol 1 Playground",
-    "description": "Explora el Sketch Book Vol 1 Playground de Roe Greene, un tecnólogo creativo y artista.",
-    "keywords": "sketch, book, playground, Roe Greene"
+    "title": "Cuaderno Vol 1 Patio de juegos",
+    "description": "Explora el Cuaderno Vol 1 Patio de juegos de Roe Greene, un tecnólogo creativo y artista.",
+    "keywords": "boceto, cuaderno, patio de juegos, Roe Greene",
+    "cta": "Bloquear por 60 minutos",
+    "cta-notice": "Bloquear el cuaderno te permite añadir contenido a las páginas.\r\n Después de 60 minutos, el bloqueo se eliminará automáticamente y no podrás hacer más cambios hasta que el cuaderno esté disponible nuevamente.",
+    "eta": "Tiempo estimado de espera:",
+    "minutes": "minutos",
+    "faq-title": "Cómo funciona",
+    "faq-1": "El cuaderno es un espacio compartido donde puedes dibujar en las páginas. Puedes bloquear el cuaderno para evitar que otros dibujen en las páginas. También puedes desbloquearlo para permitir que otros dibujen. El cuaderno se desbloqueará automáticamente después de 60 minutos.",
+    "faq-2": "Todo es completamente anónimo. No se almacenan datos personales. Sin embargo, si deseas marcar tu nombre en el cuaderno, puedes hacerlo bajo tu propio riesgo.",
+    "faq-3": "Tengo la capacidad de editar lo que hay en el cuaderno, así que por favor mantenlo respetuoso. Estaré monitoreando el cuaderno para asegurar que sea un lugar seguro y divertido para todos.",
+    "faq-4": "Solo hay 10 páginas disponibles en el cuaderno. Estaré encantado de agregar más páginas si hay interés.",
+    "sta": "Descubre más sobre",
+    "sta-link": "el proyecto aquí.",
+    "farewell": "¡Feliz dibujo! 🎨",
+    "discussion-title": "Comentarios del Cuaderno Vol. 1 Patio de juegos"
   }
 }

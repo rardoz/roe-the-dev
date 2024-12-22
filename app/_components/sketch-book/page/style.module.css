@@ -1,5 +1,6 @@
 .page {
-  background-image: url("https://images.unsplash.com/photo-1603513492128-ba7bc9b3e143?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cGFwZXIlMjB0ZXh0dXJlfGVufDB8fDB8&ixlib=rb-1.2.1&w=1000&q=80");
+  background-image: url("/paper.png");
+  background-size: cover;
   border: 1px solid rgb(198 194 194 50%);
   border-radius: 0.5rem;
   box-sizing: border-box;

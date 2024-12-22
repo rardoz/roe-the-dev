@@ -8,7 +8,7 @@ import { Button } from 'flowbite-react'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
 const PAGE_COUNT = 10
 
-const Passport: React.FC = () => {
+const SketchBook: React.FC = () => {
   const [page, setPage] = useState(0)
   const [totalPage, setTotalPage] = useState(0)
   const [pages, setPages] = useState<React.ReactNode[]>([])
@@ -28,14 +28,14 @@ const Passport: React.FC = () => {
       if (pageNum > 8) pageNum = 1
       pagesArray.push(
         <Page key={i + 1} image={`${pageNum}.jpg`} number={i + 1}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          {''}
         </Page>,
       )
     }
 
     pagesArray.push(
       <PageCover key={PAGE_COUNT + 1} pos="bottom">
-        THE END
+        {''}
       </PageCover>,
     )
 
@@ -127,4 +127,4 @@ const Passport: React.FC = () => {
   )
 }
 
-export default Passport
+export default SketchBook
