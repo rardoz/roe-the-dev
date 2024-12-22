@@ -1,5 +1,5 @@
 .cover {
-  background-image: url("https://i.imgur.com/mzp2Uub.jpg");
+  background-image: url("/leather-texture.jpg");
   background-size: cover;
   color: color(hsl 35deg 35% 35%);
   border: solid 2px color(hsl 35deg 20% 50%);
