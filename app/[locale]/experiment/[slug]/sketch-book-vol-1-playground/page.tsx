@@ -37,13 +37,15 @@ export default async function SketchBookVol1Playground(props: Props) {
   unstable_setRequestLocale(props.params?.locale || 'en-US')
 
   return (
-    <DefaultLayout
-      params={{ locale: props.params.locale || '' }}
-      navForcedInView
-    >
-      <div className="w-full mt-16">
-        <SketchBookPlayground />
-      </div>
-    </DefaultLayout>
+    <>
+      <DefaultLayout
+        params={{ locale: props.params.locale || '' }}
+        navForcedInView
+      >
+        <div className="w-full h-full overflow-hidden py-10">
+          <SketchBookPlayground />
+        </div>
+      </DefaultLayout>
+    </>
   )
 }

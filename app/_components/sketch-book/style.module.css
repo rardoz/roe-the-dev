@@ -2,4 +2,13 @@
   width: 100%;
   max-width: 1200px;
   z-index: 1000;
+  padding: 50px 150px;
+  max-height: 800px;
+  min-height: 100px;
+  min-width: 115px;
+  margin: 0 auto;
+
+  @media screen and (width <= 768px) {
+    padding: 20px 10px;
+  }
 }

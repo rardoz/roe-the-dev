@@ -28,23 +28,13 @@ const Passport: React.FC = () => {
       if (pageNum > 8) pageNum = 1
       pagesArray.push(
         <Page key={i + 1} image={`${pageNum}.jpg`} number={i + 1}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. In cursus
-          mollis nibh, non convallis ex convallis eu. Suspendisse potenti.
-          Aenean vitae pellentesque erat. Lorem ipsum dolor sit amet,
-          consectetur adipiscing elit. In cursus mollis nibh, non convallis ex
-          convallis eu. Suspendisse potenti. Aenean vitae pellentesque erat.
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. In cursus
-          mollis nibh, non convallis ex convallis eu. Suspendisse potenti.
-          Aenean vitae pellentesque erat. Lorem ipsum dolor sit amet,
-          consectetur adipiscing elit. In cursus mollis nibh, non convallis ex
-          convallis eu. Suspendisse potenti. Aenean vitae pellentesque erat.
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. In cursus
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
         </Page>,
       )
     }
 
     pagesArray.push(
-      <PageCover key={101} pos="bottom">
+      <PageCover key={PAGE_COUNT + 1} pos="bottom">
         THE END
       </PageCover>,
     )
@@ -65,8 +55,15 @@ const Passport: React.FC = () => {
     setPage(e.data)
   }
 
+  const onUpdate = (e: any) => {
+    if (e.data === 'user_fold' || e.data === 'flipping') {
+      // console.log('onUpdate', e)
+    }
+    //setPage(e.data)
+  }
+
   return (
-    <div className="mt-14 flex flex-col items-center">
+    <div>
       <div className={styles['container-md']} style={{ position: 'relative' }}>
         <HTMLFlipBook
           width={550}
@@ -90,6 +87,7 @@ const Passport: React.FC = () => {
           swipeDistance={30}
           showPageCorners={true}
           disableFlipByClick={false}
+          onChangeState={onUpdate}
           onFlip={onPage}
           className="book"
           style={{}}
@@ -99,7 +97,7 @@ const Passport: React.FC = () => {
         </HTMLFlipBook>
       </div>
 
-      <div className="container mt-3">
+      <div className="w-100">
         <div className="row">
           <div className="col-md-6 flex justify-center items-center py-10">
             <Button
