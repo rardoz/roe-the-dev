@@ -1,0 +1,17 @@
+.cover {
+  background-image: url("/leather-texture.jpg");
+  background-size: cover;
+  color: color(hsl 35deg 35% 35%);
+  border: solid 2px color(hsl 35deg 20% 50%);
+}
+
+.bottom {
+  box-shadow:
+    inset 0 0 30px 0 rgb(36 10 3 / 50%),
+    10px 0 8px 0 rgb(0 0 0 / 40%);
+}
+
+.top {
+  box-shadow: inset 0 0 30px 0 rgb(36 10 3 / 50%);
+  border: solid 2px hsl(35deg 20 50);
+}

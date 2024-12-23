@@ -49,7 +49,6 @@ export default async function RootLayout({
 
   const isValidLocale = config.locales.some((cur) => cur === locale)
   if (!isValidLocale) notFound()
-
   return (
     <html lang={locale}>
       <body className={inter.className}>

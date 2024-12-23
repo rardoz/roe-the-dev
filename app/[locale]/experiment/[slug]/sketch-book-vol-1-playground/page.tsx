@@ -2,6 +2,7 @@ import DefaultLayout from '../../../../_components/layout'
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
 import config from '../../../../../messages/config'
+import SketchBookPlayground from '../../../../_components/sketch-book-playground'
 
 type Props = {
   params: { locale?: string; slug: string }
@@ -33,19 +34,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SketchBookVol1Playground(props: Props) {
-  unstable_setRequestLocale(props.params?.locale || 'en-US')
-  const messages = await getTranslations('SketchBook')
+  const locale = props.params?.locale || 'en-US'
+  unstable_setRequestLocale(locale)
 
   return (
-    <DefaultLayout params={{ locale: props.params.locale || '' }}>
-      <div className="w-full">
-        <div className="max-w-screen-lg mx-auto pt-1" id="main-section">
-          <div className="px-4">
-            <h1>{messages('title')}</h1>
-            <p>{messages('description')}</p>
-          </div>
+    <>
+      <DefaultLayout
+        params={{ locale: props.params.locale || '' }}
+        navForcedInView
+      >
+        <div className="w-full h-full overflow-hidden py-10">
+          <SketchBookPlayground locale={locale} />
         </div>
-      </div>
-    </DefaultLayout>
+      </DefaultLayout>
+    </>
   )
 }
