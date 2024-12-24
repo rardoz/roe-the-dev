@@ -7,7 +7,7 @@ import { default as config, locales } from './config'
 
 export default getRequestConfig(async ({ requestLocale }) => {
   let _locale = await requestLocale
-  if (!_locale || locales.includes(_locale as any)) {
+  if (!_locale || !locales.includes(_locale as any)) {
     _locale = config.defaultLocale
   }
 
