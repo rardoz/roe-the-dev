@@ -27,8 +27,15 @@ const SketchBook: React.FC = () => {
       pageNum++
       if (pageNum > 8) pageNum = 1
       pagesArray.push(
-        <Page key={i + 1} image={`${pageNum}.jpg`} number={i + 1}>
-          {''}
+        <Page key={i + 1} number={i + 1}>
+          {i === 2 && global?.localStorage?.getItem('svg-test') && (
+            <div
+              className={styles.pageRenderContainer}
+              dangerouslySetInnerHTML={{
+                __html: global.localStorage.getItem('svg-test') || '',
+              }}
+            ></div>
+          )}
         </Page>,
       )
     }

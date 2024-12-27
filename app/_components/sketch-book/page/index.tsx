@@ -5,7 +5,6 @@ import styles from './style.module.css'
 interface PageProps {
   density?: 'hard' | 'soft' | string
   number: number
-  image: string
   children: React.ReactNode
 }
 

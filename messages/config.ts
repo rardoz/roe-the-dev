@@ -14,8 +14,8 @@ export const pathnames = {
   '/portfolio/[slug]': '/portfolio/[slug]',
   '/experiment': '/experiment',
   '/experiment/[slug]': '/experiment/[slug]',
-  '/experiment/[slug]/sketch-book-vol-1-playground':
-    '/experiment/[slug]/sketch-book-vol-1-playground',
+  '/experiment/[slug]/sketch-book-vol-1':
+    '/experiment/[slug]/sketch-book-vol-1',
   '/lottie-winters-kinky-salad-model-game':
     '/lottie-winters-kinky-salad-model-game',
 } satisfies AppPathname
