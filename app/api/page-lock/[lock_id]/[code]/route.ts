@@ -1,6 +1,5 @@
 import { connectDB } from '../../../../../lib/mongoose-db'
 import PageLock from '../../../../../models/page-lock'
-import type { NextApiRequest } from 'next'
 /**
  * @swagger
  * /api/page-lock/{lock_id}/{code}:
@@ -112,7 +111,7 @@ import type { NextApiRequest } from 'next'
  *                   example: "Invalid code!"
  */
 export async function GET(
-  req: NextApiRequest,
+  req: Request,
   { params }: { params: Promise<{ lock_id: string; code: string }> },
 ) {
   try {

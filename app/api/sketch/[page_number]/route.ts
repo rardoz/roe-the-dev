@@ -1,6 +1,6 @@
+import { NextRequest } from 'next/server'
 import { connectDB } from '../../../../lib/mongoose-db'
 import Sketch from '../../../../models/sketch'
-import type { NextApiRequest } from 'next'
 /**
  * @swagger
  * /api/sketch/{page_number}:
@@ -34,7 +34,7 @@ import type { NextApiRequest } from 'next'
  *         description: Server error while fetching sketches
  */
 export async function GET(
-  req: NextApiRequest,
+  req: Request | NextRequest,
   { params }: { params: Promise<{ page_number: string }> },
 ) {
   try {
@@ -94,12 +94,13 @@ export async function GET(
  *       500:
  *         description: Server error while saving sketch
  */
-export async function POST(req: NextApiRequest) {
+export async function POST(req: Request | NextRequest) {
   try {
     await connectDB()
+    const body = await req.json()
     const sketch = new Sketch({
-      sketch_paths: req.body.sketch_paths,
-      page_number: req.body.page_number,
+      sketch_paths: body.sketch_paths,
+      page_number: body.page_number,
       is_enabled: false,
     })
     const savedSketch = await sketch.save()
