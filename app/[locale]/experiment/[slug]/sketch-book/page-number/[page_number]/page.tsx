@@ -1,8 +1,8 @@
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
-import config from '../../../../../../messages/config'
-import SketchBookLockPage from '../../../../../_components/sketch-book/lock'
-import DefaultLayout from '../../../../../_components/layout'
+import config from '../../../../../../../messages/config'
+import SketchBookLockPage from '../../../../../../_components/sketch-book/lock'
+import DefaultLayout from '../../../../../../_components/layout'
 
 type Props = {
   params: { locale?: string; slug: string; page_number: string }
@@ -19,16 +19,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${messages('title')} Playground`,
     description: messages('description'),
     alternates: {
-      canonical: `/experiment/${params.slug}/sketch-book-vol-1/${params.page_number}`,
+      canonical: `/experiment/${params.slug}/sketch-book/${params.page_number}`,
       languages: Object.fromEntries(
         config.locales.map((cur) => [
           cur,
-          `/${cur}/experiment/${params.slug}/sketch-book-vol-1/${params.page_number}`,
+          `/${cur}/experiment/${params.slug}/sketch-book/${params.page_number}`,
         ]),
       ),
     },
     openGraph: {
-      url: `/experiment/${params.slug}/sketch-book-vol-1/${params.page_number}`,
+      url: `/experiment/${params.slug}/sketch-book/${params.page_number}`,
     },
     keywords: messages('keywords'),
   }

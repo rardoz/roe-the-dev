@@ -25,7 +25,7 @@ const JsDraw: React.FC = () => {
 
   const onUnlock = () => {
     onSave()
-    router.replace('sketch-book-vol-1')
+    router.replace('sketch-book')
   }
 
   useEffect(() => {

@@ -18,16 +18,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${messages('title')}`,
     description: messages('description'),
     alternates: {
-      canonical: `/experiment/${params.slug}/sketch-book-vol-1`,
+      canonical: `/experiment/${params.slug}/sketch-book`,
       languages: Object.fromEntries(
         config.locales.map((cur) => [
           cur,
-          `/${cur}/experiment/${params.slug}/sketch-book-vol-1`,
+          `/${cur}/experiment/${params.slug}/sketch-book`,
         ]),
       ),
     },
     openGraph: {
-      url: `/experiment/${params.slug}/sketch-book-vol-1`,
+      url: `/experiment/${params.slug}/sketch-book`,
     },
     keywords: messages('keywords'),
   }

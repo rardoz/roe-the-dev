@@ -48,7 +48,7 @@ const SketchBookLandingPage: React.FC<{ locale: string }> = ({ locale }) => {
       <div className="px-4 py-10 max-w-4xl mx-auto">
         <HR />
         <Discussion
-          slug="sketch-book-vol-1"
+          slug="sketch-book"
           title={translations('discussion-title')}
           contentType="experiment"
           locale={locale}

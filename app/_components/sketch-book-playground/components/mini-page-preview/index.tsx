@@ -1,22 +1,12 @@
 'use client'
 import React from 'react'
-import SketchBookProvider, {
-  SketchWithHTML,
-} from '../../../sketch-book/context'
+import { SketchWithHTML } from '../../../sketch-book/context'
 //import { useTranslations } from 'next-intl'
 
-const MiniPagePreview: React.FC<{
-  pageNumber: number
-}> = ({ pageNumber }) => {
-  //const translations = useTranslations('SketchBook')
-
+const MiniPagePreview: React.FC = () => {
   return (
     <div>
-      <React.Suspense fallback={'loading...'}>
-        <SketchBookProvider page={pageNumber} includePageBg>
-          <SketchWithHTML />
-        </SketchBookProvider>
-      </React.Suspense>
+      <SketchWithHTML />
     </div>
   )
 }

@@ -129,11 +129,11 @@ const SketchBook: React.FC = () => {
               </LinkButton>
             ) : (
               <div className="flex justify-center mx-5">
-                <LinkButton href={`sketch-book-vol-1/${page}`}>
+                <LinkButton href={`sketch-book/page-number/${page}`}>
                   {translations('cta')} {page}
                 </LinkButton>
                 &nbsp;
-                <LinkButton href={`sketch-book-vol-1/${page + 1}`}>
+                <LinkButton href={`sketch-book/page-number/${page + 1}`}>
                   {translations('cta')} {page + 1}
                 </LinkButton>
               </div>
