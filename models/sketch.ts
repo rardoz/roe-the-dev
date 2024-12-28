@@ -1,14 +1,5 @@
 import mongoose, { Schema, model } from 'mongoose'
-
-export interface SketchDocument {
-  _id: string
-  sketch_paths: string
-  page_number: number
-  is_enabled: boolean
-  createdAt: Date
-  updatedAt: Date
-}
-
+import type { SketchDocument } from './types'
 const SketchSchema = new Schema<SketchDocument>(
   {
     sketch_paths: {

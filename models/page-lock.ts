@@ -1,21 +1,12 @@
 import mongoose, { Schema, model } from 'mongoose'
-import type { SketchDocument } from './sketch'
-
-export interface PageLockDocument {
-  _id: string
-  sketch_doc: SketchDocument
-  code: string
-  startTime: Date
-  endTime: Date
-  createdAt: Date
-  updatedAt: Date
-}
+import type { PageLockDocument } from './types'
 
 const PageLockSchema = new Schema<PageLockDocument>(
   {
     sketch_doc: {
       type: Schema.Types.ObjectId,
       ref: 'Sketch',
+      unique: true,
     },
     code: {
       type: String,
@@ -26,6 +17,7 @@ const PageLockSchema = new Schema<PageLockDocument>(
         },
         message: 'Code must be exactly 4 digits',
       },
+      unique: true,
     },
     startTime: {
       type: Date,

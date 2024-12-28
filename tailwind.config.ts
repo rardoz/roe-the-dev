@@ -8,6 +8,10 @@ const config: Config = {
     'node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}',
   ],
   theme: {
+    listStyleType: {
+      none: 'none',
+      disc: 'disc',
+    },
     extend: {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

@@ -1,8 +1,7 @@
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
 import config from '../../../../../../messages/config'
-import SketchBookLockPage from '../../../../../_components/sketch-book/lock'
-import DefaultLayout from '../../../../../_components/layout'
+import SketchBookPlayground from '../../../../../_components/sketch-book-playground'
 
 type Props = {
   params: { locale?: string; slug: string; page_number: string }
@@ -39,13 +38,8 @@ export default async function Playground(props: Props) {
   const page_number = parseInt(props.params?.page_number, 10) || 0
   unstable_setRequestLocale(locale)
   return (
-    <DefaultLayout
-      params={{ locale: props.params.locale || '' }}
-      navForcedInView
-    >
-      <div className="w-full py-10 my-10">
-        <SketchBookLockPage page={page_number} />
-      </div>
-    </DefaultLayout>
+    <div className="w-full h-full overflow-hidden">
+      <SketchBookPlayground locale={locale} pageNumber={page_number} />
+    </div>
   )
 }

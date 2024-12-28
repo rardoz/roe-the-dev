@@ -4,9 +4,10 @@ import React, {
   PropsWithChildren,
   useEffect,
   useState,
+  useContext,
 } from 'react'
-import { SketchDocument } from '../../../../models/sketch'
-
+import type { SketchDocument } from '../../../../models/types'
+export const PAGE_COUNT = 10
 export const sketchBookContext = createContext({ page: 0 } as any)
 const { Provider } = sketchBookContext
 
@@ -98,8 +99,7 @@ const SketchBookProvider: React.FC<
           ),
         }))
       })
-      .catch((e) => {
-        console.error(e)
+      .catch(() => {
         setState((prevState) => ({ ...prevState, isLoading: false }))
       })
   }, [])
@@ -113,4 +113,16 @@ const SketchBookProvider: React.FC<
 
   return <Provider value={{ ...state, savePage }}>{children}</Provider>
 }
+
+export const SketchWithHTML: React.FC = () => {
+  const { paths } = useContext(sketchBookContext)
+  if (paths) {
+    return (
+      <div className="shadow-lg" dangerouslySetInnerHTML={{ __html: paths }} />
+    )
+  } else {
+    return <div />
+  }
+}
+
 export default SketchBookProvider

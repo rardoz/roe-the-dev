@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import HTMLFlipBook from 'react-pageflip'
 import styles from './style.module.css'
 import Page from './page'
@@ -8,17 +8,7 @@ import { Button } from 'flowbite-react'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
 import LinkButton from '../link-button'
 import { useTranslations } from 'next-intl'
-import SketchBookProvider, { sketchBookContext } from './context'
-const PAGE_COUNT = 10
-
-const SketchWithHTML: React.FC = () => {
-  const { paths } = useContext(sketchBookContext)
-  if (paths) {
-    return <div dangerouslySetInnerHTML={{ __html: paths }} />
-  } else {
-    return <div />
-  }
-}
+import SketchBookProvider, { SketchWithHTML, PAGE_COUNT } from './context'
 
 const SketchBook: React.FC = () => {
   const [page, setPage] = useState(0)
