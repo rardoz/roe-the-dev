@@ -22,7 +22,7 @@ const ConfirmBtn: React.FC<{ page: number }> = ({ page }) => {
         if (data.lock_id && data.code) {
           router.push(`../playground/${data.lock_id}/${data.code}`)
         } else {
-          throw Error('No lock or code available.')
+          throw Error('This is currently locked. Try this page again in a bit.')
         }
       })
       .catch((e) => {
