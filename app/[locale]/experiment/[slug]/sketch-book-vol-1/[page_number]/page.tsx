@@ -1,10 +1,10 @@
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
-import config from '../../../../../messages/config'
-import SketchBookPlayground from '../../../../_components/sketch-book-playground'
+import config from '../../../../../../messages/config'
+import SketchBookPlayground from '../../../../../_components/sketch-book-playground'
 
 type Props = {
-  params: { locale?: string; slug: string }
+  params: { locale?: string; slug: string; page_number: string }
 }
 
 export function generateStaticParams() {
@@ -18,16 +18,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${messages('title')} Playground`,
     description: messages('description'),
     alternates: {
-      canonical: `/experiment/${params.slug}/sketch-book-vol-1/playground`,
+      canonical: `/experiment/${params.slug}/sketch-book-vol-1/${params.page_number}`,
       languages: Object.fromEntries(
         config.locales.map((cur) => [
           cur,
-          `/${cur}/experiment/${params.slug}/sketch-book-vol-1/playground`,
+          `/${cur}/experiment/${params.slug}/sketch-book-vol-1/${params.page_number}`,
         ]),
       ),
     },
     openGraph: {
-      url: `/experiment/${params.slug}/sketch-book-vol-1/playground`,
+      url: `/experiment/${params.slug}/sketch-book-vol-1/${params.page_number}`,
     },
     keywords: messages('keywords'),
   }
@@ -35,11 +35,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Playground(props: Props) {
   const locale = props.params?.locale || 'en-US'
+  const page = parseInt(props.params?.page_number, 10) || 0
   unstable_setRequestLocale(locale)
-
+  console.log(props.params)
+  //we need a function to verify that this page can be accessed
   return (
     <div className="w-full h-full overflow-hidden">
-      <SketchBookPlayground locale={locale} />
+      <SketchBookPlayground locale={locale} pageNumber={page} />
     </div>
   )
 }

@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import HTMLFlipBook from 'react-pageflip'
 import styles from './style.module.css'
 import Page from './page'
@@ -8,7 +8,17 @@ import { Button } from 'flowbite-react'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
 import LinkButton from '../link-button'
 import { useTranslations } from 'next-intl'
+import SketchBookProvider, { sketchBookContext } from './context'
 const PAGE_COUNT = 10
+
+const SketchWithHTML: React.FC = () => {
+  const { paths } = useContext(sketchBookContext)
+  if (paths) {
+    return <div dangerouslySetInnerHTML={{ __html: paths }} />
+  } else {
+    return <div />
+  }
+}
 
 const SketchBook: React.FC = () => {
   const [page, setPage] = useState(0)
@@ -29,15 +39,10 @@ const SketchBook: React.FC = () => {
       pageNum++
       if (pageNum > 8) pageNum = 1
       pagesArray.push(
-        <Page key={i + 1} number={i + 1}>
-          {i === 2 && global?.localStorage?.getItem('svg-test') && (
-            <div
-              className={styles.pageRenderContainer}
-              dangerouslySetInnerHTML={{
-                __html: global.localStorage.getItem('svg-test') || '',
-              }}
-            ></div>
-          )}
+        <Page number={i + 1} key={i + 1}>
+          <SketchBookProvider page={i + 1}>
+            <SketchWithHTML />
+          </SketchBookProvider>
         </Page>,
       )
     }
@@ -117,21 +122,7 @@ const SketchBook: React.FC = () => {
             >
               <FaChevronLeft />
             </Button>
-            {page < 1 || page > totalPage ? (
-              <LinkButton className="opacity-35 mx-5" href="#">
-                {page === 0 ? 'Front Cover' : `Back Cover`}
-              </LinkButton>
-            ) : (
-              <div className="flex justify-center mx-5">
-                <LinkButton href="sketch-book-playground">
-                  {translations('cta')} {page}
-                </LinkButton>
-                &nbsp;
-                <LinkButton href="sketch-book-playground">
-                  {translations('cta')} {page + 1}
-                </LinkButton>
-              </div>
-            )}
+
             <Button
               outline={page > totalPage}
               onClick={nextButtonClick}
@@ -140,6 +131,23 @@ const SketchBook: React.FC = () => {
             >
               <FaChevronRight />
             </Button>
+          </div>
+          <div className="col-md-6 flex justify-center items-center py-10">
+            {page < 1 || page > totalPage ? (
+              <LinkButton className="opacity-35 mx-5" href="#">
+                {page === 0 ? 'Front Cover' : `Back Cover`}
+              </LinkButton>
+            ) : (
+              <div className="flex justify-center mx-5">
+                <LinkButton href={`sketch-book-vol-1/${page}`}>
+                  {translations('cta')} {page}
+                </LinkButton>
+                &nbsp;
+                <LinkButton href={`sketch-book-vol-1/${page + 1}`}>
+                  {translations('cta')} {page + 1}
+                </LinkButton>
+              </div>
+            )}
           </div>
         </div>
       </div>
