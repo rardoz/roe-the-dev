@@ -30,7 +30,7 @@ const PageLockSchema = new Schema<PageLockDocument>(
     createdAt: {
       type: Date,
       default: Date.now,
-      expires: 86400, // 24 hours in seconds
+      expires: 3600, // 1 hour in seconds
     },
   },
   {
