@@ -12,3 +12,9 @@
     padding: 20px 10px;
   }
 }
+
+/* stylelint-disable-next-line selector-class-pattern */
+.pageRenderContainer svg {
+  width: 100%;
+  height: auto;
+}

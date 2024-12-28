@@ -6,13 +6,15 @@ import Page from './page'
 import PageCover from './page-cover'
 import { Button } from 'flowbite-react'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
-const PAGE_COUNT = 10
+import LinkButton from '../link-button'
+import { useTranslations } from 'next-intl'
+import SketchBookProvider, { SketchWithHTML, PAGE_COUNT } from './context'
 
 const SketchBook: React.FC = () => {
   const [page, setPage] = useState(0)
   const [totalPage, setTotalPage] = useState(0)
   const [pages, setPages] = useState<React.ReactNode[]>([])
-
+  const translations = useTranslations('SketchBook')
   const flipBookRef = useRef<any>(null)
 
   useEffect(() => {
@@ -27,8 +29,10 @@ const SketchBook: React.FC = () => {
       pageNum++
       if (pageNum > 8) pageNum = 1
       pagesArray.push(
-        <Page key={i + 1} image={`${pageNum}.jpg`} number={i + 1}>
-          {''}
+        <Page number={i + 1} key={i + 1}>
+          <SketchBookProvider page={i + 1}>
+            <SketchWithHTML />
+          </SketchBookProvider>
         </Page>,
       )
     }
@@ -108,10 +112,7 @@ const SketchBook: React.FC = () => {
             >
               <FaChevronLeft />
             </Button>
-            <div className="mx-3 text-sm">
-              <span>{page < totalPage ? page : totalPage}</span> of{' '}
-              <span>{totalPage}</span>
-            </div>
+
             <Button
               outline={page > totalPage}
               onClick={nextButtonClick}
@@ -120,6 +121,23 @@ const SketchBook: React.FC = () => {
             >
               <FaChevronRight />
             </Button>
+          </div>
+          <div className="col-md-6 flex justify-center items-center py-10">
+            {page < 1 || page > totalPage ? (
+              <LinkButton className="opacity-35 mx-5" href="#">
+                {page === 0 ? 'Front Cover' : `Back Cover`}
+              </LinkButton>
+            ) : (
+              <div className="flex justify-center mx-5">
+                <LinkButton href={`sketch-book/page-number/${page}`}>
+                  {translations('cta')} {page}
+                </LinkButton>
+                &nbsp;
+                <LinkButton href={`sketch-book/page-number/${page + 1}`}>
+                  {translations('cta')} {page + 1}
+                </LinkButton>
+              </div>
+            )}
           </div>
         </div>
       </div>

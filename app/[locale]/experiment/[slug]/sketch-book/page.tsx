@@ -2,7 +2,7 @@ import DefaultLayout from '../../../../_components/layout'
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
 import config from '../../../../../messages/config'
-import SketchBookPlayground from '../../../../_components/sketch-book-playground'
+import SketchBookLandingPage from '../../../../_components/sketch-book-landing-page'
 
 type Props = {
   params: { locale?: string; slug: string }
@@ -18,16 +18,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${messages('title')}`,
     description: messages('description'),
     alternates: {
-      canonical: `/experiment/${params.slug}/sketch-book-vol-1-playground`,
+      canonical: `/experiment/${params.slug}/sketch-book`,
       languages: Object.fromEntries(
         config.locales.map((cur) => [
           cur,
-          `/${cur}/experiment/${params.slug}/sketch-book-vol-1-playground`,
+          `/${cur}/experiment/${params.slug}/sketch-book`,
         ]),
       ),
     },
     openGraph: {
-      url: `/experiment/${params.slug}/sketch-book-vol-1-playground`,
+      url: `/experiment/${params.slug}/sketch-book`,
     },
     keywords: messages('keywords'),
   }
@@ -44,7 +44,7 @@ export default async function SketchBookVol1Playground(props: Props) {
         navForcedInView
       >
         <div className="w-full h-full overflow-hidden py-10">
-          <SketchBookPlayground locale={locale} />
+          <SketchBookLandingPage locale={locale} />
         </div>
       </DefaultLayout>
     </>
