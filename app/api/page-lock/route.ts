@@ -63,6 +63,18 @@ export async function POST(req: Request) {
     const data = await req.json()
     if (data.page_number) {
       await connectDB()
+      const existingLock = await PageLock.find().populate({
+        path: 'sketch_doc', // Populate the 'sketch_doc' field
+        match: { page_number: data.page_number }, // Match by page_number in the populated Sketch document
+      })
+
+      if (
+        existingLock?.filter((lock) => {
+          //console.log('roe::', lock, lock.sketch_doc, lock.sketch_doc?._id)
+          return lock.sketch_doc?._id
+        }).length
+      )
+        throw new Error('Lock already exists!')
       const code = generateCode()
 
       const newSketch = await Sketch.create({
@@ -87,7 +99,6 @@ export async function POST(req: Request) {
       throw Error('A page number is required')
     }
   } catch (e: any) {
-    console.log(e)
     return Response.json({ success: false, message: e.message })
   }
 }
