@@ -5,6 +5,9 @@ import 'js-draw/styles'
 import './style.css'
 import { useRouter } from 'next/navigation'
 import { sketchBookContext } from '../../../sketch-book/context'
+import { makeEdgeToolbar } from 'js-draw'
+import CustomInsertImageWidget from './CustomInsertImageWidget'
+import { MaterialIconProvider } from '@js-draw/material-icons'
 
 const JsDraw: React.FC = () => {
   const pageRef = useRef<HTMLDivElement>(null)
@@ -32,11 +35,32 @@ const JsDraw: React.FC = () => {
     if (pageRef.current && sketchData.paths) {
       editorRef.current = new jsdraw.Editor(pageRef.current, {
         wheelEventsEnabled: 'only-if-focused',
+        iconProvider: new MaterialIconProvider(),
       })
-      const toolbar = editorRef.current.addToolbar()
 
-      toolbar.addActionButton('Save', onSave)
-      toolbar.addActionButton('Unlock', onUnlock)
+      const toolbar = makeEdgeToolbar(editorRef.current)
+
+      const imgWidget = new CustomInsertImageWidget(editorRef.current)
+      toolbar.addActionButton(
+        {
+          icon: editorRef.current.icons.makeSaveIcon(),
+          label: 'Save',
+        },
+        onSave,
+      )
+      toolbar.addActionButton(
+        {
+          icon: editorRef.current.icons.makeCloseIcon(),
+          label: 'Close',
+        },
+        onUnlock,
+      )
+
+      toolbar.addDefaultActionButtons()
+      toolbar.addWidgetsForPrimaryTools(() => {
+        return true
+      })
+      toolbar.addWidget(imgWidget)
 
       editorRef.current.loadFromSVG(sketchData.paths)
       return () => {
