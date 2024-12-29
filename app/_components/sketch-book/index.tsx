@@ -112,7 +112,7 @@ const SketchBook: React.FC = () => {
             >
               <FaChevronLeft />
             </Button>
-
+            &nbsp;&nbsp;&nbsp;
             <Button
               outline={page > totalPage}
               onClick={nextButtonClick}
@@ -122,7 +122,7 @@ const SketchBook: React.FC = () => {
               <FaChevronRight />
             </Button>
           </div>
-          <div className="col-md-6 flex justify-center items-center py-10">
+          <div className="col-md-6 flex justify-center items-center pb-10">
             {page < 1 || page > totalPage ? (
               <LinkButton className="opacity-35 mx-5" href="#">
                 {page === 0 ? 'Front Cover' : `Back Cover`}
@@ -132,7 +132,7 @@ const SketchBook: React.FC = () => {
                 <LinkButton href={`sketch-book/page-number/${page}`}>
                   {translations('cta')} {page}
                 </LinkButton>
-                &nbsp;
+                &nbsp;&nbsp;&nbsp;
                 <LinkButton href={`sketch-book/page-number/${page + 1}`}>
                   {translations('cta')} {page + 1}
                 </LinkButton>

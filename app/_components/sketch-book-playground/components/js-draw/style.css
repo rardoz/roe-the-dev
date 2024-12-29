@@ -5,3 +5,9 @@
   width: 100vw;
   height: 100vh;
 }
+
+@media screen and (width >= 800px) {
+  .toolbar-edge-toolbar > div.toolbar-element.toolbar-tool-row {
+    padding-right: 192px;
+  }
+}

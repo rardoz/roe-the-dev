@@ -13,16 +13,11 @@ const SketchBookLandingPage: React.FC<{ locale: string }> = ({ locale }) => {
       <SketchBook />
 
       <div className="flex justify-center  px-4">
-        <p className="max-w-lg text-center text-xs mt-5">
+        <p className="max-w-lg text-center text-xs mb-5">
           {translations('cta-notice')}
         </p>
       </div>
 
-      <div className="flex justify-center  px-4">
-        <p className="max-w-lg text-center text-xs my-5">
-          <strong>{translations('eta')}</strong> {0} {translations('minutes')}
-        </p>
-      </div>
       <div className="max-w-4xl mx-auto px-4">
         <HR />
         <h2 className="text-2xl -mt-4 underline">

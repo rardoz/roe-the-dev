@@ -12,7 +12,7 @@ export const sketchBookContext = createContext({ page: 0 } as any)
 import { lockPageContext } from '../lock/context'
 
 const { Provider } = sketchBookContext
-const imgBg = `<image class="js-draw-image-background" href="/paper.png" width="1821" height="2725" aria-label="" style="transform: matrix(0.2475, 0, 0, 0.22, 0, -0.464309);"></image>`
+const imgBg = `<image class="js-draw-image-background" href="/paper.png" width="450" height="600" aria-label=""></image>`
 
 const getPageTemplate = (normalizedPaths: string, includePageBg: boolean) =>
   `
@@ -23,6 +23,7 @@ const getPageTemplate = (normalizedPaths: string, includePageBg: boolean) =>
         version="1.1"
         baseProfile="full"
         xmlns="http://www.w3.org/2000/svg"
+        class="js-page-template-svg"
     >
         <style id="js-draw-style-sheet">
             path{

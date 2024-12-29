@@ -23,6 +23,7 @@
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.2",
     "@contentful/rich-text-react-renderer": "^15.22.11",
+    "@js-draw/material-icons": "^1.25.0",
     "@react-spring/konva": "^9.7.5",
     "@react-spring/web": "^9.7.5",
     "@types/bcryptjs": "^2.4.6",
