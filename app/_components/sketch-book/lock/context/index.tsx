@@ -19,10 +19,12 @@ const LockPageProvider: React.FC<
     lockedPaths: string
     isLoading: boolean
     pageNumber?: number
+    endTime?: Date
   }>({
     lockedPaths: '',
     isLoading: false,
     pageNumber: undefined,
+    endTime: undefined,
   })
 
   const getLockedPage = () => {
@@ -36,6 +38,7 @@ const LockPageProvider: React.FC<
           isLoading: false,
           lockedPaths: data?.lock?.sketch_doc?.sketch_paths,
           pageNumber: data?.lock?.sketch_doc?.page_number,
+          endTime: data?.lock?.endTime,
         })
       })
       .catch((e) => {
@@ -51,7 +54,6 @@ const LockPageProvider: React.FC<
     getLockedPage()
   }, [])
 
-  console.log('pageNumber', state.pageNumber)
   return (
     <Provider value={{ ...state, lockId, code }}>
       {!state.isLoading && children}

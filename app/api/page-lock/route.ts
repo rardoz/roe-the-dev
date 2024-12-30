@@ -122,7 +122,7 @@ export async function POST(req: Request): Promise<Response> {
     const lock = new PageLock({
       code,
       startTime: now,
-      endTime: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+      endTime: new Date(now.getTime() + 60 * 60 * 1000), // 60 minutes in milliseconds,
       sketch_doc: newSketch,
     })
 

@@ -77,7 +77,7 @@ const SketchBookProvider: React.FC<
       })
         .then((response) => response.json())
         .then((data) => {
-          if (!data.success) throw new Error(data.error)
+          if (data.success === false) throw new Error(data.message)
         })
         .catch((error) => {
           console.error('Failed to save page:', error)

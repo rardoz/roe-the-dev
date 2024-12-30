@@ -6,8 +6,20 @@
   height: 100vh;
 }
 
-@media screen and (width >= 800px) {
+@media screen and (width >= 865px) {
   .toolbar-edge-toolbar > div.toolbar-element.toolbar-tool-row {
-    padding-right: 192px;
+    padding-right: 440px;
+  }
+}
+
+@media screen and (width <= 865px) {
+  .toolbar-edge-toolbar {
+    flex-wrap: wrap !important;
+  }
+
+  .toolbar-edge-toolbar > .toolbar-action-row {
+    max-width: 100% !important;
+    flex-grow: auto !important;
+    flex-shrink: auto !important;
   }
 }
