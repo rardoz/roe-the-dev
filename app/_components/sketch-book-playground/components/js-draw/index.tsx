@@ -28,7 +28,7 @@ const JsDraw: React.FC = () => {
 
   const onUnlock = () => {
     onSave()
-    router.replace('sketch-book')
+    router.push(`/experiment/sketchbook-experiment/sketch-book`)
   }
 
   useEffect(() => {

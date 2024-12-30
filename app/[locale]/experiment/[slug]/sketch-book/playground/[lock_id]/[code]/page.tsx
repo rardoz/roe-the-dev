@@ -7,7 +7,6 @@ type Props = {
   params: {
     locale?: string
     slug: string
-    page_number: string
     lock_id: string
     code: string
   }

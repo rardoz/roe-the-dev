@@ -6,6 +6,8 @@ import Sketch from '../../../models/sketch'
  * /api/sketch:
  *   post:
  *     summary: Save a new sketch
+ *     tags:
+ *       - Sketch Book
  *     description: Creates a new sketch entry in the database
  *     requestBody:
  *       required: true

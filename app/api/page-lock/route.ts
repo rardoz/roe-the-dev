@@ -58,47 +58,214 @@ const generateCode = (): string => {
  *                   type: string
  *                   example: "A page number is required"
  */
-export async function POST(req: Request) {
+interface PostRequestBody {
+  page_number: number
+}
+
+interface PostSuccessResponse {
+  lock_id: string
+  code: string
+}
+
+interface PostErrorResponse {
+  success: false
+  message: string
+}
+
+interface PopulatedSketchDoc {
+  _id: string
+  page_number: number
+}
+
+interface PopulatedPageLock {
+  sketch_doc: PopulatedSketchDoc | null
+}
+
+export async function POST(req: Request): Promise<Response> {
   try {
-    const data = await req.json()
-    if (data.page_number) {
-      await connectDB()
-      const existingLock = await PageLock.find().populate({
-        path: 'sketch_doc', // Populate the 'sketch_doc' field
-        match: { page_number: data.page_number }, // Match by page_number in the populated Sketch document
-      })
+    const data = (await req.json()) as PostRequestBody
 
-      if (
-        existingLock?.filter((lock) => {
-          //console.log('roe::', lock, lock.sketch_doc, lock.sketch_doc?._id)
-          return lock.sketch_doc?._id
-        }).length
+    if (!data.page_number) {
+      return Response.json(
+        {
+          success: false,
+          message: 'A page number is required',
+        } as PostErrorResponse,
+        { status: 400 },
       )
-        throw new Error('Lock already exists!')
-      const code = generateCode()
-
-      const newSketch = await Sketch.create({
-        page_number: data.page_number,
-        path: ' ',
-        is_enabled: false,
-      })
-
-      const now = new Date()
-      const endTime = new Date(now.getTime() + 24 * 60 * 60 * 1000)
-
-      const lock = new PageLock({
-        code,
-        startTime: now,
-        endTime: endTime,
-        sketch_doc: newSketch,
-      })
-
-      const savedLock = await lock.save()
-      return Response.json({ lock_id: savedLock._id, code })
-    } else {
-      throw Error('A page number is required')
     }
+
+    await connectDB()
+    const existingLock = await PageLock.find<PopulatedPageLock>().populate({
+      path: 'sketch_doc',
+      match: { page_number: data.page_number },
+    })
+
+    if (existingLock?.filter((lock) => lock.sketch_doc?._id).length) {
+      return Response.json(
+        {
+          success: false,
+          message: 'Lock already exists!',
+        } as PostErrorResponse,
+        { status: 400 },
+      )
+    }
+
+    const code = generateCode()
+    const newSketch = await Sketch.create({
+      page_number: data.page_number,
+      path: ' ',
+      is_enabled: false,
+    })
+
+    const now = new Date()
+    const lock = new PageLock({
+      code,
+      startTime: now,
+      endTime: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+      sketch_doc: newSketch,
+    })
+
+    const savedLock = await lock.save()
+
+    return Response.json({
+      lock_id: savedLock._id,
+      code: savedLock.code,
+    } as PostSuccessResponse)
   } catch (e: any) {
-    return Response.json({ success: false, message: e.message })
+    return Response.json(
+      {
+        success: false,
+        message: e.message,
+      } as PostErrorResponse,
+      { status: 500 },
+    )
   }
+}
+/**
+ * @swagger
+ * /api/page-lock:
+ *   get:
+ *     tags:
+ *       - Page Locks
+ *     summary: Get lock status for multiple pages
+ *     description: Returns lock status for requested page numbers
+ *     parameters:
+ *       - in: query
+ *         name: page_number
+ *         required: true
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: number
+ *         style: form
+ *         explode: true
+ *         description: Page numbers to check (can be multiple)
+ *         example: [1,2,3]
+ *     responses:
+ *       200:
+ *         description: Lock status retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 page_lock_status:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         example: "123abc"
+ *                       page_number:
+ *                         type: number
+ *                         example: 1
+ *                       locked:
+ *                         type: boolean
+ *                         example: true
+ *                       end_time:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2024-12-29T03:44:42.626Z"
+ *       400:
+ *         description: Bad request - missing or invalid page numbers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Page numbers are required!"
+ */
+interface PageLockStatus {
+  page_number: number
+  locked: boolean
+  end_time: Date | undefined
+}
+
+interface PageLockStatusResponse {
+  page_lock_status: PageLockStatus[]
+}
+
+interface PopulatedPageLockLight {
+  _id: string
+  endTime: Date
+  sketch_doc: {
+    page_number: number
+  } | null
+}
+
+export async function GET(req: Request): Promise<Response> {
+  const { searchParams } = new URL(req.url)
+  const pageNumbers = searchParams.getAll('page_number')
+
+  if (!pageNumbers.length) {
+    return Response.json(
+      { success: false, message: 'Page numbers are required!' },
+      { status: 400 },
+    )
+  }
+
+  const cleanPageNumbers = pageNumbers
+    .map((num) => parseInt(num, 10))
+    .filter((num) => num > 0)
+
+  if (cleanPageNumbers.length !== pageNumbers.length) {
+    return Response.json(
+      { success: false, message: 'Invalid page numbers set!' },
+      { status: 400 },
+    )
+  }
+
+  await connectDB()
+  const existingLocks = await PageLock.find<PopulatedPageLockLight>()
+    .select('endTime sketch_doc')
+    .populate({
+      path: 'sketch_doc',
+      select: 'page_number',
+      match: { page_number: { $in: cleanPageNumbers } },
+    })
+
+  const response: PageLockStatusResponse = {
+    page_lock_status: cleanPageNumbers.map((page_number) => {
+      const found = existingLocks.find(
+        (lock) => lock.sketch_doc?.page_number === page_number,
+      )
+      const endTime = found?.endTime
+      const id = found?._id
+      return {
+        page_number,
+        locked: !!endTime,
+        end_time: endTime,
+        id,
+      }
+    }),
+  }
+
+  return Response.json(response)
 }

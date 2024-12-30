@@ -120,15 +120,111 @@ export async function GET(
     else {
       await connectDB()
       const lock = await PageLock.findById(lock_id)
-      if (lock.code == code) {
+      if (lock?.code == code) {
         await lock.populate('sketch_doc')
         return Response.json({ lock: lock })
       } else {
-        return Response.json({ success: false, message: 'Invalid code!' })
+        return Response.json(
+          { success: false, message: 'Invalid code!' },
+          { status: 401 },
+        )
       }
     }
   } catch (e: any) {
     console.log(e)
-    return Response.json({ success: false, message: e.message })
+    return Response.json(
+      { success: false, message: e.message },
+      { status: 400 },
+    )
+  }
+}
+
+/**
+ * @swagger
+ * /api/page-lock/{lock_id}/{code}:
+ *   put:
+ *     tags:
+ *       - Page Locks
+ *     summary: Validate lock code
+ *     description: Validates if the provided code matches the lock
+ *     parameters:
+ *       - in: path
+ *         name: lock_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the page lock
+ *         example: "676f659d749142a2f379bc9f"
+ *       - in: path
+ *         name: code
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^\d{4}$'
+ *         description: 4-digit lock code
+ *         example: "2085"
+ *     responses:
+ *       200:
+ *         description: Code validation successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       401:
+ *         description: Invalid code provided
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Invalid code!"
+ *       400:
+ *         description: Bad request - missing or invalid lock_id
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Lock ID is required!"
+ */
+export async function PUT(
+  req: Request,
+  { params }: { params: Promise<{ lock_id: string; code: string }> },
+) {
+  try {
+    const { lock_id, code } = await params
+    if (!lock_id) throw new Error('Lock ID is required!')
+    else {
+      await connectDB()
+      const lock = await PageLock.findById(lock_id).select('code')
+      if (lock?.code == code) {
+        return Response.json({ success: true })
+      } else {
+        return Response.json(
+          { success: false, message: 'Invalid code!' },
+          { status: 401 },
+        )
+      }
+    }
+  } catch (e: any) {
+    console.log(e)
+    return Response.json(
+      { success: false, message: e.message },
+      { status: 400 },
+    )
   }
 }

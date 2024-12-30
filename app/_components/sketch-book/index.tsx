@@ -6,15 +6,14 @@ import Page from './page'
 import PageCover from './page-cover'
 import { Button } from 'flowbite-react'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
-import LinkButton from '../link-button'
-import { useTranslations } from 'next-intl'
 import SketchBookProvider, { SketchWithHTML, PAGE_COUNT } from './context'
+import LockIndicatorProvider from './lock/context/indicators'
+import Pagination from './pagination'
 
 const SketchBook: React.FC = () => {
   const [page, setPage] = useState(0)
   const [totalPage, setTotalPage] = useState(0)
   const [pages, setPages] = useState<React.ReactNode[]>([])
-  const translations = useTranslations('SketchBook')
   const flipBookRef = useRef<any>(null)
 
   useEffect(() => {
@@ -122,23 +121,11 @@ const SketchBook: React.FC = () => {
               <FaChevronRight />
             </Button>
           </div>
-          <div className="col-md-6 flex justify-center items-center pb-10">
-            {page < 1 || page > totalPage ? (
-              <LinkButton className="opacity-35 mx-5" href="#">
-                {page === 0 ? 'Front Cover' : `Back Cover`}
-              </LinkButton>
-            ) : (
-              <div className="flex justify-center mx-5">
-                <LinkButton href={`sketch-book/page-number/${page}`}>
-                  {translations('cta')} {page}
-                </LinkButton>
-                &nbsp;&nbsp;&nbsp;
-                <LinkButton href={`sketch-book/page-number/${page + 1}`}>
-                  {translations('cta')} {page + 1}
-                </LinkButton>
-              </div>
-            )}
-          </div>
+          <LockIndicatorProvider
+            pageNumbers={page < 1 || page > totalPage ? [] : [page, page + 1]}
+          >
+            <Pagination page={page} totalPage={totalPage} />
+          </LockIndicatorProvider>
         </div>
       </div>
     </div>

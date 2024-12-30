@@ -6,6 +6,8 @@ import Sketch from '../../../../models/sketch'
  * /api/sketch/{page_number}:
  *   get:
  *     summary: Retrieve sketches by page number
+ *     tags:
+ *       - Sketch Book
  *     description: Gets all sketches for a specific page number
  *     parameters:
  *       - in: path

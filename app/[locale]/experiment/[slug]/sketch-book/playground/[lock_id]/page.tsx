@@ -1,15 +1,15 @@
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
-import config from '../../../../../../../../messages/config'
-import SketchBookPlayground from '../../../../../../../_components/sketch-book-playground'
+import config from '../../../../../../../messages/config'
+import DefaultLayout from '../../../../../../_components/layout'
+import SectionTitle from '../../../../../../_components/section-title'
+import CodeForm from '../../../../../../_components/sketch-book/code-form'
 
 type Props = {
   params: {
     locale?: string
     slug: string
-    page_number: string
     lock_id: string
-    code: string
   }
 }
 
@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const messages = await getTranslations('SketchBook')
 
   return {
-    title: `${messages('title')} Playground`,
+    title: `${messages('title')} Lock Code`,
     description: messages('description'),
   }
 }
@@ -29,12 +29,17 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Playground(props: Props) {
   const locale = props.params?.locale || 'en-US'
   const lock_id = props.params?.lock_id
-  const code = props.params?.code
   unstable_setRequestLocale(locale)
 
   return (
-    <div className="w-full h-full overflow-hidden">
-      <SketchBookPlayground locale={locale} code={code} lockId={lock_id} />
-    </div>
+    <DefaultLayout navForcedInView>
+      <div className="w-full min-h-screen overflow-hidden my-16 py-10 flex items-center flex-col">
+        <div className="mb-6 w-3/4 mx-auto">
+          <SectionTitle>Skechbook Locked!</SectionTitle>
+
+          <CodeForm lock_id={lock_id} />
+        </div>
+      </div>
+    </DefaultLayout>
   )
 }
