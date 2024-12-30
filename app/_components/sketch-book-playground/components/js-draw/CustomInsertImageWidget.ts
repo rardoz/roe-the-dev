@@ -240,39 +240,42 @@ export default class CustomInsertImageWidget extends BaseWidget {
     return mb * 1024 * 1024 // Converts MB to bytes
   }
 
-  private calculateResizeFactor(imageFileSizeBytes: number, maxSizeMB = 1) {
-    const maxSizeBytes = maxSizeMB * 1024 * 1024 // Convert max size to bytes (1 MB = 1024 * 1024 bytes)
+  private calculateResizeFactor(
+    imageFileSizeBytes: number,
+    maxSizeMB = 1,
+  ): number {
+    const maxSizeBytes = this.mbToBytes(maxSizeMB)
 
-    // If the image is already smaller than the target size, no resizing is needed
     if (imageFileSizeBytes <= maxSizeBytes) {
-      return 1 // No resizing needed
+      return 1
     }
 
-    // Calculate the resize factor to achieve the target size
-    let resizeFactor = Math.sqrt(maxSizeBytes / imageFileSizeBytes)
+    // More aggressive ratio with 0.8 safety margin
+    const ratio = Math.sqrt(maxSizeBytes / imageFileSizeBytes) * 0.875
 
-    // Ensure the resize factor is less than or equal to 1
-    return resizeFactor < 1 ? resizeFactor : 1
+    // Ensure ratio is between 0.1 and 1
+    return Math.min(Math.max(ratio, 0.1), 1)
   }
 
-  private updateImageSizeDisplay() {
+  private updateImageSizeDisplay(resizeForced?: boolean | false) {
     const currentImage = this.imagesPreview.visibleItem.get()
     const imageData = currentImage?.getBase64Url() ?? ''
 
     const { size, units } = bytesToSizeString(imageData.length)
 
-    //here
-    if (units === 'MiB' && size > 1) {
-      currentImage?.decreaseSize(
-        this.calculateResizeFactor(this.mbToBytes(size)),
-      )
-      const infoMessage = document.createElement('em')
+    // Can only resize automagically once!
+    if (units === 'MiB' && size > 1 && !resizeForced) {
+      const resizeFactor = this.calculateResizeFactor(this.mbToBytes(size))
+      currentImage?.decreaseSize(resizeFactor)
+      const infoMessage =
+        document.getElementById('js-draw-custom-info-message') ||
+        document.createElement('em')
       infoMessage.id = 'js-draw-custom-info-message'
       infoMessage.textContent =
         'Notice: The image was bigger than 1mb and was automatically compressed!'
 
       this.statusView.after(infoMessage)
-      this.updateImageSizeDisplay()
+      this.updateImageSizeDisplay(true)
       return
     }
 
