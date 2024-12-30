@@ -175,6 +175,9 @@ export async function POST(req: Request): Promise<Response> {
  *                   items:
  *                     type: object
  *                     properties:
+ *                       id:
+ *                         type: string
+ *                         example: "123abc"
  *                       page_number:
  *                         type: number
  *                         example: 1
@@ -210,6 +213,7 @@ interface PageLockStatusResponse {
 }
 
 interface PopulatedPageLockLight {
+  _id: string
   endTime: Date
   sketch_doc: {
     page_number: number
@@ -249,13 +253,16 @@ export async function GET(req: Request): Promise<Response> {
 
   const response: PageLockStatusResponse = {
     page_lock_status: cleanPageNumbers.map((page_number) => {
-      const endTime = existingLocks.find(
+      const found = existingLocks.find(
         (lock) => lock.sketch_doc?.page_number === page_number,
-      )?.endTime
+      )
+      const endTime = found?.endTime
+      const id = found?._id
       return {
         page_number,
         locked: !!endTime,
         end_time: endTime,
+        id,
       }
     }),
   }
