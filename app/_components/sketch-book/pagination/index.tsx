@@ -28,7 +28,7 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPage }) => {
                 key={lock.page_number}
                 href={
                   lock.locked
-                    ? `sketch-book/code-gate/${lock.id}`
+                    ? `sketch-book/playground/${lock.id}`
                     : `sketch-book/page-number/${lock.page_number}`
                 }
               >
