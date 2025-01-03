@@ -1,10 +1,18 @@
-import React from 'react'
+'use client'
+import React, { useEffect } from 'react'
 import SectionTitle from '../../section-title'
 import MiniPagePreview from '../../sketch-book-playground/components/mini-page-preview'
-import SketchBookProvider from '../context'
+import SketchBookProvider, { PAGE_COUNT } from '../context'
 import ConfirmBtn from './confirm-btn'
-
+import { useRouter } from 'next/navigation'
 const SketchBookLockPage: React.FC<{ page: number }> = ({ page }) => {
+  const router = useRouter()
+  useEffect(() => {
+    if (page > PAGE_COUNT || page < 1) {
+      router.replace('/error')
+    }
+  }, [page])
+
   return (
     <React.Suspense fallback={'loading...'}>
       <SketchBookProvider page={page} includePageBg>

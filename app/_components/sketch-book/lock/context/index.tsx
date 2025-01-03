@@ -1,4 +1,5 @@
 'use client'
+import { useRouter } from 'next/navigation'
 import React, {
   createContext,
   PropsWithChildren,
@@ -51,6 +52,7 @@ const LockPageProvider: React.FC<PropsWithChildren<LockPageProviderProps>> = ({
   lockId,
   code,
 }) => {
+  const router = useRouter()
   const [state, setState] = useState<{
     lockedPaths: string
     isLoading: boolean
@@ -69,6 +71,9 @@ const LockPageProvider: React.FC<PropsWithChildren<LockPageProviderProps>> = ({
     fetch(`/api/page-lock/${lockId}/${code}`)
       .then((response) => response.json())
       .then((data: SaveLockedPageResponse) => {
+        if (data.success === false) {
+          throw new Error(data.message)
+        }
         setState({
           ...state,
           isLoading: false,
@@ -83,6 +88,7 @@ const LockPageProvider: React.FC<PropsWithChildren<LockPageProviderProps>> = ({
           ...state,
           isLoading: false,
         })
+        router.replace('/error')
       })
   }
 
@@ -102,7 +108,7 @@ const LockPageProvider: React.FC<PropsWithChildren<LockPageProviderProps>> = ({
         if (data.success === false) {
           throw new Error(data.message)
         }
-        alert('Page saved successfully')
+        alert('Page saved successfully!')
       })
       .catch((e) => {
         console.error(e)
