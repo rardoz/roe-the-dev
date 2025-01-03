@@ -112,7 +112,7 @@ const LockPageProvider: React.FC<PropsWithChildren<LockPageProviderProps>> = ({
       })
       .catch((e) => {
         console.error(e)
-        alert('There was an error saving your page. Please try again.')
+        alert('There was an error saving your page.')
       })
   }
 
