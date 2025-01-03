@@ -6,15 +6,51 @@ import React, {
   useState,
 } from 'react'
 
-export const lockPageContext = createContext({
+interface LockPageState {
+  isLoading: boolean
+  paths?: string
+  pageNumber?: number
+  endTime?: Date
+}
+
+interface SaveLockedPageResponse {
+  success: boolean
+  message?: string
+  lock?: {
+    sketch_doc?: {
+      sketch_paths?: string
+      page_number?: number
+    }
+    endTime?: Date
+  }
+}
+
+interface LockPageContextValue extends LockPageState {
+  lockId?: string
+  code?: string
+  lockedPaths?: string
+  // eslint-disable-next-line no-unused-vars
+  saveLockedPage: (paths: string) => void
+}
+
+interface LockPageProviderProps {
+  children: React.ReactNode
+  lockId?: string
+  code?: string
+}
+
+export const lockPageContext = createContext<LockPageContextValue>({
   lockedPaths: '',
   isLoading: false,
-} as any)
+  saveLockedPage: () => {},
+})
 const { Provider } = lockPageContext
 
-const LockPageProvider: React.FC<
-  PropsWithChildren<{ lockId: string; code: string }>
-> = ({ children, lockId, code }) => {
+const LockPageProvider: React.FC<PropsWithChildren<LockPageProviderProps>> = ({
+  children,
+  lockId,
+  code,
+}) => {
   const [state, setState] = useState<{
     lockedPaths: string
     isLoading: boolean
@@ -32,11 +68,11 @@ const LockPageProvider: React.FC<
     setState({ ...state, isLoading: true })
     fetch(`/api/page-lock/${lockId}/${code}`)
       .then((response) => response.json())
-      .then((data: any) => {
+      .then((data: SaveLockedPageResponse) => {
         setState({
           ...state,
           isLoading: false,
-          lockedPaths: data?.lock?.sketch_doc?.sketch_paths,
+          lockedPaths: data?.lock?.sketch_doc?.sketch_paths || '',
           pageNumber: data?.lock?.sketch_doc?.page_number,
           endTime: data?.lock?.endTime,
         })
@@ -54,8 +90,28 @@ const LockPageProvider: React.FC<
     getLockedPage()
   }, [])
 
+  //do not trigger a state change here... we dont want to accidently trigger a re-render
+  const saveLockedPage = (allLockedPagePaths = '') => {
+    if (state.isLoading) return
+    fetch(`/api/page-lock/${lockId}/${code}`, {
+      method: 'POST',
+      body: JSON.stringify({ paths: allLockedPagePaths }),
+    })
+      .then((response) => response.json())
+      .then((data: any) => {
+        if (data.success === false) {
+          throw new Error(data.message)
+        }
+        alert('Page saved successfully')
+      })
+      .catch((e) => {
+        console.error(e)
+        alert('There was an error saving your page. Please try again.')
+      })
+  }
+
   return (
-    <Provider value={{ ...state, lockId, code }}>
+    <Provider value={{ ...state, lockId, code, saveLockedPage }}>
       {!state.isLoading && children}
     </Provider>
   )

@@ -1,3 +1,4 @@
+import { NextRequest } from 'next/server'
 import { connectDB } from '../../../../../lib/mongoose-db'
 import PageLock from '../../../../../models/page-lock'
 /**
@@ -220,6 +221,104 @@ export async function PUT(
         )
       }
     }
+  } catch (e: any) {
+    console.log(e)
+    return Response.json(
+      { success: false, message: e.message },
+      { status: 400 },
+    )
+  }
+}
+
+/**
+ * @swagger
+ * /api/page-lock/{lock_id}/{code}:
+ *   post:
+ *     tags:
+ *       - Page Locks
+ *     summary: Save sketch paths for a locked page
+ *     description: Updates the sketch paths for a locked page after validating the lock code
+ *     parameters:
+ *       - in: path
+ *         name: lock_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the page lock
+ *         example: "676f659d749142a2f379bc9f"
+ *       - in: path
+ *         name: code
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^\d{4}$'
+ *         description: 4-digit lock code
+ *         example: "2085"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               sketch_paths:
+ *                 type: string
+ *                 description: The new sketch paths to save
+ *                 example: "<svg>...</svg>"
+ *     responses:
+ *       200:
+ *         description: Sketch paths saved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Bad request - missing or invalid parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Lock ID is required!"
+ *       401:
+ *         description: Unauthorized - invalid code
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Invalid code!"
+ */
+export async function POST(
+  req: Request | NextRequest,
+  { params }: { params: Promise<{ lock_id: string; code: string }> },
+) {
+  const { lock_id, code } = await params
+  if (!lock_id) throw new Error('Lock ID is required!')
+  try {
+    await connectDB()
+    const lock = await PageLock.findById(lock_id)
+    if (lock?.code != code) throw new Error('Invalid code!')
+    await lock.populate('sketch_doc')
+    const body = await req.json()
+    if (!body.paths) throw new Error('Sketch paths are required!')
+    lock.sketch_doc.sketch_paths = body.paths
+    await lock.sketch_doc.save()
+    return Response.json({ success: true })
   } catch (e: any) {
     console.log(e)
     return Response.json(

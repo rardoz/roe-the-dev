@@ -23,3 +23,8 @@
     flex-shrink: auto !important;
   }
 }
+
+/* stylelint-disable-next-line selector-class-pattern */
+.toolbar-toolContainer.toolbar-toolButtonContainer.toolbar-internalWidgetId--eraser-tool-widget {
+  display: none;
+}
