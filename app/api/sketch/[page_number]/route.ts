@@ -5,10 +5,10 @@ import Sketch from '../../../../models/sketch'
  * @swagger
  * /api/sketch/{page_number}:
  *   get:
- *     summary: Retrieve sketches by page number
+ *     summary: Retrieve a sketch by page number
  *     tags:
  *       - Sketch Book
- *     description: Gets all sketches for a specific page number
+ *     description: Gets the currently enabled sketch for a specific page number
  *     parameters:
  *       - in: path
  *         name: page_number
@@ -18,20 +18,18 @@ import Sketch from '../../../../models/sketch'
  *         description: The page number to fetch sketches for
  *     responses:
  *       200:
- *         description: List of sketches
+ *         description: 1 sketch document
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   sketch_paths:
- *                     type: string
- *                   page_number:
- *                     type: string
- *                   is_enabled:
- *                     type: boolean
+ *               type: object
+ *               properties:
+ *                 sketch_paths:
+ *                   type: string
+ *                 page_number:
+ *                   type: string
+ *                 is_enabled:
+ *                   type: boolean
  *       500:
  *         description: Server error while fetching sketches
  */
@@ -44,15 +42,14 @@ export async function GET(
     if (!page_number) throw new Error('Page number is required')
     else {
       await connectDB()
-      const pages = await Sketch.find({ page_number })
-      return Response.json(pages)
+      const page = await Sketch.findOne({ page_number, is_enabled: true })
+      return Response.json(page)
     }
     // const page_number = req.query.page_number
     // await connectDB()
     // const pages = await Sketch.find({ page_number })
     // return Response.json(pages)
   } catch (e: any) {
-    console.log(e)
     return Response.json({ success: false, message: e.message })
   }
 }
@@ -98,8 +95,8 @@ export async function GET(
  */
 export async function POST(req: Request | NextRequest) {
   try {
-    await connectDB()
     const body = await req.json()
+    await connectDB()
     const sketch = new Sketch({
       sketch_paths: body.sketch_paths,
       page_number: body.page_number,

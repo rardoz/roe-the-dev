@@ -12,31 +12,6 @@ export const sketchBookContext = createContext({ page: 0 } as any)
 import { lockPageContext } from '../lock/context'
 
 const { Provider } = sketchBookContext
-const imgBg = `<image class="js-draw-image-background" href="/paper.png" width="450" height="600" aria-label=""></image>`
-
-const getPageTemplate = (normalizedPaths: string, includePageBg: boolean) =>
-  `
-    <svg
-        viewBox="0 0 450 600"
-        width="450"
-        height="600"
-        version="1.1"
-        baseProfile="full"
-        xmlns="http://www.w3.org/2000/svg"
-        class="js-page-template-svg"
-    >
-        <style id="js-draw-style-sheet">
-            path{
-                stroke-linecap:round;
-                stroke-linejoin:round;
-            }
-            text{
-                white-space:pre;
-            }
-        </style>
-        ${includePageBg ? imgBg : ''}
-        ${normalizedPaths}
-    </svg>`
 
 const SketchBookProvider: React.FC<
   PropsWithChildren<{
@@ -45,7 +20,7 @@ const SketchBookProvider: React.FC<
     lockId?: string
     code?: string
   }>
-> = ({ children, page, includePageBg }) => {
+> = ({ children, page }) => {
   const [state, setState] = useState<{
     page?: number
     paths: string
@@ -60,7 +35,7 @@ const SketchBookProvider: React.FC<
   const lockedState = useContext(lockPageContext)
 
   const finalPage = lockedState?.pageNumber || page
-  //we need to keep an eye out for the id they are using and we are going to keep updating the single id insteead of having multipple
+  //todo kill save page in lou of save locked page
   const savePage = React.useCallback(
     (new_paths: string) => {
       setState((prev) => ({ ...prev, isLoading: true }))
@@ -94,17 +69,11 @@ const SketchBookProvider: React.FC<
       .then((response) => {
         return response.json()
       })
-      .then((data: SketchDocument[]) => {
+      .then((data: SketchDocument) => {
         setState((prevState) => ({
           ...prevState,
           isLoading: false,
-          paths: getPageTemplate(
-            data
-              .map(({ sketch_paths }) => sketch_paths)
-
-              .join('') + (lockedState.lockedPaths || ''),
-            includePageBg || false,
-          ),
+          paths: data?.sketch_paths || '',
         }))
       })
       .catch(() => {

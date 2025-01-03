@@ -1,6 +1,5 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import SketchBookProvider from '../sketch-book/context'
 import LockPageProvider from '../sketch-book/lock/context'
 const JsDraw = React.lazy(() => import('./components/js-draw'))
 //import { useTranslations } from 'next-intl'
@@ -20,9 +19,7 @@ const SketchBookPlayground: React.FC<{
     <div>
       <React.Suspense fallback={'loading...'}>
         <LockPageProvider lockId={lockId} code={code}>
-          <SketchBookProvider includePageBg>
-            {hydrationLoad && <JsDraw />}
-          </SketchBookProvider>
+          {hydrationLoad && <JsDraw />}
         </LockPageProvider>
       </React.Suspense>
     </div>

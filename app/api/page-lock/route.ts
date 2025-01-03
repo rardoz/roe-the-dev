@@ -81,6 +81,36 @@ interface PopulatedPageLock {
   sketch_doc: PopulatedSketchDoc | null
 }
 
+const imgBg = `<image class="js-draw-image-background" href="/paper.png" width="450" height="600" aria-label=""></image>`
+
+const getPageTemplate = (normalizedPaths: string, includePageBg: boolean) =>
+  `
+    <svg
+        viewBox="0 0 450 600"
+        width="450"
+        height="600"
+        version="1.1"
+        baseProfile="full"
+        xmlns="http://www.w3.org/2000/svg"
+        class="js-page-template-svg"
+    >
+        <style id="js-draw-style-sheet">
+            path{
+                stroke-linecap:round;
+                stroke-linejoin:round;
+            }
+            text{
+                white-space:pre;
+            }
+        </style>
+        ${includePageBg ? imgBg : ''}
+        ${normalizedPaths}
+    </svg>`
+
+const findCurrentlyActiveSketch = async (page_number: number) => {
+  return await Sketch.findOne({ page_number, is_enabled: true })
+}
+
 export async function POST(req: Request): Promise<Response> {
   try {
     const data = (await req.json()) as PostRequestBody
@@ -112,18 +142,32 @@ export async function POST(req: Request): Promise<Response> {
     }
 
     const code = generateCode()
-    const newSketch = await Sketch.create({
-      page_number: data.page_number,
-      path: ' ',
-      is_enabled: false,
-    })
+    // Only create a new sketch if one doesn't already exists
+    let sketch = await findCurrentlyActiveSketch(data.page_number)
+    if (!sketch || !sketch._id) {
+      sketch = await Sketch.create({
+        page_number: data.page_number,
+        sketch_paths: getPageTemplate('', true),
+        is_enabled: true,
+      })
+    } else {
+      // clone the currently active sketch and then disable it
+      sketch.is_enabled = false
+      await sketch.save()
+
+      sketch = await Sketch.create({
+        page_number: data.page_number,
+        sketch_paths: sketch.sketch_paths,
+        is_enabled: true,
+      })
+    }
 
     const now = new Date()
     const lock = new PageLock({
       code,
       startTime: now,
       endTime: new Date(now.getTime() + 60 * 60 * 1000), // 60 minutes in milliseconds,
-      sketch_doc: newSketch,
+      sketch_doc: sketch,
     })
 
     const savedLock = await lock.save()

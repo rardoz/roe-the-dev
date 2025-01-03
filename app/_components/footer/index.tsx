@@ -60,13 +60,7 @@ const Footer: FC = () => {
         </div>
         <p className="text-sm py-1">
           &copy; {currentYear}&nbsp;
-          <Link
-            href="https://byrojo.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            byrojo.com
-          </Link>
+          <Link href="/">roethedev.com</Link>
         </p>
       </div>
     </footer>
