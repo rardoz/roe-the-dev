@@ -35,34 +35,6 @@ const SketchBookProvider: React.FC<
   const lockedState = useContext(lockPageContext)
 
   const finalPage = lockedState?.pageNumber || page
-  //todo kill save page in lou of save locked page
-  const savePage = React.useCallback(
-    (new_paths: string) => {
-      setState((prev) => ({ ...prev, isLoading: true }))
-
-      fetch(`/api/sketch`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          page_number: finalPage,
-          sketch_paths: new_paths,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success === false) throw new Error(data.message)
-        })
-        .catch((error) => {
-          console.error('Failed to save page:', error)
-        })
-        .finally(() => {
-          setState((prev) => ({ ...prev, isLoading: false }))
-        })
-    },
-    [finalPage],
-  )
 
   const getPage = React.useCallback((page: number) => {
     fetch(`/api/sketch/${page}`)
@@ -88,7 +60,7 @@ const SketchBookProvider: React.FC<
     }
   }, [getPage, finalPage, isLoading])
 
-  return <Provider value={{ ...state, savePage }}>{children}</Provider>
+  return <Provider value={{ ...state }}>{children}</Provider>
 }
 
 export const SketchWithHTML: React.FC = () => {
