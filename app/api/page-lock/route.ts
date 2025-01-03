@@ -83,10 +83,7 @@ interface PopulatedPageLock {
 
 const imgBg = `<image class="js-draw-image-background" href="/paper.png" width="450" height="600" aria-label=""></image>`
 
-export const getPageTemplate = (
-  normalizedPaths: string,
-  includePageBg: boolean,
-) =>
+const getPageTemplate = (normalizedPaths: string, includePageBg: boolean) =>
   `
     <svg
         viewBox="0 0 450 600"
