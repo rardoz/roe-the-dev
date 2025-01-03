@@ -29,7 +29,6 @@ const JsDraw: React.FC = () => {
   }
 
   useEffect(() => {
-    console.log('lockData', lockData.lockId)
     if (pageRef.current && lockData.lockId) {
       editorRef.current = new jsdraw.Editor(pageRef.current, {
         wheelEventsEnabled: 'only-if-focused',

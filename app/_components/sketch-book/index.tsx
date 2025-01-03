@@ -58,13 +58,6 @@ const SketchBook: React.FC = () => {
     setPage(e.data)
   }
 
-  const onUpdate = (e: any) => {
-    if (e.data === 'user_fold' || e.data === 'flipping') {
-      // console.log('onUpdate', e)
-    }
-    //setPage(e.data)
-  }
-
   return (
     <div>
       <div className={styles['container-md']} style={{ position: 'relative' }}>
@@ -90,7 +83,6 @@ const SketchBook: React.FC = () => {
           swipeDistance={30}
           showPageCorners={true}
           disableFlipByClick={false}
-          onChangeState={onUpdate}
           onFlip={onPage}
           className="book"
           style={{}}

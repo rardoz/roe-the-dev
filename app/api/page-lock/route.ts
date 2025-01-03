@@ -150,7 +150,6 @@ export async function POST(req: Request): Promise<Response> {
         sketch_paths: getPageTemplate('', true),
         is_enabled: true,
       })
-      console.log('creating a new sketch document')
     } else {
       // clone the currently active sketch and then disable it
       sketch.is_enabled = false
@@ -161,7 +160,6 @@ export async function POST(req: Request): Promise<Response> {
         sketch_paths: sketch.sketch_paths,
         is_enabled: true,
       })
-      console.log('cloning a new sketch document')
     }
 
     const now = new Date()

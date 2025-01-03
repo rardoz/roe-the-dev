@@ -132,7 +132,6 @@ export async function GET(
       }
     }
   } catch (e: any) {
-    console.log(e)
     return Response.json(
       { success: false, message: e.message },
       { status: 400 },
@@ -222,7 +221,6 @@ export async function PUT(
       }
     }
   } catch (e: any) {
-    console.log(e)
     return Response.json(
       { success: false, message: e.message },
       { status: 400 },
@@ -320,7 +318,6 @@ export async function POST(
     await lock.sketch_doc.save()
     return Response.json({ success: true })
   } catch (e: any) {
-    console.log(e)
     return Response.json(
       { success: false, message: e.message },
       { status: 400 },

@@ -50,7 +50,6 @@ export async function GET(
     // const pages = await Sketch.find({ page_number })
     // return Response.json(pages)
   } catch (e: any) {
-    console.log(e)
     return Response.json({ success: false, message: e.message })
   }
 }
@@ -96,8 +95,8 @@ export async function GET(
  */
 export async function POST(req: Request | NextRequest) {
   try {
-    await connectDB()
     const body = await req.json()
+    await connectDB()
     const sketch = new Sketch({
       sketch_paths: body.sketch_paths,
       page_number: body.page_number,

@@ -70,7 +70,6 @@ const SketchBookProvider: React.FC<
         return response.json()
       })
       .then((data: SketchDocument) => {
-        console.log(data)
         setState((prevState) => ({
           ...prevState,
           isLoading: false,
