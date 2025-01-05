@@ -88,7 +88,7 @@ const LockPageProvider: React.FC<PropsWithChildren<LockPageProviderProps>> = ({
           ...state,
           isLoading: false,
         })
-        router.replace('/error')
+        router.push('/error?message=' + e.message)
       })
   }
 

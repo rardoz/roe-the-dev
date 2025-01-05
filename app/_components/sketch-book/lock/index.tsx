@@ -9,7 +9,7 @@ const SketchBookLockPage: React.FC<{ page: number }> = ({ page }) => {
   const router = useRouter()
   useEffect(() => {
     if (page > PAGE_COUNT || page < 1) {
-      router.replace('/error')
+      router.replace('/error?coode=page-count-count')
     }
   }, [page])
 
