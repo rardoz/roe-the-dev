@@ -39,6 +39,23 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
+## Install for Apple Silcon Chip
+
+See the [GitPod](#local-environment-setup-with-gitpod) instructions for better a better dev experience.
+
+- Install Rosetta 2 by running this command: `softwareupdate --install-rosetta`
+- Right click on `~/Applications/VSCode.app` and click `Get info`
+- Make sure the Rosetta checkbox is enabled
+- Open the project using VSCode and run this command `nvm uninstall 20.9.0 && nvm install 20.9.0`
+  - Note that you will need [nvm package manager](https://formulae.brew.sh/formula/nvm) installed
+  - Note if you dont already have it installed, you need to run `nvm install 20.9.0`
+- run `npm i` to install
+- run `npm dev` to start the app
+- When you are done, Right click on `~/Applications/VSCode.app` and click `Get info`
+- Make sure the Rosetta checkbox is disabled
+
+I just bought a M3 chip Macbook and noticed this new "feature" which is quite unfortunate. I will be dockerizing this application for a better dev experience.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
