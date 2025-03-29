@@ -21,7 +21,9 @@ Then you can configure your app:
 
 ## Getting Started
 
-First, run the development server:
+- Copy the `.env.example` file to `.env.local` file in the project root and update accordingly
+- Make sure you are on Node 20+
+- Then, run the development server:
 
 ```bash
 npm run dev
@@ -39,7 +41,7 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Install for Apple Silcon Chip
+## Install for Apple Sillicon Chip
 
 See the [GitPod](#local-environment-setup-with-gitpod) instructions for better a better dev experience.
 
