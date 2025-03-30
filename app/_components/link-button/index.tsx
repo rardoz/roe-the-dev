@@ -5,6 +5,8 @@ const LinkButton: React.FC<
   React.PropsWithChildren<{
     className?: string
     href: typeof UnstyledLink | string
+    target?: string
+    rel?: string
   }>
 > = ({ className, href, ...props }) => {
   return (
