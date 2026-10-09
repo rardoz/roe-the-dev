@@ -6,14 +6,14 @@ import VideoBackground from '../../_components/video-bg'
 import Link from '../../_components/link'
 import BreadCrumbs from '../../_components/breadcrumbs'
 import type { Metadata } from 'next'
-import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import config from '../../../messages/config'
 const CONTENTFUL_PORTFOLIO_ID =
   process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
 const LIMIT = 9
 
 type Props = {
-  params?: { locale: string; page?: string }
+  params: Promise<{ locale: string; page?: string }>
 }
 
 export function generateStaticParams() {
@@ -40,18 +40,19 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Portfolio(props: Props) {
-  unstable_setRequestLocale(props.params?.locale || 'en-US')
+  const params = await props.params
+  setRequestLocale(params?.locale || 'en-US')
   const entries = await getEntries({
     limit: LIMIT,
     contentType: CONTENTFUL_PORTFOLIO_ID,
-    skip: parseInt(props.params?.page || '0', 10) * LIMIT,
+    skip: parseInt(params?.page || '0', 10) * LIMIT,
   })
 
   const messages = await getTranslations('Portfolio')
 
   return (
     <>
-      <DefaultLayout params={props.params}>
+      <DefaultLayout params={params}>
         <VideoBackground videoSrc="/portfolio-video-720.mp4" fixed />
         <div className="w-full max-w-screen-2xl mb-16 mt-16">
           <SectionTitle>{messages.raw('title')}</SectionTitle>

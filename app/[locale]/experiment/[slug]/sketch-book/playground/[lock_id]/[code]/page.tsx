@@ -1,15 +1,15 @@
-import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
 import config from '../../../../../../../../messages/config'
 import SketchBookPlayground from '../../../../../../../_components/sketch-book-playground'
 
 type Props = {
-  params: {
+  params: Promise<{
     locale?: string
     slug: string
     lock_id: string
     code: string
-  }
+  }>
 }
 
 export function generateStaticParams() {
@@ -26,10 +26,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Playground(props: Props) {
-  const locale = props.params?.locale || 'en-US'
-  const lock_id = props.params?.lock_id
-  const code = props.params?.code
-  unstable_setRequestLocale(locale)
+  const params = await props.params
+  const locale = params?.locale || 'en-US'
+  const lock_id = params?.lock_id
+  const code = params?.code
+  setRequestLocale(locale)
 
   return (
     <div className="w-full h-full overflow-hidden">

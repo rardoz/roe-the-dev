@@ -12,7 +12,7 @@ import {
   documentToReactComponents,
   Options,
 } from '@contentful/rich-text-react-renderer'
-import React, { MutableRefObject, useRef } from 'react'
+import React, { useRef } from 'react'
 
 import Code from './code'
 import Image from 'next/image'
@@ -150,7 +150,7 @@ const selectWithCodeWrapper = (content: Document): Document => {
 }
 
 const ContentfulToReact: React.FC<{ content: Document }> = ({ content }) => {
-  const ref = useRef() as MutableRefObject<HTMLDivElement>
+  const ref = useRef<HTMLDivElement>(null)
 
   return (
     <div ref={ref} className="break-words">

@@ -1,10 +1,12 @@
 /** @type {import('next').NextConfig} */
-const withNextIntl = require('next-intl/plugin')(
+import createNextIntlPlugin from 'next-intl/plugin'
+
+const withNextIntl = createNextIntlPlugin(
   // This is the default (also the `src` folder is supported out of the box)
   './messages/i18n.ts',
 )
 
-module.exports = withNextIntl({
+export default withNextIntl({
   // Other Next.js configuration ...
   images: {
     remotePatterns: [

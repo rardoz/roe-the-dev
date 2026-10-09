@@ -4,7 +4,7 @@ import { getEntries } from '../../../_services/contentful'
 import Discussion from '../../../_components/discussion'
 import SectionTitle from '../../../_components/section-title'
 import Hero from '../../../_components/hero'
-import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import BreadCrumbs from '../../../_components/breadcrumbs'
 import dayjs from 'dayjs'
 import type { Metadata } from 'next'
@@ -15,7 +15,7 @@ const CONTENTFUL_EXPERIMENT_ID =
   process.env.CONTENTFUL_EXPERIMENT_ID || 'experiment'
 
 type Props = {
-  params: { locale?: string; slug: string }
+  params: Promise<{ locale?: string; slug: string }>
 }
 
 async function getEntry(slug: string) {
@@ -30,7 +30,10 @@ export function generateStaticParams() {
   return config.locales.map((locale) => ({ locale }))
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({
+  params: pendingParams,
+}: Props): Promise<Metadata> {
+  const params = await pendingParams
   const messages = await getTranslations('Experiment')
   const entry = await getEntry(params.slug)
 
@@ -52,13 +55,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ExperimentDetail(props: Props) {
-  unstable_setRequestLocale(props.params?.locale || 'en-US')
-  const entry = await getEntry(props.params.slug)
+  const params = await props.params
+  setRequestLocale(params?.locale || 'en-US')
+  const entry = await getEntry(params.slug)
 
   const messages = await getTranslations('Experiment')
   return (
     <>
-      <DefaultLayout params={{ locale: props.params.locale || '' }}>
+      <DefaultLayout params={{ locale: params.locale || '' }}>
         <div className="w-full">
           <Hero
             description={entry?.description}
@@ -101,7 +105,7 @@ export default async function ExperimentDetail(props: Props) {
                     slug={entry.slug!}
                     title={entry.title!}
                     contentType="experiment"
-                    locale={props.params?.locale}
+                    locale={params?.locale}
                   />
                 </div>
               </>

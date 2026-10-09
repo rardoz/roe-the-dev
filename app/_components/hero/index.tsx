@@ -10,7 +10,7 @@ const Hero: FC<{
   chevron?: boolean
 }> = ({ imageSrc, imageDescription, title, description, chevron = true }) => {
   return (
-    <div className="h-screen w-full relative bg-opacity-30 bg-black items-center">
+    <div className="h-screen w-full relative bg-black/30 items-center">
       {imageSrc && (
         <Image
           src={imageSrc}

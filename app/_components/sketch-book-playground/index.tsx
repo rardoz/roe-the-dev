@@ -1,7 +1,8 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
+import dynamic from 'next/dynamic'
 import LockPageProvider from '../sketch-book/lock/context'
-const JsDraw = React.lazy(() => import('./components/js-draw'))
+const JsDraw = dynamic(() => import('./components/js-draw'), { ssr: false })
 //import { useTranslations } from 'next-intl'
 
 const SketchBookPlayground: React.FC<{
@@ -10,16 +11,11 @@ const SketchBookPlayground: React.FC<{
   code: string
 }> = ({ lockId, code }) => {
   //const translations = useTranslations('SketchBook')
-  const [hydrationLoad, setHydrationLoad] = useState(false)
-
-  useEffect(() => {
-    setHydrationLoad(true)
-  }, [])
   return (
     <div>
       <React.Suspense fallback={'loading...'}>
         <LockPageProvider lockId={lockId} code={code}>
-          {hydrationLoad && <JsDraw />}
+          <JsDraw />
         </LockPageProvider>
       </React.Suspense>
     </div>

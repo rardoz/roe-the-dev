@@ -15,7 +15,7 @@ function decodeHtml(html: string): string {
 const Code: React.FC<React.PropsWithChildren> = ({ children }) => {
   const iFrameRef = useRef<HTMLIFrameElement>(null)
   const codeRef = useRef<HTMLDivElement>(null)
-  const editorRef = useRef<EditorView>()
+  const editorRef = useRef<EditorView | null>(null)
 
   useEffect(() => {
     const iFrame = iFrameRef.current

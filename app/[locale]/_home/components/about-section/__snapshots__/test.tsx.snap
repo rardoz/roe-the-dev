@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`About Section should render with default locale set 1`] = `
 <div>
@@ -21,7 +21,7 @@ exports[`About Section should render with default locale set 1`] = `
       class="flex justify-center items-start flex-wrap sm:flex-nowrap"
     >
       <div
-        class="flex-shrink-0 px-4 mb-4"
+        class="shrink-0 px-4 mb-4"
       >
         <img
           alt="about"
@@ -63,7 +63,7 @@ exports[`About Section should render with default locale set 1`] = `
         </div>
       </div>
       <div
-        class="flex-shrink flex-grow px-4 text-center sm:text-left"
+        class="shrink grow px-4 text-center sm:text-left"
       >
         <h3
           class="font-semibold pb-4 text-lg"

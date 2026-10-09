@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Nav should render 1`] = `
 <div>
@@ -27,10 +27,10 @@ exports[`Nav should render 1`] = `
         />
       </a>
       <div
-        class="flex-grow flex justify-end mx-3"
+        class="grow flex justify-end mx-3"
       >
         <span
-          class="flex h-fit items-center gap-1 font-semibold bg-gray-200 text-gray-800 group-hover:bg-gray-300 dark:bg-gray-400 dark:text-gray-900 dark:group-hover:bg-gray-500 text-xs p-1.5 rounded-full"
+          class="flex h-fit items-center gap-1 font-semibold bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-400 dark:text-gray-900 dark:hover:bg-gray-500 text-xs p-1.5 rounded-full"
           data-testid="flowbite-badge"
         >
           <span>
@@ -66,7 +66,7 @@ exports[`Nav should render 1`] = `
       </div>
       <button
         aria-expanded="false"
-        class="text-gray-500 transition-all duration-500 inline-flex items-center justify-center p-2 w-10 h-10 text-sm  rounded-lg  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+        class="text-gray-500 transition-all duration-500 inline-flex items-center justify-center p-2 w-10 h-10 text-sm  rounded-lg  hover:bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
         type="button"
       >
         <span
@@ -85,12 +85,12 @@ exports[`Nav should render 1`] = `
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"
+            d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z"
           />
         </svg>
       </button>
       <div
-        class="hidden fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-40"
+        class="hidden fixed top-0 left-0 w-screen h-screen bg-black/40"
       >
         <ul
           class="
@@ -113,7 +113,7 @@ exports[`Nav should render 1`] = `
           >
             <button
               aria-expanded="false"
-              class="inline-flex items-center justify-center p-2 w-10 h-10 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+              class="inline-flex items-center justify-center p-2 w-10 h-10 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
               type="button"
             >
               <span

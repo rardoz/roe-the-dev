@@ -11,7 +11,7 @@ const SketchBookLockPage: React.FC<{ page: number }> = ({ page }) => {
     if (page > PAGE_COUNT || page < 1) {
       router.replace('/error?coode=page-count-count')
     }
-  }, [page])
+  }, [page, router])
 
   return (
     <React.Suspense fallback={'loading...'}>

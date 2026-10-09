@@ -1,27 +1,22 @@
-import { createLocalizedPathnamesNavigation } from 'next-intl/navigation'
+import { createNavigation } from 'next-intl/navigation'
 
 import config from '../../../messages/config'
 
 export const { Link, redirect, usePathname, useRouter, getPathname } =
-  createLocalizedPathnamesNavigation({
+  createNavigation({
     locales: config.locales,
-    pathnames: config.pathnames,
   })
 
 import { ComponentProps } from 'react'
-import type { AppPathnames } from '../../../messages/config'
 
-export function UnstyledLink<Pathname extends AppPathnames>({
-  href,
-  ...rest
-}: ComponentProps<typeof Link<Pathname | any>>) {
+export function UnstyledLink({ href, ...rest }: ComponentProps<typeof Link>) {
   return <Link href={href} {...rest} />
 }
 
-export function StyledLink<Pathname extends AppPathnames>({
+export function StyledLink({
   className,
   ...rest
-}: ComponentProps<typeof Link<Pathname | any>>) {
+}: ComponentProps<typeof Link>) {
   return (
     <UnstyledLink
       {...rest}

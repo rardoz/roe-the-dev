@@ -1,4 +1,4 @@
-import { Pathnames } from 'next-intl/navigation'
+import { Pathnames } from 'next-intl/routing'
 
 const localePrefix: 'as-needed' | 'always' | 'never' | undefined = 'as-needed'
 

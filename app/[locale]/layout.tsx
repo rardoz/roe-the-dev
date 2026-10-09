@@ -2,7 +2,7 @@ import React from 'react'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import '../globals.css'
-import { Flowbite } from 'flowbite-react'
+import { ThemeProvider } from 'flowbite-react'
 import theme from '../_theme'
 import { notFound } from 'next/navigation'
 import config from '../../messages/config'
@@ -35,15 +35,16 @@ export function generateStaticParams() {
 
 export default async function RootLayout({
   children,
-  params: { locale },
+  params,
 }: {
   children: React.ReactNode
-  params: { locale: string }
+  params: Promise<{ locale: string }>
 }) {
+  const { locale } = await params
   let messages
   try {
     messages = (await import(`../../messages/${locale}.json`)).default
-  } catch (error) {
+  } catch {
     notFound()
   }
 
@@ -52,12 +53,12 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <body className={inter.className}>
-        <Flowbite theme={{ theme }}>
+        <ThemeProvider theme={theme}>
           <NextIntlClientProvider locale={locale} messages={messages}>
             {children}
             <Analytics />
           </NextIntlClientProvider>
-        </Flowbite>
+        </ThemeProvider>
       </body>
     </html>
   )

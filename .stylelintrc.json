@@ -12,11 +12,18 @@
           "responsive",
           "screen",
           "tailwind",
-          "variants"
+          "variants",
+          "config",
+          "source",
+          "theme",
+          "plugin",
+          "utility",
+          "variant",
+          "custom-variant"
         ]
       }
     ],
-    "declaration-block-trailing-semicolon": null,
-    "no-descending-specificity": null
+    "no-descending-specificity": null,
+    "import-notation": "string"
   }
 }

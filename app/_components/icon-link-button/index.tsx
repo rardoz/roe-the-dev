@@ -3,7 +3,7 @@ import { UnstyledLink } from '../next-intl'
 
 const IconLinkButton: React.FC<
   React.PropsWithChildren<{
-    href: typeof UnstyledLink | string
+    href: React.ComponentProps<typeof UnstyledLink>['href']
     className?: string
     altText: string
     rel?: HTMLAnchorElement['rel']

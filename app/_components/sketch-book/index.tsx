@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import HTMLFlipBook from 'react-pageflip'
 import styles from './style.module.css'
 import Page from './page'
@@ -10,41 +10,37 @@ import SketchBookProvider, { SketchWithHTML, PAGE_COUNT } from './context'
 import LockIndicatorProvider from './lock/context/indicators'
 import Pagination from './pagination'
 
+function createPages() {
+  const pagesArray = [
+    <PageCover key={0} pos="top">
+      {''}
+    </PageCover>,
+  ]
+
+  for (let i = 0; i < PAGE_COUNT; i++) {
+    pagesArray.push(
+      <Page number={i + 1} key={i + 1}>
+        <SketchBookProvider page={i + 1}>
+          <SketchWithHTML />
+        </SketchBookProvider>
+      </Page>,
+    )
+  }
+
+  pagesArray.push(
+    <PageCover key={PAGE_COUNT + 1} pos="bottom">
+      {''}
+    </PageCover>,
+  )
+
+  return pagesArray
+}
+
 const SketchBook: React.FC = () => {
   const [page, setPage] = useState(0)
-  const [totalPage, setTotalPage] = useState(0)
-  const [pages, setPages] = useState<React.ReactNode[]>([])
+  const totalPage = PAGE_COUNT
+  const [pages] = useState<React.ReactNode[]>(createPages)
   const flipBookRef = useRef<any>(null)
-
-  useEffect(() => {
-    const pagesArray = [
-      <PageCover key={0} pos="top">
-        {''}
-      </PageCover>,
-    ]
-
-    let pageNum = 0
-    for (let i = 0; i < PAGE_COUNT; i++) {
-      pageNum++
-      if (pageNum > 8) pageNum = 1
-      pagesArray.push(
-        <Page number={i + 1} key={i + 1}>
-          <SketchBookProvider page={i + 1}>
-            <SketchWithHTML />
-          </SketchBookProvider>
-        </Page>,
-      )
-    }
-
-    pagesArray.push(
-      <PageCover key={PAGE_COUNT + 1} pos="bottom">
-        {''}
-      </PageCover>,
-    )
-
-    setPages(pagesArray)
-    setTotalPage(PAGE_COUNT)
-  }, [])
 
   const nextButtonClick = () => {
     flipBookRef.current.pageFlip().flipNext()

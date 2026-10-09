@@ -1,4 +1,5 @@
-import { CustomFlowbiteTheme } from 'flowbite-react'
+import { createTheme } from 'flowbite-react'
 
-const flowbiteTheme: CustomFlowbiteTheme = {}
+const flowbiteTheme = createTheme({})
+
 export default flowbiteTheme

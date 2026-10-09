@@ -1,4 +1,4 @@
-import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
 import config from '../../../../../../../messages/config'
 import DefaultLayout from '../../../../../../_components/layout'
@@ -6,11 +6,11 @@ import SectionTitle from '../../../../../../_components/section-title'
 import CodeForm from '../../../../../../_components/sketch-book/code-form'
 
 type Props = {
-  params: {
+  params: Promise<{
     locale?: string
     slug: string
     lock_id: string
-  }
+  }>
 }
 
 export function generateStaticParams() {
@@ -27,9 +27,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Playground(props: Props) {
-  const locale = props.params?.locale || 'en-US'
-  const lock_id = props.params?.lock_id
-  unstable_setRequestLocale(locale)
+  const params = await props.params
+  const locale = params?.locale || 'en-US'
+  const lock_id = params?.lock_id
+  setRequestLocale(locale)
 
   return (
     <DefaultLayout navForcedInView>

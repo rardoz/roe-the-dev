@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
-import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import config from '../../../messages/config'
 import LottieGame from '../../_components/lottie-game'
 import './styles.css'
 
 type Props = {
-  params?: { locale: string }
+  params: Promise<{ locale: string }>
 }
 
 export function generateStaticParams() {
@@ -22,7 +22,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function LWKSMG(props: Props) {
-  unstable_setRequestLocale(props.params?.locale || 'en-US')
+  const params = await props.params
+  setRequestLocale(params?.locale || 'en-US')
   return (
     <div className="lottie-layout">
       <LottieGame />

@@ -4,7 +4,7 @@ import { UnstyledLink } from '../next-intl'
 const LinkButton: React.FC<
   React.PropsWithChildren<{
     className?: string
-    href: typeof UnstyledLink | string
+    href: React.ComponentProps<typeof UnstyledLink>['href']
     target?: string
     rel?: string
   }>

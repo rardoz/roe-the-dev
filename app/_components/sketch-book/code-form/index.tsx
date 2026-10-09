@@ -19,7 +19,6 @@ const CodeForm: React.FC<CodeFormProps> = ({ lock_id }) => {
 
   useEffect(() => {
     if (code.length === 4) {
-      setCodeCheck({})
       fetch(`/api/page-lock/${lock_id}/${code}`, {
         method: 'PUT',
         headers: {
@@ -64,9 +63,8 @@ const CodeForm: React.FC<CodeFormProps> = ({ lock_id }) => {
         maxLength={4}
         id="sketch-page-code--input"
         onChange={(e) => {
-          if (e.target.value && e.target.value.length === 4) {
-            setCode(e.target.value)
-          }
+          setCodeCheck({})
+          setCode(e.target.value)
         }}
         className={`block w-full max-w-48 p-4 text-gray-900 border border-${statusColor}-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-${statusColor}-500 dark:bg-gray-700 dark:border-${statusColor}-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
       />

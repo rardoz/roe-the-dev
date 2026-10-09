@@ -4,7 +4,9 @@ import { FaChevronRight, FaHouseChimney } from 'react-icons/fa6'
 import { UnstyledLink } from '../next-intl'
 
 const BreadCrumbs: FC<{
-  links: ({ href: typeof UnstyledLink | string } & { label: string })[]
+  links: ({
+    href: React.ComponentProps<typeof UnstyledLink>['href'] | string
+  } & { label: string })[]
 }> = ({ links }) => {
   return (
     <div className="flex" aria-label="Breadcrumb">

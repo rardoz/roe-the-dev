@@ -1,6 +1,6 @@
 'use client'
 import { useTransition } from 'react-transition-state'
-import React, { PropsWithChildren, useEffect, useState } from 'react'
+import React, { PropsWithChildren } from 'react'
 import Image from 'next/image'
 import { UnstyledLink } from '../next-intl'
 import Link from 'next/link'
@@ -23,15 +23,7 @@ const Nav: React.FC<
     threshold: 1,
   })
 
-  const [isSticky, setIsSticky] = useState(false)
-
-  useEffect(() => {
-    if (!inView || forceInView) {
-      setIsSticky(true)
-    } else {
-      setIsSticky(false)
-    }
-  }, [inView, forceInView])
+  const isSticky = !inView || Boolean(forceInView)
 
   const [{ status, isMounted: isMenuActive }, setMenuActive] = useTransition({
     timeout: 300,
@@ -70,7 +62,7 @@ const Nav: React.FC<
               alt={messages.logoAltText}
             />
           </UnstyledLink>
-          <div className="flex-grow flex justify-end mx-3">
+          <div className="grow flex justify-end mx-3">
             <Badge color="light" className="p-1.5 rounded-full">
               {config.locales.map((locale, index) => {
                 return (
@@ -90,7 +82,7 @@ const Nav: React.FC<
             type="button"
             className={`${
               !isSticky ? 'text-white hover:text-gray-500' : 'text-gray-500'
-            } transition-all duration-500 inline-flex items-center justify-center p-2 w-10 h-10 text-sm  rounded-lg  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600`}
+            } transition-all duration-500 inline-flex items-center justify-center p-2 w-10 h-10 text-sm  rounded-lg  hover:bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600`}
             aria-expanded={isMenuActive}
           >
             <span className="sr-only">{messages.menuIconAltText}</span>
@@ -102,7 +94,7 @@ const Nav: React.FC<
             }}
             className={`${
               isMenuActive || status === 'preEnter' ? 'block ' : 'hidden'
-            } fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-40`}
+            } fixed top-0 left-0 w-screen h-screen bg-black/40`}
           >
             <ul
               className={`
@@ -124,7 +116,7 @@ const Nav: React.FC<
                 <button
                   onClick={() => setMenuActive(!isMenuActive)}
                   type="button"
-                  className="inline-flex items-center justify-center p-2 w-10 h-10 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                  className="inline-flex items-center justify-center p-2 w-10 h-10 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
                   aria-expanded={isMenuActive}
                 >
                   <span className="sr-only">{messages.menuIconAltText}</span>

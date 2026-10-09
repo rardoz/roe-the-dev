@@ -1,7 +1,7 @@
 import React from 'react'
 import { PropsWithChildren } from 'react'
 
-const NavLinks: React.FC<PropsWithChildren<{}>> = ({ children = [] }) => {
+const NavLinks: React.FC<PropsWithChildren> = ({ children = [] }) => {
   return (
     <>
       {Array.isArray(children) ? (

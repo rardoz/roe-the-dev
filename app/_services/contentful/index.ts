@@ -32,7 +32,7 @@ const normalizeData = (
     const {
       sys: { createdAt, updatedAt },
     } = field
-    let fieldRow = field.fields as BlogField
+    const fieldRow = field.fields as BlogField
 
     // todo make this not hurt my heart to look at
     normalizedFields.push({

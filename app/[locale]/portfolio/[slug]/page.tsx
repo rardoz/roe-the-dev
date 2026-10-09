@@ -5,7 +5,7 @@ import Discussion from '../../../_components/discussion'
 import SectionTitle from '../../../_components/section-title'
 import VideoPlayer from '../../../_components/video-player'
 import Hero from '../../../_components/hero'
-import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import BreadCrumbs from '../../../_components/breadcrumbs'
 import dayjs from 'dayjs'
 import type { Metadata } from 'next'
@@ -16,7 +16,7 @@ const CONTENTFUL_PORTFOLIO_ID =
   process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio'
 
 type Props = {
-  params: { locale?: string; slug: string }
+  params: Promise<{ locale?: string; slug: string }>
 }
 
 export function generateStaticParams() {
@@ -32,7 +32,10 @@ async function getEntry(slug: string) {
   return porfolioEntries?.items?.[0]
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({
+  params: pendingParams,
+}: Props): Promise<Metadata> {
+  const params = await pendingParams
   const messages = await getTranslations('Portfolio')
   const entry = await getEntry(params.slug)
 
@@ -55,13 +58,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PortfolioDetail(props: Props) {
-  unstable_setRequestLocale(props.params?.locale || 'en-US')
-  const entry = await getEntry(props.params.slug)
+  const params = await props.params
+  setRequestLocale(params?.locale || 'en-US')
+  const entry = await getEntry(params.slug)
   const messages = await getTranslations('Portfolio')
 
   return (
     <>
-      <DefaultLayout params={{ locale: props.params.locale || '' }}>
+      <DefaultLayout params={{ locale: params.locale || '' }}>
         <div className="w-full">
           <Hero
             description={entry?.description}
@@ -112,7 +116,7 @@ export default async function PortfolioDetail(props: Props) {
                     slug={entry.slug!}
                     title={entry.title!}
                     contentType="portfolio"
-                    locale={props.params.locale}
+                    locale={params.locale}
                   />
                 </div>
               </>

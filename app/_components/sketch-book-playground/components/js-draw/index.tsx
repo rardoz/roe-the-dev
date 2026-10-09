@@ -1,5 +1,5 @@
 'use client'
-import React, { useContext, useEffect, useRef } from 'react'
+import React, { useCallback, useContext, useEffect, useRef } from 'react'
 import * as jsdraw from 'js-draw'
 import 'js-draw/styles'
 import './style.css'
@@ -14,19 +14,20 @@ const JsDraw: React.FC = () => {
   const editorRef = useRef<jsdraw.Editor | null>(null)
   const router = useRouter()
   const lockData = useContext(lockPageContext)
-  const onSave = () => {
+  const { saveLockedPage } = lockData
+  const onSave = useCallback(() => {
     //NOTE: we only want to save what the user added so we can remove it later if we need to
     const output = editorRef.current?.toSVG()
     if (output) {
       const newPaths = output.outerHTML
-      lockData.saveLockedPage(newPaths)
+      saveLockedPage(newPaths)
     }
-  }
+  }, [saveLockedPage])
 
-  const onUnlock = () => {
+  const onUnlock = useCallback(() => {
     onSave()
     router.push(`/experiment/sketchbook-experiment/sketch-book`)
-  }
+  }, [onSave, router])
 
   useEffect(() => {
     if (pageRef.current && lockData.lockId) {
@@ -106,7 +107,16 @@ const JsDraw: React.FC = () => {
         editorRef.current?.remove()
       }
     }
-  }, [lockData.lockId]) //only do this once!
+  }, [
+    lockData.lockId,
+    lockData.code,
+    lockData.endTime,
+    lockData.lockedPaths,
+    lockData.pageNumber,
+    onSave,
+    onUnlock,
+    router,
+  ])
 
   return (
     <>

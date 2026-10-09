@@ -11,7 +11,7 @@ const AboutSection = () => {
       <SectionTitle>{t('title')}</SectionTitle>
       <div className="w-3/4 lg:w-1/2">
         <div className="flex justify-center items-start flex-wrap sm:flex-nowrap">
-          <div className="flex-shrink-0 px-4 mb-4">
+          <div className="shrink-0 px-4 mb-4">
             <Image
               src="/roe-profile-pic.png"
               className="rounded-full border-8 border-white drop-shadow-lg hover:drop-shadow-xl hover:scale-105 transition-all duration-500 ease-in-out"
@@ -31,7 +31,7 @@ const AboutSection = () => {
               </LinkButton>
             </div>
           </div>
-          <div className="flex-shrink flex-grow px-4 text-center sm:text-left">
+          <div className="shrink grow px-4 text-center sm:text-left">
             <h3 className="font-semibold pb-4 text-lg">{t('subtitle')}</h3>
             <p>{t('description1')}</p>
             <p className="my-4">{t('description2')}</p>

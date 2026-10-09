@@ -2,12 +2,7 @@ import type { AssetFields } from 'contentful'
 import type { Document } from '@contentful/rich-text-types'
 
 export type ContentType =
-  | 'blog'
-  | 'portfolio'
-  | 'linkBank'
-  | 'featuredContent'
-  | 'experiment'
-  | string
+  'blog' | 'portfolio' | 'linkBank' | 'featuredContent' | 'experiment' | string
 
 export interface USE_BLOG_ARGS {
   limit?: number

@@ -1,6 +1,6 @@
 import DefaultLayout from '../../_components/layout'
 import { getEntries } from '../../_services/contentful'
-import { getTranslations, unstable_setRequestLocale } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import SectionTitle from '../../_components/section-title'
 import Card from '../../_components/card'
 import VideoBackground from '../../_components/video-bg'
@@ -14,7 +14,7 @@ const CONTENTFUL_EXPERIMENT_ID =
 const LIMIT = 9
 
 type Props = {
-  params?: { locale: string; page?: string }
+  params: Promise<{ locale: string; page?: string }>
 }
 
 export function generateStaticParams() {
@@ -41,11 +41,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Experiment(props: Props) {
-  unstable_setRequestLocale(props.params?.locale || 'en-US')
+  const params = await props.params
+  setRequestLocale(params?.locale || 'en-US')
   const entries = await getEntries({
     limit: LIMIT,
     contentType: CONTENTFUL_EXPERIMENT_ID,
-    skip: parseInt(props.params?.page || '0', 10) * LIMIT,
+    skip: parseInt(params?.page || '0', 10) * LIMIT,
   }).catch(() => {
     return { items: [] }
   })
@@ -54,7 +55,7 @@ export default async function Experiment(props: Props) {
 
   return (
     <>
-      <DefaultLayout params={props.params}>
+      <DefaultLayout params={params}>
         <VideoBackground videoSrc="/experiment-video-720.mp4" fixed />
         <div className="w-full max-w-screen-2xl mb-16 mt-16">
           <SectionTitle>{messages('title')}</SectionTitle>

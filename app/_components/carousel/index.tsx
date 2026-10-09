@@ -1,5 +1,5 @@
 'use client'
-import { Carousel as FCarousel, theme } from 'flowbite-react'
+import { Carousel as FCarousel, carouselTheme } from 'flowbite-react'
 import React from 'react'
 
 const Carousel: React.FC<React.PropsWithChildren<{ className?: string }>> = ({
@@ -13,12 +13,12 @@ const Carousel: React.FC<React.PropsWithChildren<{ className?: string }>> = ({
         draggable
         theme={{
           control: {
-            base: theme.carousel.control.base + ' hidden sm:inline-flex',
+            base: carouselTheme.control.base + ' hidden sm:inline-flex',
           },
           scrollContainer: {
             snap: 'snap-x',
             base:
-              theme.carousel.scrollContainer.base +
+              carouselTheme.scrollContainer.base +
               ' rounded-none overflow-hidden',
           },
         }}
