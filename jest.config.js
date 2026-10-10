@@ -17,7 +17,6 @@ module.exports = {
     '!<rootDir>/.next/**',
     '!<rootDir>/*.config.js',
     '!<rootDir>/coverage/**',
-    '!<rootDir>/**/story.{ts,js,tsx}',
   ],
   moduleNameMapper: {
     '^flowbite-react$': '<rootDir>/node_modules/flowbite-react/dist/index.js',

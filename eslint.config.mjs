@@ -3,21 +3,14 @@ import nextVitals from 'eslint-config-next/core-web-vitals'
 import nextTypescript from 'eslint-config-next/typescript'
 import prettier from 'eslint-config-prettier/flat'
 import prettierPlugin from 'eslint-plugin-prettier'
-import storybook from 'eslint-plugin-storybook'
 import jest from 'eslint-plugin-jest'
 import jsdoc from 'eslint-plugin-jsdoc'
 
 export default defineConfig([
   ...nextVitals,
   ...nextTypescript,
-  ...storybook.configs['flat/recommended'],
   prettier,
-  globalIgnores([
-    '.next/**',
-    'coverage/**',
-    'storybook-static/**',
-    'public/**',
-  ]),
+  globalIgnores(['.next/**', 'coverage/**', 'public/**']),
   {
     plugins: { prettier: prettierPlugin },
     rules: {
