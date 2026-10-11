@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { createWorld, disposeWorld } from './world'
 import { disposeObject, loadAsteroid } from './asteroid'
-import { clamp, filmState, mix, smooth } from './motion'
+import { documentFilmProgress, filmState, mix, smooth } from './motion'
 import { createSpatialContent, updateSpatialContent } from './spatial-content'
 import {
   createTumble,
@@ -161,16 +161,26 @@ export async function createFilmScene({
   const backOffset = new THREE.Vector3(0, 26, -100)
 
   const readProgress = () => {
-    const length = container.offsetHeight - window.innerHeight
-    progress = clamp(
-      (window.scrollY - container.offsetTop) / Math.max(1, length),
+    const extra = Number(container.dataset.postsExtra || 0)
+    const length = container.offsetHeight - window.innerHeight - extra
+    progress = documentFilmProgress(
+      window.scrollY - container.offsetTop,
+      length,
+      extra,
     )
   }
 
   const handleOpen = (p: number) =>
     p < 0.12 && container.dataset.mode !== 'reading'
   const placeHandle = (p: number) => {
-    if (!handle) return
+    // Fast Refresh can retain a scene after React replaces/reuses its old node.
+    // Never project the asteroid control onto an element with another owner.
+    if (
+      !handle?.isConnected ||
+      handle.getAttribute('role') !== 'slider' ||
+      !container.contains(handle)
+    )
+      return
     const open = handleOpen(p) && !reduced
     handle.hidden = !open
     if (!open) return
@@ -361,7 +371,8 @@ export async function createFilmScene({
       (world.cityDisc.children[0] as THREE.Mesh)
         .material as THREE.ShaderMaterial
     ).uniforms.uRays.value = rays
-    world.city.visible = p > 0.13
+    // The city's illuminated ribs project as vertical shafts behind the posts.
+    world.city.visible = state.postsBackdropClear
     world.city.scale.y = mix(1, 0.35, state.impact)
     world.city.rotation.z = state.impact * -0.035
     world.cloud.visible = state.impact > 0.001

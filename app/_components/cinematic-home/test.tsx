@@ -1,8 +1,27 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import CinematicHome from './index'
+import { createFilmScene } from './scene'
+import { headingInkBottom } from './heading'
+import {
+  editorialFrameLines,
+  editorialFramePath,
+  POST_ORNAMENT,
+} from './post-frame'
 import { editorialItems, type EditorialItem } from './content'
-import { POST_FRAME, filmState, helixCard, postsPose } from './motion'
+import {
+  POST_FRAME,
+  documentFilmOffset,
+  documentFilmProgress,
+  filmState,
+  helixCard,
+  mobilePostWidth,
+  postRow,
+  postsPose,
+  postsHeadingOffset,
+  postsStacked,
+  smooth,
+} from './motion'
 
 jest.mock('next/image', () => ({
   __esModule: true,
@@ -39,6 +58,10 @@ const items: EditorialItem[] = Array.from({ length: 5 }, (_, index) => ({
 }))
 
 beforeEach(() => {
+  Object.defineProperty(window, 'innerWidth', {
+    configurable: true,
+    value: 1024,
+  })
   window.matchMedia = jest.fn().mockImplementation(() => ({
     matches: false,
     addEventListener: jest.fn(),
@@ -46,9 +69,41 @@ beforeEach(() => {
   }))
   window.scrollTo = jest.fn()
   Element.prototype.scrollIntoView = jest.fn()
+  global.ResizeObserver = class {
+    observe() {}
+    disconnect() {}
+    unobserve() {}
+  }
 })
 
 describe('continuous scroll film', () => {
+  it('anchors to glyph ink rather than the linebox whitespace', () => {
+    const heading = document.createElement('h2')
+    heading.innerHTML =
+      '<span data-heading-label>FEATURED POSTS<span data-heading-baseline></span></span>'
+    jest
+      .spyOn(heading, 'getBoundingClientRect')
+      .mockReturnValue({ top: 100 } as DOMRect)
+    jest
+      .spyOn(
+        heading.querySelector<HTMLElement>('[data-heading-baseline]')!,
+        'getBoundingClientRect',
+      )
+      .mockReturnValue({ top: 140 } as DOMRect)
+    const ctx = document.createElement('canvas').getContext('2d')!
+    const descent = ctx.measureText('FEATURED POSTS').actualBoundingBoxDescent
+    const ink = headingInkBottom(heading)
+    expect(ink).toBeCloseTo(40 + descent)
+    const offset = postsHeadingOffset(280, 100, ink)
+    expect(280 - (100 + offset + ink)).toBeCloseTo(100)
+  })
+  it('keeps bright city geometry out of the posts backdrop and restores it for About', () => {
+    for (const progress of [0, 0.12, 0.14, 0.17625, 0.2125, 0.24875, 0.314])
+      expect(filmState(progress).postsBackdropClear).toBe(false)
+    for (const progress of [0.315, 0.335, 0.36, 0.49, 0.68, 1])
+      expect(filmState(progress).postsBackdropClear).toBe(true)
+  })
+
   it('keeps the impact bounded and reverses to the same state at the same scroll position', () => {
     const forward = [0.3, 0.46, 0.49, 0.54, 0.9].map(filmState)
     const reverse = [0.9, 0.54, 0.49, 0.46, 0.3].map(filmState).reverse()
@@ -59,44 +114,219 @@ describe('continuous scroll film', () => {
     expect(filmState(0.6).flash).toBeLessThan(0.001)
   })
 
-  it('flows featured posts in from below along opposing diagonals without overlap', () => {
+  it('fits the mobile ornamental footprint and balanced desktop row gaps', () => {
+    expect(mobilePostWidth(390)).toBe(350)
+    for (const width of [700, 1024, 1440, 1920])
+      for (const count of [1, 2, 3, 5]) {
+        const row = postRow(width, count)
+        expect(
+          row.unit * (POST_FRAME.width + 0.08) * count + row.gap * (count - 1),
+        ).toBeLessThanOrEqual(width - 112 + 1e-6)
+        expect(
+          row.pitch * row.unit - row.unit * (POST_FRAME.width + 0.08),
+        ).toBeCloseTo(28)
+      }
+  })
+
+  it('uses the Posts-only stack boundary and the approved reference footprint', () => {
+    for (const width of [699, 700, 701, 999, 1000, 1001]) {
+      expect(postsStacked(width)).toBe(width <= 1000)
+      expect(mobilePostWidth(width)).toBe(Math.min(width - 40, 421.96757))
+    }
+  })
+
+  it('shares desktop ornament geometry with stacked SVG and caps outer widths', () => {
+    expect(mobilePostWidth(390)).toBe(350)
+    expect(mobilePostWidth(700)).toBe(421.96757)
+    expect(mobilePostWidth(974)).toBe(421.96757)
+    const lines = editorialFrameLines()
+    expect(lines.length % 6).toBe(0)
+    expect(editorialFramePath().match(/M/g)).toHaveLength(lines.length / 6)
+    expect(Math.max(...lines.filter((_, i) => i % 3 === 1))).toBe(
+      POST_ORNAMENT.height / 2,
+    )
+    expect(Math.max(...lines.filter((_, i) => i % 3 === 0))).toBeCloseTo(
+      POST_ORNAMENT.width / 2,
+    )
+  })
+
+  it('accumulates entered posts without subsequent departures', () => {
     for (const mobile of [false, true])
-      for (const count of [1, 2, 3, 4, 5, 9]) {
-        for (let step = 0; step <= 400; step++) {
-          const progress = 0.12 + (step / 400) * 0.2
+      for (const count of [1, 2, 5, 9])
+        for (let index = 0; index < count; index++) {
+          const settled = postsPose(index, count, 0.25, mobile)
+          expect(settled.y).toBeCloseTo(0)
+          expect(settled.color).toBe(1)
+          expect(settled.active).toBe(true)
+          expect(settled.interactive).toBe(true)
+          expect(postsPose(index, count, 0.13, mobile).opacity).toBe(0)
+          expect(postsPose(index, count, 0.29, mobile)).toEqual(settled)
+        }
+  })
+
+  it('keeps readable desktop frames separated throughout opposing entries', () => {
+    for (const count of [1, 2, 3, 5, 9])
+      for (const reach of [1.4, 2.7, 3.7, 10])
+        for (let step = 0; step <= 150; step++) {
           const cards = Array.from({ length: count }, (_, index) =>
-            postsPose(index, count, progress, mobile),
-          ).filter((card) => card.opacity > 0.02)
-          cards.forEach((a, i) =>
-            cards.slice(i + 1).forEach((b) => {
-              const apart =
-                Math.abs(a.x - b.x) >= POST_FRAME.width - 1e-6 ||
-                Math.abs(a.y - b.y) >= POST_FRAME.height - 1e-6
-              expect(apart).toBe(true)
-            }),
+            postsPose(index, count, 0.13 + step / 1000, false, reach),
+          ).filter((card) => card.opacity > 0)
+          cards.forEach((a, index) =>
+            cards
+              .slice(index + 1)
+              .forEach((b) =>
+                expect(
+                  Math.abs(a.x - b.x) >=
+                    ((POST_FRAME.width + 0.08) * (a.scale + b.scale)) / 2 ||
+                    Math.abs(a.y - b.y) >=
+                      ((POST_FRAME.height + 0.08) * (a.scale + b.scale)) / 2,
+                ).toBe(true),
+              ),
           )
+        }
+  })
+
+  it('enters desktop posts one at a time in CMS order and settles all before handoff', () => {
+    for (const count of [1, 2, 3, 5, 9]) {
+      for (let step = 0; step <= 1400; step++) {
+        const progress = 0.13 + step / 10000
+        const cards = Array.from({ length: count }, (_, index) =>
+          postsPose(index, count, progress, false),
+        )
+        const moving = cards.filter(
+          (card) => card.travel > 0 && card.travel < 1,
+        )
+        expect(moving.length).toBeLessThanOrEqual(1)
+        cards.forEach((card, index) => {
+          if (card.travel > 0) {
+            expect(
+              cards.slice(0, index).every((previous) => previous.travel === 1),
+            ).toBe(true)
+            if (card.travel < 1)
+              expect(
+                cards.slice(index + 1).every((next) => next.travel === 0),
+              ).toBe(true)
+          }
+        })
+      }
+      for (let index = 0; index < count; index++) {
+        const start = 0.14 + (index / count) * 0.105
+        const entering = postsPose(
+          index,
+          count,
+          start + (0.105 / count) * 0.1,
+          false,
+        )
+        const slot = (index - (count - 1) / 2) * 1.4
+        if (index > 0 && index < count - 1) {
+          expect(entering.x).toBe(slot)
+          expect(entering.y).toBeGreaterThan(0)
+        } else {
+          expect((entering.x - slot) * (index === 0 ? -1 : 1)).toBeGreaterThan(
+            0,
+          )
+          expect(entering.y).toBe(0)
+        }
+        expect(postsPose(index, count, 0.245, false).travel).toBe(1)
+        expect(postsPose(index, count, 0.275, false)).toEqual(
+          postsPose(index, count, 0.245, false),
+        )
+      }
+    }
+  })
+
+  it('anchors the desktop title bottom 100px above the measured first ornamental footprint', () => {
+    for (const viewport of [
+      { width: 700, height: 500 },
+      { width: 1200, height: 900 },
+      { width: 1440, height: 900 },
+      { width: 1920, height: 1080 },
+    ])
+      for (const progress of [0.15, 0.17, 0.175, 0.21, 0.245, 0.275]) {
+        const row = postRow(viewport.width, 3)
+        const pose = postsPose(0, 3, progress, false)
+        const ornamentalTop =
+          viewport.height / 2 +
+          row.unit * pose.y -
+          ((POST_FRAME.height + 0.08) * row.unit * pose.scale) / 2
+        const headingTop = 110
+        const headingHeight = 58.5
+        const offset = postsHeadingOffset(
+          ornamentalTop,
+          headingTop,
+          headingHeight,
+        )
+        expect(
+          ornamentalTop - (headingTop + offset + headingHeight),
+        ).toBeCloseTo(100)
+      }
+  })
+
+  it('stages horizontal entrances beyond their edge and keeps waiting posts hidden', () => {
+    for (const width of [700, 1200, 1440, 1920])
+      for (const count of [1, 2, 3, 5, 9]) {
+        const row = postRow(width, count)
+        const reach = width / 2 / row.unit + POST_FRAME.width / 2 + 0.15
+        for (let index = 0; index < count; index++) {
+          const pose = postsPose(index, count, 0.13, false, reach)
+          const x = pose.x + (index - (count - 1) / 2) * (row.pitch - 1.4)
+          const half = ((POST_FRAME.width + 0.08) * pose.scale * row.unit) / 2
+          expect(pose.opacity).toBe(0)
+          if (index > 0 && index < count - 1) {
+            expect(pose.y).toBe(reach)
+            expect(pose.x).toBe((index - (count - 1) / 2) * 1.4)
+          } else if (index === 0)
+            expect(width / 2 + x * row.unit + half).toBeLessThan(0)
+          else expect(width / 2 + x * row.unit - half).toBeGreaterThan(width)
         }
       }
   })
 
-  it('arrives from the outer lower sides and settles the last pair with a card-width gap', () => {
-    for (const mobile of [false, true]) {
-      const early = [0, 1].map((index) => postsPose(index, 4, 0.15, mobile))
-      expect(early[0].x).toBeLessThan(0)
-      expect(early[1].x).toBeGreaterThan(0)
-      expect(early[0].y).toBeGreaterThan(0.5)
-      const later = [0, 1].map((index) => postsPose(index, 4, 0.19, mobile))
-      expect(Math.abs(later[0].x)).toBeLessThan(Math.abs(early[0].x))
-      expect(later[0].y).toBeLessThan(early[0].y)
-      const settled = [2, 3].map((index) => postsPose(index, 4, 0.27, mobile))
-      expect(settled.every((card) => card.color === 1)).toBe(true)
-      const distance = Math.hypot(
-        settled[0].x - settled[1].x,
-        settled[0].y - settled[1].y,
+  it('preserves the approved mobile pose timing independently of desktop sequencing', () => {
+    for (const count of [1, 2, 3, 5, 9])
+      for (let index = 0; index < count; index++)
+        for (const progress of [0.14, 0.17, 0.19, 0.21, 0.245, 0.275]) {
+          const side = index - (count - 1) / 2 <= 0 ? -1 : 1
+          expect(postsPose(index, count, progress, true).travel).toBe(
+            smooth(side < 0 ? 0.14 : 0.175, side < 0 ? 0.205 : 0.245, progress),
+          )
+        }
+  })
+
+  it('uses only direct left, bottom, right axes for the three CMS posts', () => {
+    for (let step = 0; step <= 120; step++) {
+      const progress = 0.135 + step / 1000
+      const cards = [0, 1, 2].map((index) =>
+        postsPose(index, 3, progress, false),
       )
-      expect(distance).toBeGreaterThanOrEqual(POST_FRAME.width + 0.1)
+      expect(cards[0].y).toBe(0)
+      expect(cards[1].x).toBe(0)
+      expect(cards[2].y).toBe(0)
+      cards.forEach((card) => {
+        expect(card.scale).toBe(1)
+        expect(card.depth).toBe(0)
+      })
+      cards.forEach((card, index) => {
+        const start = 0.14 + (index / 3) * 0.105
+        if (progress <= start) {
+          expect(card.opacity).toBe(0)
+          expect(card.interactive).toBe(false)
+        }
+      })
     }
-    expect(postsPose(0, 4, 0.135, false).opacity).toBe(0)
+  })
+
+  it('inserts document reading distance without changing opening or later film states', () => {
+    const length = 16000
+    const extra = 2100
+    expect(documentFilmProgress(1000, length, extra)).toBe(1000 / length)
+    expect(
+      documentFilmProgress(length * 0.285 + extra / 2, length, extra),
+    ).toBe(0.285)
+    for (const progress of [0.36, 0.49, 0.68, 1]) {
+      const offset = documentFilmOffset(progress, length, extra)
+      expect(documentFilmProgress(offset, length, extra)).toBeCloseTo(progress)
+    }
   })
 
   it('makes every project reachable in front of the helix with real depth between projects', () => {
@@ -153,6 +383,125 @@ describe('continuous scroll film', () => {
 })
 
 describe('semantic content and native controls', () => {
+  it.each([699, 700, 701, 999, 1000, 1001])(
+    'keeps Posts layout independent of other scene breakpoints at %ipx',
+    async (width) => {
+      Object.defineProperty(window, 'innerWidth', {
+        configurable: true,
+        value: width,
+      })
+      jest
+        .mocked(createFilmScene)
+        .mockImplementationOnce(async ({ onReady }) => {
+          onReady(true)
+          return jest.fn()
+        })
+      const { container } = render(
+        <CinematicHome posts={items} transmissions={items} projects={items} />,
+      )
+      await waitFor(() =>
+        expect(container.firstChild).toHaveAttribute(
+          'data-posts-document',
+          `${width <= 1000}`,
+        ),
+      )
+      const section = container.querySelector<HTMLElement>('#film-posts')!
+      expect(section.style.getPropertyValue('--post-outer-width')).toBe(
+        `${mobilePostWidth(width)}px`,
+      )
+      expect(section.closest('[data-film-stage]') !== null).toBe(width > 1000)
+      expect(
+        section.compareDocumentPosition(
+          container.querySelector('#film-about')!,
+        ) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy()
+    },
+  )
+
+  it('renders mobile Posts as real keyboard-accessible document content outside the sticky stage', async () => {
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 390,
+    })
+    jest.mocked(createFilmScene).mockImplementationOnce(async ({ onReady }) => {
+      onReady(true)
+      return jest.fn()
+    })
+    const { container } = render(
+      <CinematicHome posts={items} transmissions={items} projects={items} />,
+    )
+    await waitFor(() =>
+      expect(container.firstChild).toHaveAttribute(
+        'data-posts-document',
+        'true',
+      ),
+    )
+    const section = container.querySelector('#film-posts')!
+    expect(section.parentElement).toBe(container.querySelector('main'))
+    expect(section.closest('#film-content')).toBe(
+      container.querySelector('main'),
+    )
+    expect(section.closest('.stage')).toBeNull()
+    const stage = container.querySelector('[data-film-stage]')!
+    expect(stage).not.toHaveAttribute('hidden')
+    expect(stage).not.toHaveAttribute('role', 'slider')
+    expect(stage.querySelector('canvas')).not.toBeNull()
+    expect(stage.querySelector('[role="slider"]')).not.toBe(stage)
+    const about = container.querySelector('#film-about')!
+    expect(
+      section.compareDocumentPosition(about) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+    expect(section).toHaveAttribute('data-document', 'true')
+    expect(
+      (section as HTMLElement).style.getPropertyValue('--post-outer-width'),
+    ).toBe('350px')
+    expect(section.querySelectorAll('[data-spatial-card]')).toHaveLength(5)
+    section.querySelectorAll('[data-spatial-card]').forEach((link) => {
+      expect(link).toHaveAttribute('tabindex', '0')
+      expect(link.querySelector('[role="img"]')).not.toBeNull()
+      expect(link.querySelector('svg')).toHaveAttribute(
+        'viewBox',
+        '-.589 -.675 1.178 1.35',
+      )
+      expect(link.querySelector('svg path')).toHaveAttribute(
+        'd',
+        editorialFramePath(),
+      )
+      expect(link.querySelector('svg path')).toHaveAttribute(
+        'vector-effect',
+        'non-scaling-stroke',
+      )
+    })
+  })
+
+  it('keeps every post readable and keyboard reachable with reduced motion', async () => {
+    window.matchMedia = jest.fn().mockImplementation((query: string) => ({
+      matches: query === '(prefers-reduced-motion: reduce)',
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+    }))
+    const { container } = render(
+      <CinematicHome posts={items} transmissions={items} projects={items} />,
+    )
+    await waitFor(() =>
+      expect(container.firstChild).toHaveAttribute('data-mode', 'reading'),
+    )
+    const links = container.querySelectorAll<HTMLAnchorElement>(
+      '#film-posts [data-spatial-card]',
+    )
+    expect(links).toHaveLength(items.length)
+    links.forEach((link, index) => {
+      expect(link).toHaveAttribute('tabindex', '0')
+      expect(link).toHaveAttribute('href', items[index].href)
+      expect(link).toHaveAccessibleName(items[index].title)
+      expect(link.style.pointerEvents).toBe('auto')
+      fireEvent.pointerDown(link)
+      expect(link).toHaveAttribute('data-engaged', 'true')
+      fireEvent.blur(link)
+      expect(link).not.toHaveAttribute('data-engaged')
+    })
+  })
+
   it('provides the real content and portrait when WebGL is unavailable', async () => {
     const { container } = render(
       <CinematicHome

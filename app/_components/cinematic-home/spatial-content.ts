@@ -1,12 +1,16 @@
 import * as THREE from 'three'
 import type { EditorialItem } from './content'
+import { headingInkBottom } from './heading'
+import { editorialFrameLines } from './post-frame'
 import {
   clamp,
   filmState,
   mix,
   POST_FRAME,
-  postsFormation,
+  postRow,
   postsPose,
+  postsHeadingOffset,
+  postsStacked,
   smooth,
 } from './motion'
 
@@ -76,72 +80,9 @@ function copyTexture(item: EditorialItem, displayFont: string) {
 }
 
 function frameGeometry() {
-  const lines: number[] = []
-  const add = (x1: number, y1: number, x2: number, y2: number) =>
-    lines.push(x1, y1, 0.014, x2, y2, 0.014)
-  const chamfered = (width: number, height: number, step: number) => {
-    const x = width / 2,
-      y = height / 2
-    const corners = [
-      [-x + step, -y],
-      [x - step, -y],
-      [x, -y + step],
-      [x, y - step],
-      [x - step, y],
-      [-x + step, y],
-      [-x, y - step],
-      [-x, -y + step],
-    ]
-    corners.forEach((corner, index) => {
-      const next = corners[(index + 1) % corners.length]
-      add(corner[0], corner[1], next[0], next[1])
-    })
-  }
-  chamfered(1.035, 1.2, 0.035)
-  chamfered(1.075, 1.24, 0.045)
-  chamfered(1.125, 1.29, 0.075)
-  // Stepped corner brackets with fan rays.
-  for (const sx of [-1, 1])
-    for (const sy of [-1, 1]) {
-      const x = sx * 0.585,
-        y = sy * 0.66
-      add(x, y - sy * 0.13, x, y)
-      add(x, y, x - sx * 0.13, y)
-      add(x - sx * 0.02, y - sy * 0.1, x - sx * 0.02, y - sy * 0.02)
-      add(x - sx * 0.1, y - sy * 0.02, x - sx * 0.02, y - sy * 0.02)
-      for (const spread of [0.05, 0.09, 0.13])
-        add(
-          sx * 0.5175,
-          sy * 0.6,
-          sx * (0.5175 + spread * 0.55),
-          sy * (0.6 + spread * 0.55),
-        )
-    }
-  const diamond = (cx: number, cy: number, size: number) => {
-    add(cx, cy + size, cx + size, cy)
-    add(cx + size, cy, cx, cy - size)
-    add(cx, cy - size, cx - size, cy)
-    add(cx - size, cy, cx, cy + size)
-  }
-  diamond(0, 0.645, 0.03)
-  diamond(0, -0.645, 0.03)
-  diamond(0, 0.645, 0.015)
-  diamond(0, -0.645, 0.015)
-  for (const side of [-1, 1]) {
-    diamond(side * 0.56, 0, 0.026)
-    add(side * 0.54, 0.09, side * 0.54, 0.26)
-    add(side * 0.54, -0.09, side * 0.54, -0.26)
-    add(side * 0.19, 0.645, side * 0.36, 0.645)
-    add(side * 0.19, -0.645, side * 0.36, -0.645)
-    add(side * 0.4, 0.655, side * 0.4, 0.635)
-    add(side * 0.4, -0.655, side * 0.4, -0.635)
-  }
-  // Separator between the image and the copy.
-  add(-0.5, -0.0075, -0.04, -0.0075)
-  add(0.04, -0.0075, 0.5, -0.0075)
   return new THREE.BufferGeometry().setAttribute(
     'position',
-    new THREE.Float32BufferAttribute(lines, 3),
+    new THREE.Float32BufferAttribute(editorialFrameLines(), 3),
   )
 }
 
@@ -269,7 +210,6 @@ export function updateSpatialContent(
     viewportHeight
   if (isPosts) {
     const viewportWidth = window.innerWidth
-    const formation = postsFormation(mobile, frames.length)
     const section = container.querySelector<HTMLElement>('#film-posts')
     const heading = section?.querySelector<HTMLElement>('h2')
     const link = section?.querySelector<HTMLElement>(':scope > a')
@@ -284,10 +224,12 @@ export function updateSpatialContent(
           (link ? link.offsetTop : viewportHeight - (mobile ? 112 : 52)) - 14,
         )
     const reservedSides = landscape ? 0.28 * viewportWidth : mobile ? 16 : 56
+    const row = postRow(viewportWidth, frames.length)
     const pixels = Math.min(
-      (safeBottom - safeTop) / formation.extent.height,
-      (viewportWidth - 2 * reservedSides) / formation.extent.width,
-      viewportWidth * (mobile ? 1 : 0.3),
+      (safeBottom - safeTop) / (POST_FRAME.height + 0.08),
+      viewportWidth - 2 * reservedSides,
+      viewportWidth * (mobile ? 0.73 : 0.3),
+      row.unit,
     )
     width = pixels * worldPerPixel
     // Cards are staged beyond the viewport edge, whatever the card size.
@@ -330,6 +272,22 @@ export function updateSpatialContent(
     const element = container.querySelector<HTMLElement>(
       `[data-spatial-card="${namespace}-${index}"]`,
     )
+    if (isPosts && postsStacked(window.innerWidth)) {
+      group.visible = false
+      if (element) {
+        const bounds = element.getBoundingClientRect()
+        element.style.pointerEvents = 'auto'
+        element.dataset.visible = `${bounds.bottom > 0 && bounds.top < window.innerHeight}`
+        element.dataset.opacity = '1.000'
+        element.dataset.color =
+          element.dataset.active === 'true' ||
+          element.matches(':hover, :focus') ||
+          element.dataset.engaged === 'true'
+            ? '1.000'
+            : '0.000'
+      }
+      return
+    }
     const pointerX = Number(element?.style.getPropertyValue('--pointer-x') || 0)
     const pointerY = Number(element?.style.getPropertyValue('--pointer-y') || 0)
     group.userData.pointerX = mix(group.userData.pointerX || 0, pointerX, 0.25)
@@ -339,13 +297,21 @@ export function updateSpatialContent(
     const pose = isPosts
       ? postsPose(index, frames.length, progress, mobile, reach)
       : null
+    if (pose) {
+      const pitch = POST_FRAME.width + 0.08 + 28 / (width / worldPerPixel)
+      pose.x += (index - (frames.length - 1) / 2) * (pitch - 1.4)
+    }
     const sectionOpacity = isPosts ? filmState(progress).postsCardsOpacity : 1
     const opacity = pose ? pose.opacity * sectionOpacity : 1
+    if (pose && element) {
+      element.style.visibility = pose.opacity > 0 ? 'visible' : 'hidden'
+      element.setAttribute('aria-hidden', `${pose.opacity === 0}`)
+    }
     const visible = isPosts
       ? opacity > 0.004
       : progress > 0.645 && progress < 0.915
     group.visible = isPosts
-      ? visible
+      ? visible && !mobile
       : visible && absolute < (mobile ? 2.1 : 2.7)
     const centerWeight = 1 - smooth(0.22, 0.72, absolute)
     if (pose) {
@@ -353,6 +319,7 @@ export function updateSpatialContent(
         .copy(center)
         .addScaledVector(right, pose.x * width)
         .addScaledVector(camera.up, -pose.y * width)
+        .addScaledVector(direction.clone().normalize(), pose.depth * width)
       group.quaternion.copy(camera.quaternion)
     } else {
       const angle = offset * 1.13
@@ -365,7 +332,7 @@ export function updateSpatialContent(
       group.quaternion.copy(camera.quaternion)
       group.rotateY(-Math.sin(angle) * 0.55)
     }
-    group.scale.setScalar(width)
+    group.scale.setScalar(width * (pose?.scale ?? 1))
     group.rotateY(group.userData.pointerX * 0.035)
     group.rotateX(group.userData.pointerY * -0.028)
     const frameMaterial = (group.children[3] as THREE.LineSegments)
@@ -415,6 +382,20 @@ export function updateSpatialContent(
       '--projected-height',
       `${Math.abs(topLeft.y - bottomRight.y) * 0.5 * window.innerHeight}px`,
     )
+    if (isPosts && index === 0 && !mobile) {
+      const heading = container.querySelector<HTMLElement>('#film-posts h2')
+      if (heading) {
+        const ornamentalTop = new THREE.Vector3(0, 0.675, 0)
+          .applyMatrix4(group.matrixWorld)
+          .project(camera)
+        const top = (-ornamentalTop.y * 0.5 + 0.5) * window.innerHeight
+        element.dataset.ornamentalTop = top.toFixed(3)
+        heading.style.setProperty(
+          '--posts-heading-offset',
+          `${postsHeadingOffset(top, heading.offsetTop, headingInkBottom(heading))}px`,
+        )
+      }
+    }
     element.dataset.worldPosition = JSON.stringify(
       group.position.toArray().map((value) => +value.toFixed(3)),
     )

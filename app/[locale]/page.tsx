@@ -1,10 +1,6 @@
-import DefaultLayout from '../_components/layout'
-import BigCarousel from '../_components/big-carousel'
+import CinematicHome from '../_components/cinematic-home'
+import { editorialItems } from '../_components/cinematic-home/content'
 import { getEntries } from '../_services/contentful'
-import CarouselSlide from '../_components/big-carousel/slide'
-import AboutSection from './_home/components/about-section'
-import PortfolioSection from './_home/components/portfolio-section'
-import BlogSection from './_home/components/blog-section'
 
 import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
@@ -31,20 +27,22 @@ export default async function Home(props: Props) {
   const params = await props.params
   setRequestLocale(params?.locale || 'en-US')
 
-  const entries = await getEntries({
-    order: 'fields.orderOverride',
-    contentType: 'featuredContent',
-  })
+  const [posts, featured, projects] = await Promise.all([
+    getEntries({ limit: 5, contentType: 'linkBank' }),
+    getEntries({
+      order: 'fields.orderOverride',
+      contentType: 'featuredContent',
+    }),
+    getEntries({
+      limit: 6,
+      contentType: process.env.CONTENTFUL_PORTFOLIO_ID || 'portfolio',
+    }),
+  ])
   return (
-    <DefaultLayout params={params}>
-      <BigCarousel className="mb-10">
-        {entries.items?.map((item) => (
-          <CarouselSlide key={item.title} {...item}></CarouselSlide>
-        ))}
-      </BigCarousel>
-      <AboutSection />
-      <PortfolioSection locale={params?.locale} />
-      <BlogSection locale={params?.locale} />
-    </DefaultLayout>
+    <CinematicHome
+      posts={editorialItems(posts.items, 'blog')}
+      transmissions={editorialItems(featured.items, 'featured')}
+      projects={editorialItems(projects.items, 'portfolio')}
+    />
   )
 }

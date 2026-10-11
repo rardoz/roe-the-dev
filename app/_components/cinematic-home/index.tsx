@@ -21,12 +21,21 @@ import { UnstyledLink } from '../next-intl'
 import { socialLinks, type EditorialItem } from './content'
 import {
   clamp,
+  POST_FRAME,
   crossingCard,
+  documentFilmOffset,
+  documentFilmProgress,
   filmState,
   helixCard,
+  mobilePostWidth,
+  postRow,
+  postsHeadingOffset,
+  postsStacked,
   sectionPositions,
 } from './motion'
 import { keyRotation } from './tumble'
+import { headingInkBottom } from './heading'
+import { editorialFramePath } from './post-frame'
 import styles from './style.module.css'
 
 type FilmProps = {
@@ -43,12 +52,14 @@ function EditorialFrame({
   style,
   tabIndex,
   spatialId,
+  hidden = false,
 }: {
   item: EditorialItem
   active?: boolean
   style?: CSSProperties
   tabIndex?: number
   spatialId?: string
+  hidden?: boolean
 }) {
   return (
     <UnstyledLink
@@ -61,6 +72,8 @@ function EditorialFrame({
       aria-label={item.title}
       style={style}
       tabIndex={tabIndex}
+      aria-hidden={hidden}
+      inert={hidden}
       onPointerDown={(event) => {
         event.currentTarget.dataset.engaged = 'true'
         window.dispatchEvent(new Event('film-card-input'))
@@ -117,6 +130,28 @@ function EditorialFrame({
         <span>{item.description}</span>
       </span>
       <span className={styles['frame-diamond']} aria-hidden="true" />
+      {spatialId?.startsWith('posts-') && (
+        <svg
+          className={styles['post-ornament']}
+          viewBox="-.589 -.675 1.178 1.35"
+          aria-hidden="true"
+        >
+          <path
+            d={editorialFramePath()}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1"
+            vectorEffect="non-scaling-stroke"
+          />
+          <path
+            d="M-.45 .53125H.31875M.3675 .5375L.41375 .49125V.525M.41375 .49125H.37875"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+      )}
     </UnstyledLink>
   )
 }
@@ -261,12 +296,28 @@ export default function CinematicHome({
   const [renderer, setRenderer] = useState('loading')
   const [progress, setProgress] = useState(0)
   const [mobile, setMobile] = useState(false)
+  const [viewportWidth, setViewportWidth] = useState(1440)
   const [reduced, setReduced] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [readingSelected, setReadingSelected] = useState(false)
+  const [postsExtra, setPostsExtra] = useState(0)
+  const [postsTop, setPostsTop] = useState(0)
+  const [mobileEntries, setMobileEntries] = useState<number[]>([])
   const reading =
     reduced || readingSelected || (renderer === 'fallback' && !hadWebGL)
   const state = filmState(progress)
+  const postsStack = postsStacked(viewportWidth)
+  useEffect(() => {
+    if (postsStack || reading || renderer === 'webgl') return
+    const section = container.current?.querySelector<HTMLElement>('#film-posts')
+    const heading = section?.querySelector<HTMLElement>('h2')
+    const card = section?.querySelector<HTMLElement>('[data-spatial-card]')
+    if (!heading || !card) return
+    heading.style.setProperty(
+      '--posts-heading-offset',
+      `${postsHeadingOffset(card.getBoundingClientRect().top - 11, heading.offsetTop, headingInkBottom(heading))}px`,
+    )
+  }, [postsStack, reading, renderer, progress, viewportWidth])
 
   useEffect(() => {
     let disposed = false
@@ -305,6 +356,8 @@ export default function CinematicHome({
     const sync = () => {
       setReduced(query.matches)
       setMobile(window.innerWidth < 700)
+      setViewportWidth(window.innerWidth)
+      scroll()
     }
     let frame = 0
     const scroll = () => {
@@ -312,27 +365,62 @@ export default function CinematicHome({
       frame = requestAnimationFrame(() => {
         frame = 0
         if (!container.current) return
-        const distance = container.current.offsetHeight - window.innerHeight
+        const section =
+          container.current.querySelector<HTMLElement>('#film-posts')
+        const extra = postsStack && !reading ? postsExtra : 0
+        const distance =
+          container.current.offsetHeight - window.innerHeight - extra
+        setPostsTop(distance * 0.14)
         setProgress(
-          clamp(
-            (window.scrollY - container.current.offsetTop) /
-              Math.max(1, distance),
+          documentFilmProgress(
+            window.scrollY - container.current.offsetTop,
+            distance,
+            extra,
           ),
         )
+        if (postsStack && !reading && section) {
+          const cards = section.querySelectorAll<HTMLElement>(
+            '[data-spatial-card]',
+          )
+          setMobileEntries(
+            Array.from(cards, (card) =>
+              clamp(
+                (window.innerHeight * 0.8 -
+                  (section.offsetTop +
+                    card.offsetTop +
+                    ((card.offsetParent as HTMLElement | null)?.offsetTop ||
+                      0) +
+                    container.current!.offsetTop -
+                    window.scrollY)) /
+                  (window.innerHeight * 0.5),
+              ),
+            ),
+          )
+          const needed = Math.max(
+            0,
+            section.offsetHeight + 100 - distance * 0.175,
+          )
+          if (Math.abs(needed - extra) > 1) setPostsExtra(needed)
+        }
       })
     }
     sync()
     scroll()
     window.addEventListener('scroll', scroll, { passive: true })
     window.addEventListener('resize', sync)
+    const observer = new ResizeObserver(scroll)
+    if (container.current) observer.observe(container.current)
+    const postsSection = container.current?.querySelector('#film-posts')
+    if (postsSection) observer.observe(postsSection)
     query.addEventListener('change', sync)
     return () => {
       cancelAnimationFrame(frame)
       window.removeEventListener('scroll', scroll)
       window.removeEventListener('resize', sync)
       query.removeEventListener('change', sync)
+      observer.disconnect()
     }
-  }, [])
+  }, [postsStack, reading, postsExtra])
 
   useEffect(() => {
     if (!menuOpen) return
@@ -375,8 +463,13 @@ export default function CinematicHome({
       window.scrollTo({
         top:
           container.current.offsetTop +
-          sectionPositions[name] *
-            (container.current.offsetHeight - window.innerHeight),
+          documentFilmOffset(
+            postsStack && name === 'posts' ? 0.14 : sectionPositions[name],
+            container.current.offsetHeight -
+              window.innerHeight -
+              (postsStack && !reading ? postsExtra : 0),
+            postsStack && !reading ? postsExtra : 0,
+          ),
         behavior: 'smooth',
       })
   }
@@ -393,6 +486,89 @@ export default function CinematicHome({
     { name: 'contact', label: t('contact'), icon: <FaEnvelope /> },
   ]
 
+  const postsSection = (
+    <section
+      id="film-posts"
+      data-document={postsStack && !reading}
+      inert={menuOpen}
+      className={`${styles['section']} ${styles['posts']}`}
+      {...(postsStack && !reading ? {} : visibility(state.postsOpacity))}
+      style={
+        {
+          '--section-opacity': reading || postsStack ? 1 : state.postsOpacity,
+          '--rise': reading || postsStack ? 0 : state.postsRise,
+          '--post-outer-width': `${mobilePostWidth(viewportWidth)}px`,
+        } as CSSProperties
+      }
+    >
+      <h2 className={styles['section-title']}>
+        <span data-heading-label>
+          {t('featuredPosts')}
+          <span data-heading-baseline aria-hidden="true" />
+        </span>
+      </h2>
+      <div
+        className={styles['spatial-stage']}
+        style={
+          {
+            '--post-unit': `${postRow(viewportWidth, posts.length).unit}px`,
+          } as CSSProperties
+        }
+      >
+        {posts.map((item, index) => {
+          const pose = crossingCard(
+            index,
+            posts.length,
+            progress,
+            postsStack,
+            postsStack
+              ? undefined
+              : viewportWidth / 2 / postRow(viewportWidth, posts.length).unit +
+                  POST_FRAME.width / 2 +
+                  0.15,
+          )
+          pose.x +=
+            (index - (posts.length - 1) / 2) *
+            (postRow(viewportWidth, posts.length).pitch - 1.4) *
+            1
+          const entry = mobileEntries[index] || 0
+          const settled = reading || (postsStack ? entry === 1 : pose.active)
+          return (
+            <EditorialFrame
+              key={item.href}
+              item={item}
+              spatialId={`posts-${index}`}
+              active={settled}
+              hidden={!reading && !postsStack && pose.opacity === 0}
+              tabIndex={reading || postsStack || pose.interactive ? 0 : -1}
+              style={
+                {
+                  '--card-x': postsStack
+                    ? `${(index % 2 ? 1 : -1) * (1 - entry) * 100}vw`
+                    : `calc(var(--post-unit) * ${pose.x})`,
+                  '--card-y': postsStack
+                    ? `${(1 - entry) * 70}px`
+                    : `calc(var(--post-unit) * ${pose.y})`,
+                  '--card-opacity': reading || postsStack ? 1 : pose.opacity,
+                  '--card-scale': postsStack ? 1 : pose.scale,
+                  visibility:
+                    !reading && !postsStack && pose.opacity === 0
+                      ? 'hidden'
+                      : 'visible',
+                  pointerEvents:
+                    reading || postsStack || pose.interactive ? 'auto' : 'none',
+                } as CSSProperties
+              }
+            />
+          )
+        })}
+      </div>
+      <UnstyledLink href="/blog" className={styles['text-link']}>
+        {t('allArticles')} ↗
+      </UnstyledLink>
+    </section>
+  )
+
   return (
     <div
       ref={container}
@@ -400,6 +576,14 @@ export default function CinematicHome({
       data-renderer={renderer}
       data-mode={reading ? 'reading' : 'cinema'}
       data-progress={progress.toFixed(5)}
+      data-posts-document={postsStack && !reading}
+      data-posts-extra={postsStack && !reading ? postsExtra : 0}
+      style={
+        {
+          '--posts-extra': `${postsStack && !reading ? postsExtra : 0}px`,
+          '--posts-top': `${postsTop}px`,
+        } as CSSProperties
+      }
     >
       <a
         href="#film-content"
@@ -434,234 +618,206 @@ export default function CinematicHome({
           <span />
         </button>
       </header>
-      <main
-        id="film-content"
-        className={styles['stage']}
-        tabIndex={-1}
-        inert={menuOpen}
-      >
-        <canvas ref={canvas} className={styles['canvas']} aria-hidden="true" />
+      <main id="film-content" tabIndex={-1} inert={menuOpen}>
+        {postsStack && !reading && postsSection}
         <div
-          ref={handle}
-          className={styles['asteroid-handle']}
-          role="slider"
-          tabIndex={reading ? -1 : 0}
-          hidden
-          aria-label={t('rotateAsteroid')}
-          aria-orientation="vertical"
-          aria-valuemin={-180}
-          aria-valuemax={180}
-          aria-valuenow={20}
-          onKeyDown={(event) => {
-            // Guards the gap before the scene attaches its own rotation handler.
-            if (
-              (keyRotation(event.key) || event.key === ' ') &&
-              !event.altKey &&
-              !event.ctrlKey &&
-              !event.metaKey
-            )
-              event.preventDefault()
-          }}
-        />
-        {renderer === 'fallback' && (
-          <div className={styles['fallback-world']} aria-hidden="true">
-            <span className={styles['fallback-rock']} />
-            <span className={styles['fallback-horizon']} />
-          </div>
-        )}
-        <div className={styles['film-grain']} aria-hidden="true" />
-        <section
-          id="film-arrival"
-          className={`${styles['section']} ${styles['arrival']}`}
-          {...visibility(state.arrivalOpacity)}
-          style={
-            {
-              '--section-opacity': reading ? 1 : state.arrivalOpacity,
-              '--copy-opacity': reading ? 1 : state.arrivalCopyOpacity,
-            } as CSSProperties
-          }
+          key="film-stage"
+          data-film-stage
+          className={styles['stage']}
+          tabIndex={-1}
+          inert={menuOpen}
         >
-          <div className={styles['divider']} aria-hidden="true">
-            <span>◇</span>
-          </div>
-          <h1>{t('intro')}</h1>
-          <p className={styles['scroll-prompt']}>
-            {t('scroll')}
-            <span aria-hidden="true">↓</span>
-          </p>
-        </section>
-        <section
-          id="film-posts"
-          className={`${styles['section']} ${styles['posts']}`}
-          {...visibility(state.postsOpacity)}
-          style={
-            {
-              ...visibility(state.postsOpacity).style,
-              '--rise': reading ? 0 : state.postsRise,
-            } as CSSProperties
-          }
-        >
-          <h2 className={styles['section-title']}>{t('featuredPosts')}</h2>
-          <div className={styles['spatial-stage']}>
-            {posts.map((item, index) => {
-              const pose = crossingCard(index, posts.length, progress, mobile)
-              return (
-                <EditorialFrame
-                  key={item.href}
-                  item={item}
-                  spatialId={`posts-${index}`}
-                  active={!reading && pose.active}
-                  tabIndex={reading || pose.interactive ? 0 : -1}
-                  style={
-                    {
-                      '--card-x': `calc(var(--post-unit) * ${pose.x})`,
-                      '--card-y': `calc(var(--post-unit) * ${pose.y})`,
-                      '--card-opacity': pose.opacity,
-                    } as CSSProperties
-                  }
-                />
+          <canvas
+            ref={canvas}
+            className={styles['canvas']}
+            aria-hidden="true"
+          />
+          <div
+            ref={handle}
+            className={styles['asteroid-handle']}
+            role="slider"
+            tabIndex={reading ? -1 : 0}
+            hidden
+            aria-label={t('rotateAsteroid')}
+            aria-orientation="vertical"
+            aria-valuemin={-180}
+            aria-valuemax={180}
+            aria-valuenow={20}
+            onKeyDown={(event) => {
+              // Guards the gap before the scene attaches its own rotation handler.
+              if (
+                (keyRotation(event.key) || event.key === ' ') &&
+                !event.altKey &&
+                !event.ctrlKey &&
+                !event.metaKey
               )
-            })}
-          </div>
-          <UnstyledLink href="/blog" className={styles['text-link']}>
-            {t('allArticles')} ↗
-          </UnstyledLink>
-        </section>
-        <section
-          id="film-about"
-          className={`${styles['section']} ${styles['about']}`}
-          {...visibility(state.aboutOpacity)}
-        >
-          <h2 className={styles['section-title']}>{t('aboutRoe')}</h2>
-          <div className={styles['about-composition']}>
-            <div className={styles['about-copy']}>
-              <h3>{about('subtitle')}</h3>
-              <p>{about('description1')}</p>
-              <p className={styles['about-education']}>
-                {about('description2')}
-              </p>
-              <a
-                href="https://linkedin.com/in/rardoz"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles['line-button']}
-              >
-                {t('learnMore')} ↗
-              </a>
+                event.preventDefault()
+            }}
+          />
+          {renderer === 'fallback' && (
+            <div className={styles['fallback-world']} aria-hidden="true">
+              <span className={styles['fallback-rock']} />
+              <span className={styles['fallback-horizon']} />
             </div>
-            <div className={styles['portrait']}>
-              <Image
-                src="/roe-profile-pic.png"
-                width={500}
-                height={500}
-                alt="Roe Greene"
-              />
-              <span className={styles['frame-diamond']} aria-hidden="true" />
-              <span
-                className={`${styles['frame-diamond']} ${styles['side-diamond']}`}
-                data-side="left"
-                aria-hidden="true"
-              />
-              <span
-                className={`${styles['frame-diamond']} ${styles['side-diamond']}`}
-                data-side="right"
-                aria-hidden="true"
-              />
-            </div>
-          </div>
-        </section>
-        <section
-          id="film-impact"
-          className={`${styles['section']} ${styles['impact']}`}
-          {...visibility(
-            state.progress > 0.455 && state.progress < 0.535 ? 1 : 0,
           )}
-          aria-label={t('impact')}
-        >
-          <p>{t('impactCaption')}</p>
-        </section>
-        <div
-          className={styles['impact-exposure']}
-          style={{ opacity: reading || reduced ? 0 : state.flash }}
-          aria-hidden="true"
-        />
-        <section
-          id="film-transmissions"
-          className={`${styles['section']} ${styles['transmissions']}`}
-          {...visibility(state.transmissionsOpacity)}
-        >
-          <h2 className={styles['section-title']}>{t('transmissions')}</h2>
-          <p className={styles['subtitle']}>{t('transmissionCaption')}</p>
-          <Transmissions items={transmissions} reading={reading} />
-        </section>
-        <section
-          id="film-portfolio"
-          className={`${styles['section']} ${styles['portfolio']}`}
-          {...visibility(state.portfolioOpacity)}
-        >
-          <h2 className={styles['section-title']}>{t('portfolio')}</h2>
-          <p className={styles['subtitle']}>{t('portfolioCaption')}</p>
-          <div className={`${styles['spatial-stage']} ${styles['helix']}`}>
-            {projects.map((item, index) => {
-              const pose = helixCard(index, projects.length, progress, mobile)
-              return (
-                <EditorialFrame
-                  key={item.href}
-                  item={item}
-                  spatialId={`projects-${index}`}
-                  active={pose.active}
-                  tabIndex={reading || pose.active ? 0 : -1}
-                  style={
-                    {
-                      '--card-x': `${pose.x}vw`,
-                      '--card-y': `${pose.y}vh`,
-                      '--card-z': `${pose.depth}px`,
-                      '--card-angle': `${pose.rotation}deg`,
-                      '--card-opacity': pose.opacity,
-                      '--card-color': pose.color,
-                      '--card-scale': pose.scale,
-                    } as CSSProperties
-                  }
-                />
-              )
-            })}
-          </div>
-          <UnstyledLink href="/portfolio" className={styles['text-link']}>
-            {t('allProjects')} ↗
-          </UnstyledLink>
-        </section>
-        <footer
-          id="film-contact"
-          className={`${styles['section']} ${styles['contact']}`}
-          {...visibility(state.contactOpacity)}
-        >
-          <span className={styles['end-mark']} aria-hidden="true">
-            ◇
-          </span>
-          <h2>{t('contactHeading')}</h2>
-          <p>{t('contactCaption')}</p>
-          <a
-            href="mailto:roethedev@gmail.com"
-            className={styles['line-button']}
+          <div className={styles['film-grain']} aria-hidden="true" />
+          <section
+            id="film-arrival"
+            className={`${styles['section']} ${styles['arrival']}`}
+            {...visibility(state.arrivalOpacity)}
+            style={
+              {
+                '--section-opacity': reading ? 1 : state.arrivalOpacity,
+                '--copy-opacity': reading ? 1 : state.arrivalCopyOpacity,
+              } as CSSProperties
+            }
           >
-            {t('contactCta')} ↗
-          </a>
-          <nav className={styles['socials']} aria-label={t('socials')}>
-            {socialLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                target={link.href.startsWith('mailto') ? undefined : '_blank'}
-                rel="noopener noreferrer"
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
-          <p className={styles['copyright']}>
-            © {new Date().getFullYear()} Roe Greene
-          </p>
-        </footer>
+            <div className={styles['divider']} aria-hidden="true">
+              <span>◇</span>
+            </div>
+            <h1>{t('intro')}</h1>
+            <p className={styles['scroll-prompt']}>
+              {t('scroll')}
+              <span aria-hidden="true">↓</span>
+            </p>
+          </section>
+          {(!postsStack || reading) && postsSection}
+          <section
+            id="film-about"
+            className={`${styles['section']} ${styles['about']}`}
+            {...visibility(state.aboutOpacity)}
+          >
+            <h2 className={styles['section-title']}>{t('aboutRoe')}</h2>
+            <div className={styles['about-composition']}>
+              <div className={styles['about-copy']}>
+                <h3>{about('subtitle')}</h3>
+                <p>{about('description1')}</p>
+                <p className={styles['about-education']}>
+                  {about('description2')}
+                </p>
+                <a
+                  href="https://linkedin.com/in/rardoz"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles['line-button']}
+                >
+                  {t('learnMore')} ↗
+                </a>
+              </div>
+              <div className={styles['portrait']}>
+                <Image
+                  src="/roe-profile-pic.png"
+                  width={500}
+                  height={500}
+                  alt="Roe Greene"
+                />
+                <span className={styles['frame-diamond']} aria-hidden="true" />
+                <span
+                  className={`${styles['frame-diamond']} ${styles['side-diamond']}`}
+                  data-side="left"
+                  aria-hidden="true"
+                />
+                <span
+                  className={`${styles['frame-diamond']} ${styles['side-diamond']}`}
+                  data-side="right"
+                  aria-hidden="true"
+                />
+              </div>
+            </div>
+          </section>
+          <section
+            id="film-impact"
+            className={`${styles['section']} ${styles['impact']}`}
+            {...visibility(
+              state.progress > 0.455 && state.progress < 0.535 ? 1 : 0,
+            )}
+            aria-label={t('impact')}
+          >
+            <p>{t('impactCaption')}</p>
+          </section>
+          <div
+            className={styles['impact-exposure']}
+            style={{ opacity: reading || reduced ? 0 : state.flash }}
+            aria-hidden="true"
+          />
+          <section
+            id="film-transmissions"
+            className={`${styles['section']} ${styles['transmissions']}`}
+            {...visibility(state.transmissionsOpacity)}
+          >
+            <h2 className={styles['section-title']}>{t('transmissions')}</h2>
+            <p className={styles['subtitle']}>{t('transmissionCaption')}</p>
+            <Transmissions items={transmissions} reading={reading} />
+          </section>
+          <section
+            id="film-portfolio"
+            className={`${styles['section']} ${styles['portfolio']}`}
+            {...visibility(state.portfolioOpacity)}
+          >
+            <h2 className={styles['section-title']}>{t('portfolio')}</h2>
+            <p className={styles['subtitle']}>{t('portfolioCaption')}</p>
+            <div className={`${styles['spatial-stage']} ${styles['helix']}`}>
+              {projects.map((item, index) => {
+                const pose = helixCard(index, projects.length, progress, mobile)
+                return (
+                  <EditorialFrame
+                    key={item.href}
+                    item={item}
+                    spatialId={`projects-${index}`}
+                    active={pose.active}
+                    tabIndex={reading || pose.active ? 0 : -1}
+                    style={
+                      {
+                        '--card-x': `${pose.x}vw`,
+                        '--card-y': `${pose.y}vh`,
+                        '--card-z': `${pose.depth}px`,
+                        '--card-angle': `${pose.rotation}deg`,
+                        '--card-opacity': pose.opacity,
+                        '--card-color': pose.color,
+                        '--card-scale': pose.scale,
+                      } as CSSProperties
+                    }
+                  />
+                )
+              })}
+            </div>
+            <UnstyledLink href="/portfolio" className={styles['text-link']}>
+              {t('allProjects')} ↗
+            </UnstyledLink>
+          </section>
+          <footer
+            id="film-contact"
+            className={`${styles['section']} ${styles['contact']}`}
+            {...visibility(state.contactOpacity)}
+          >
+            <span className={styles['end-mark']} aria-hidden="true">
+              ◇
+            </span>
+            <h2>{t('contactHeading')}</h2>
+            <p>{t('contactCaption')}</p>
+            <a
+              href="mailto:roethedev@gmail.com"
+              className={styles['line-button']}
+            >
+              {t('contactCta')} ↗
+            </a>
+            <nav className={styles['socials']} aria-label={t('socials')}>
+              {socialLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target={link.href.startsWith('mailto') ? undefined : '_blank'}
+                  rel="noopener noreferrer"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+            <p className={styles['copyright']}>
+              © {new Date().getFullYear()} Roe Greene
+            </p>
+          </footer>
+        </div>
       </main>
       <nav
         className={styles['bottom-nav']}

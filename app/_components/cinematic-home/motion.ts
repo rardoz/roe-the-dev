@@ -41,6 +41,7 @@ export function filmState(progress: number) {
     postsCardsOpacity: windowOpacity(p, 0.125, 0.14, 0.285, 0.315),
     // Title and link flow upward from below as the section arrives.
     postsRise: 1 - smooth(0.12, 0.2, p),
+    postsBackdropClear: p >= 0.315,
     aboutOpacity: windowOpacity(p, 0.3, 0.335, 0.405, 0.455),
     transmissionsOpacity: windowOpacity(p, 0.535, 0.555, 0.615, 0.65),
     portfolioOpacity: windowOpacity(p, 0.645, 0.67, 0.875, 0.91),
@@ -48,70 +49,53 @@ export function filmState(progress: number) {
   }
 }
 
-// Featured Posts criss-cross. Distances are in card widths; y grows downward.
-// Normal page scroll drives it: each group of up to three cards is staged
-// outside opposite sides of the viewport, then slides diagonally into a
-// non-overlapping slot (first card from the upper left, second from the lower
-// right, third later from the upper right).
+// Opposing entries settle into a persistent row; the mobile document list uses
+// the same color/interaction states but lays out real DOM frames vertically.
 export const POST_FRAME = { width: 1.125, height: 1.29 }
-const POST_GAP = 0.26
-const POST_PITCH_X = POST_FRAME.width + POST_GAP
-// Mobile rows need extra air so stacked frames never touch.
-const POST_PITCH_Y = POST_FRAME.height + 0.45
-const POST_SPAN = { start: 0.14, end: 0.245 }
-// Per-card enter windows inside a group's timeline: the pair first, then the third.
-const POST_ENTER: [number, number][] = [
-  [0, 0.45],
-  [0, 0.45],
-  [0.35, 0.8],
-]
-const POST_LEAVE = [0.86, 1]
-// Default distance, in card widths, that clears the viewport edge.
+const POST_PITCH_Y = 1.15
 const POST_REACH = { desktop: 3.7, mobile: 2.7 }
 
-type PostSlot = { x: number; y: number; side: -1 | 1; dy: number }
-
-function postSlots(count: number, mobile: boolean): PostSlot[] {
-  const half = POST_PITCH_X / 2
-  if (mobile) {
-    if (count <= 1) return [{ x: 0, y: 0, side: -1, dy: -0.45 }]
-    if (count === 2)
-      return [
-        { x: -half, y: -0.36, side: -1, dy: -0.45 },
-        { x: half, y: 0.36, side: 1, dy: 1 },
-      ]
-    return [
-      { x: -half, y: -POST_PITCH_Y / 2, side: -1, dy: -0.45 },
-      { x: half, y: 0, side: 1, dy: 1 },
-      { x: -half, y: POST_PITCH_Y / 2, side: -1, dy: 0.45 },
-    ]
-  }
-  if (count <= 1) return [{ x: 0, y: 0, side: -1, dy: -1.4 }]
-  if (count === 2)
-    return [
-      { x: -half, y: 0, side: -1, dy: -1.4 },
-      { x: half, y: 0, side: 1, dy: 1.4 },
-    ]
-  return [
-    { x: -POST_PITCH_X, y: 0, side: -1, dy: -1.4 },
-    { x: 0, y: 0, side: 1, dy: 1.4 },
-    { x: POST_PITCH_X, y: 0, side: 1, dy: -1.4 },
-  ]
+export function postRow(viewportWidth: number, count: number) {
+  const gap = 28
+  const available = viewportWidth - 112
+  const unit = Math.min(
+    480,
+    (available - gap * Math.max(0, count - 1)) /
+      (Math.max(1, count) * (POST_FRAME.width + 0.08)),
+  )
+  return { unit, pitch: POST_FRAME.width + 0.08 + gap / unit, gap }
 }
 
-export function postsFormation(mobile: boolean, count = 3) {
-  const slots = postSlots(Math.min(3, Math.max(1, count)), mobile)
-  const xs = slots.map((slot) => slot.x)
-  const ys = slots.map((slot) => slot.y)
-  return {
-    slots,
-    extent: {
-      width: Math.max(...xs) - Math.min(...xs) + POST_FRAME.width,
-      height: Math.max(...ys) - Math.min(...ys) + POST_FRAME.height,
-    },
-  }
+export function documentFilmProgress(
+  offset: number,
+  length: number,
+  extra = 0,
+) {
+  const insertion = length * 0.285
+  return clamp(
+    (offset - clamp(offset - insertion, 0, extra)) / Math.max(1, length),
+  )
 }
 
+export function documentFilmOffset(
+  progress: number,
+  length: number,
+  extra = 0,
+) {
+  return progress * length + (progress > 0.285 ? extra : 0)
+}
+
+export function mobilePostWidth(viewportWidth: number) {
+  return Math.min(viewportWidth - 40, 421.96757)
+}
+export const postsStacked = (viewportWidth: number) => viewportWidth <= 1000
+export function postsHeadingOffset(
+  cardTop: number,
+  headingTop: number,
+  headingHeight: number,
+) {
+  return cardTop - 100 - headingHeight - headingTop
+}
 export function postsPose(
   index: number,
   count: number,
@@ -119,38 +103,54 @@ export function postsPose(
   mobile: boolean,
   reach = mobile ? POST_REACH.mobile : POST_REACH.desktop,
 ) {
-  const groups = Math.max(1, Math.ceil(count / 3))
-  const group = Math.floor(index / 3)
-  const slot = postSlots(Math.min(3, count - group * 3), mobile)[index % 3]
-  const timeline =
-    clamp((progress - POST_SPAN.start) / (POST_SPAN.end - POST_SPAN.start)) *
-      groups -
-    group
-  const [from, to] = POST_ENTER[index % 3]
-  const travel = smooth(from, to, timeline)
-  const leaving =
-    group < groups - 1 ? smooth(POST_LEAVE[0], POST_LEAVE[1], timeline) : 0
-  const away = slot.side * Math.max(reach, Math.abs(slot.x) + 1)
-  // The vertical offset resolves early so a card never crosses the title or link row.
-  const lift = 1 - smooth(0, 0.8, travel)
+  const slot = (index - (count - 1) / 2) * 1.4
+  const side = mobile ? (slot <= 0 ? -1 : 1) : index === 0 ? -1 : 1
+  const travel = smooth(
+    mobile
+      ? side < 0
+        ? 0.14
+        : 0.175
+      : 0.14 + (index / Math.max(1, count)) * 0.105,
+    mobile
+      ? side < 0
+        ? 0.205
+        : 0.245
+      : 0.14 + ((index + 1) / Math.max(1, count)) * 0.105,
+    progress,
+  )
+  // The first and last enter horizontally; interior entries rise into their
+  // own columns so additional CMS content cannot cross settled footprints.
+  const bottom = !mobile && index > 0 && index < count - 1
   return {
-    x: mix(slot.x, away, Math.max(1 - travel, leaving)),
-    y: slot.y + slot.dy * lift,
-    opacity: 1,
-    color: smooth(0.7, 1, travel) * (1 - smooth(0, 0.4, leaving)),
-    active: travel > 0.85 && leaving < 0.2,
-    interactive: travel > 0.97 && leaving === 0,
+    x: mobile
+      ? slot + side * reach * (1 - travel)
+      : bottom
+        ? slot
+        : mix(side * (reach + Math.abs(slot)), slot, travel),
+    y: mobile
+      ? -POST_PITCH_Y * (1 - travel)
+      : bottom
+        ? reach * (1 - travel)
+        : 0,
+    depth: mobile ? (1 - travel) * 0.12 : 0,
+    scale: mobile ? mix(0.6, 1, travel) : 1,
+    opacity: travel > 0 ? 1 : 0,
+    color: smooth(0.8, 1, travel),
+    active: travel > 0.97,
+    interactive: travel > 0.97,
+    travel,
   }
 }
 
-// Fallback (DOM-only) pose in card widths, matching the WebGL formation.
+// DOM-only pose in card widths, matching the WebGL crossing.
 export function crossingCard(
   index: number,
   count: number,
   progress: number,
   mobile: boolean,
+  reach?: number,
 ) {
-  return postsPose(index, count, progress, mobile)
+  return postsPose(index, count, progress, mobile, reach)
 }
 
 export function helixCard(
