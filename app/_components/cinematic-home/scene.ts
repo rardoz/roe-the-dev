@@ -16,6 +16,12 @@ import {
   wrapAngle,
 } from './tumble'
 import type { EditorialItem } from './content'
+import {
+  ABOUT_ASTEROID_EVENT,
+  aboutAsteroidState,
+  silhouetteHull,
+  type Point,
+} from './about-motion'
 
 type SceneOptions = {
   canvas: HTMLCanvasElement
@@ -165,6 +171,9 @@ export async function createFilmScene({
   const debrisPose = new THREE.Object3D()
   const handlePoint = new THREE.Vector3()
   const backOffset = new THREE.Vector3(0, 26, -100)
+  let aboutOutline: Point[] | null = null
+  const aboutPoint = new THREE.Vector3()
+  const aboutDirection = new THREE.Vector3()
 
   const readProgress = () => {
     const extra = Number(container.dataset.postsExtra || 0)
@@ -335,6 +344,65 @@ export async function createFilmScene({
     const rockScale = entryScale(p) * (1 - smooth(0.48, 0.515, p))
     world.asteroid.scale.set(rockScale, rockScale, rockScale)
     world.asteroid.visible = p < 0.516
+    const aboutPhase = aboutAsteroidState(p)
+    if (aboutPhase.active && container.dataset.aboutControl === 'true') {
+      camera.updateMatrixWorld()
+      world.asteroid.updateMatrixWorld()
+      aboutPoint.copy(world.asteroid.position).project(camera)
+      const originX = (aboutPoint.x * 0.5 + 0.5) * width
+      const originY = (-aboutPoint.y * 0.5 + 0.5) * height
+      const distance = camera.position.distanceTo(world.asteroid.position)
+      const projectedWidth =
+        ((rimX + rimYZ) * rockScale * height) / (2 * distance * verticalField)
+      if (!aboutOutline) {
+        const points = asteroidVertices.map((vertex) => {
+          aboutPoint
+            .copy(vertex)
+            .applyMatrix4(world.asteroid.matrixWorld)
+            .project(camera)
+          return {
+            x: ((aboutPoint.x * 0.5 + 0.5) * width - originX) / projectedWidth,
+            y:
+              ((-aboutPoint.y * 0.5 + 0.5) * height - originY) / projectedWidth,
+          }
+        })
+        const hull = silhouetteHull(points)
+        const left = Math.min(...hull.map((point) => point.x))
+        const right = Math.max(...hull.map((point) => point.x))
+        const top = Math.min(...hull.map((point) => point.y))
+        const bottom = Math.max(...hull.map((point) => point.y))
+        aboutOutline = hull.map((point) => ({
+          x: (point.x - (left + right) / 2) / (right - left),
+          y: (point.y - (top + bottom) / 2) / (right - left),
+        }))
+      }
+      container.dispatchEvent(
+        new CustomEvent(ABOUT_ASTEROID_EVENT, {
+          detail: {
+            x: originX,
+            y: originY,
+            width: projectedWidth,
+            outline: aboutOutline,
+          },
+        }),
+      )
+      const x = Number(container.dataset.aboutX)
+      const y = Number(container.dataset.aboutY)
+      const diameter = Number(container.dataset.aboutWidth)
+      if (Number.isFinite(x) && Number.isFinite(y) && diameter > 0) {
+        aboutPoint
+          .set((x / width) * 2 - 1, 1 - (y / height) * 2, 0.5)
+          .unproject(camera)
+        aboutDirection.copy(aboutPoint).sub(camera.position).normalize()
+        world.asteroid.position
+          .copy(camera.position)
+          .addScaledVector(aboutDirection, distance)
+        world.asteroid.scale.setScalar((rockScale * diameter) / projectedWidth)
+      }
+      world.asteroid.visible = aboutPhase.foreground < 0.999
+    } else {
+      aboutOutline = null
+    }
     // Light sits directly behind the rock, so the facing side stays in shadow.
     backLight.position.copy(world.asteroid.position).add(backOffset)
     backLight.target.position.copy(world.asteroid.position)
@@ -502,6 +570,7 @@ export async function createFilmScene({
     width = window.innerWidth
     height = window.innerHeight
     mobile = width < 700
+    aboutOutline = null
     camera.aspect = width / height
     camera.fov = mobile ? 52 : 45
     camera.updateProjectionMatrix()
@@ -626,7 +695,7 @@ export async function createFilmScene({
   const modeObserver = new MutationObserver(requestDraw)
   modeObserver.observe(container, {
     attributes: true,
-    attributeFilter: ['data-mode'],
+    attributeFilter: ['data-mode', 'data-about-control'],
   })
   handle?.addEventListener('pointerdown', startDrag)
   handle?.addEventListener('pointermove', moveDrag)

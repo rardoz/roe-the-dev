@@ -38,6 +38,7 @@ import { useAmbientSound } from './ambient-audio'
 import { SoundIcon } from './sound-icon'
 import { headingInkBottom } from './heading'
 import { editorialFramePath } from './post-frame'
+import { AboutRoe } from './about'
 import styles from './style.module.css'
 
 type FilmProps = {
@@ -287,7 +288,6 @@ export default function CinematicHome({
   className = '',
 }: FilmProps) {
   const t = useTranslations('Cinema')
-  const about = useTranslations('About')
   const locale = useLocale()
   const { isPlaying, toggle } = useAmbientSound()
   const container = useRef<HTMLDivElement>(null)
@@ -696,49 +696,13 @@ export default function CinematicHome({
             </p>
           </section>
           {(!postsStack || reading) && postsSection}
-          <section
-            id="film-about"
-            className={`${styles['section']} ${styles['about']}`}
-            {...visibility(state.aboutOpacity)}
-          >
-            <h2 className={styles['section-title']}>{t('aboutRoe')}</h2>
-            <div className={styles['about-composition']}>
-              <div className={styles['about-copy']}>
-                <h3>{about('subtitle')}</h3>
-                <p>{about('description1')}</p>
-                <p className={styles['about-education']}>
-                  {about('description2')}
-                </p>
-                <a
-                  href="https://linkedin.com/in/rardoz"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles['line-button']}
-                >
-                  {t('learnMore')} ↗
-                </a>
-              </div>
-              <div className={styles['portrait']}>
-                <Image
-                  src="/roe-profile-pic.png"
-                  width={500}
-                  height={500}
-                  alt="Roe Greene"
-                />
-                <span className={styles['frame-diamond']} aria-hidden="true" />
-                <span
-                  className={`${styles['frame-diamond']} ${styles['side-diamond']}`}
-                  data-side="left"
-                  aria-hidden="true"
-                />
-                <span
-                  className={`${styles['frame-diamond']} ${styles['side-diamond']}`}
-                  data-side="right"
-                  aria-hidden="true"
-                />
-              </div>
-            </div>
-          </section>
+          <AboutRoe
+            progress={progress}
+            opacity={state.aboutOpacity}
+            reading={reading}
+            mobile={mobile}
+            blocked={menuOpen}
+          />
           <section
             id="film-impact"
             className={`${styles['section']} ${styles['impact']}`}
