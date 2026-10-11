@@ -1,4 +1,8 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import mockEnMessages from '../../../messages/en-US.json'
+import esMessages from '../../../messages/es-US.json'
 import '@testing-library/jest-dom'
 import { StrictMode } from 'react'
 import CinematicHome from './index'
@@ -41,7 +45,8 @@ jest.mock('../next-intl', () => ({
 }))
 jest.mock('next-intl', () => ({
   useLocale: () => 'en-US',
-  useTranslations: () => (key: string) => key,
+  useTranslations: () => (key: string) =>
+    key === 'sound' ? mockEnMessages.Cinema.sound : key,
 }))
 jest.mock('./scene', () => ({
   createFilmScene: jest.fn(
@@ -62,6 +67,7 @@ const items: EditorialItem[] = Array.from({ length: 5 }, (_, index) => ({
 }))
 
 beforeEach(() => {
+  localStorage.clear()
   Object.defineProperty(window, 'innerWidth', {
     configurable: true,
     value: 1024,
@@ -620,7 +626,7 @@ describe('home ambient audio', () => {
   const flushFrames = (time: number) => {
     const pending = frames
     frames = []
-    pending.forEach((callback) => callback(time))
+    act(() => pending.forEach((callback) => callback(time)))
   }
 
   const audioOf = (play: jest.SpyInstance) =>
@@ -636,6 +642,11 @@ describe('home ambient audio', () => {
     expect(audio.loop).toBe(true)
     expect(audio.src).toMatch(/\/the-void\.mp3$/)
     expect(audio.volume).toBe(0)
+    expect(screen.getByRole('button', { name: 'Sound' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    expect(esMessages.Cinema.sound).toBe('Sonido')
   })
 
   it('silently ignores blocked autoplay without fading', async () => {
@@ -651,6 +662,10 @@ describe('home ambient audio', () => {
     await Promise.resolve()
     flushFrames(5000)
     expect(audioOf(play).volume).toBe(0)
+    expect(screen.getByRole('button', { name: 'Sound' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    )
     expect(
       error.mock.calls
         .flat()
@@ -675,6 +690,189 @@ describe('home ambient audio', () => {
     }
     expect(audio.volume).toBeCloseTo(0.75)
     expect(frames).toHaveLength(0)
+  })
+
+  it('starts blocked audio on a gesture, then fades out and remembers off', async () => {
+    const play = jest
+      .mocked(HTMLMediaElement.prototype.play)
+      .mockRejectedValueOnce(new DOMException('blocked', 'NotAllowedError'))
+    const pause = jest.mocked(HTMLMediaElement.prototype.pause)
+    render(
+      <CinematicHome posts={items} transmissions={items} projects={items} />,
+    )
+    const button = screen.getByRole('button', { name: 'Sound' })
+    expect(button).toHaveAttribute('type', 'button')
+    expect(button.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
+    await act(async () => {
+      await Promise.resolve()
+    })
+    expect(button).toHaveAttribute('aria-pressed', 'false')
+    fireEvent.click(button)
+    expect(play).toHaveBeenCalledTimes(2)
+    await waitFor(() => expect(button).toHaveAttribute('aria-pressed', 'true'))
+    const audio = audioOf(play)
+    flushFrames(1000)
+    flushFrames(3000)
+    expect(audio.volume).toBeCloseTo(0.75)
+    expect(localStorage.getItem('roe-sound')).toBe('on')
+    fireEvent.click(button)
+    expect(button).toHaveAttribute('aria-pressed', 'false')
+    expect(localStorage.getItem('roe-sound')).toBe('off')
+    expect(pause).not.toHaveBeenCalled()
+    flushFrames(4000)
+    flushFrames(4250)
+    expect(audio.volume).toBeCloseTo(0.375)
+    expect(pause).not.toHaveBeenCalled()
+    flushFrames(4500)
+    expect(audio.volume).toBe(0)
+    expect(pause).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not attempt autoplay when off is remembered', async () => {
+    localStorage.setItem('roe-sound', 'off')
+    const play = jest.mocked(HTMLMediaElement.prototype.play)
+    render(
+      <CinematicHome posts={items} transmissions={items} projects={items} />,
+    )
+    await act(async () => {
+      await Promise.resolve()
+    })
+    expect(play).not.toHaveBeenCalled()
+    expect(screen.getByRole('button', { name: 'Sound' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    )
+  })
+
+  it('cancels a fade-out when toggled back on without pausing the new playback', async () => {
+    const play = jest.mocked(HTMLMediaElement.prototype.play)
+    const pause = jest.mocked(HTMLMediaElement.prototype.pause)
+    render(
+      <CinematicHome posts={items} transmissions={items} projects={items} />,
+    )
+    const button = screen.getByRole('button', { name: 'Sound' })
+    await waitFor(() => expect(button).toHaveAttribute('aria-pressed', 'true'))
+    flushFrames(1000)
+    flushFrames(3000)
+    fireEvent.click(button)
+    flushFrames(4000)
+    fireEvent.click(button)
+    await waitFor(() => expect(button).toHaveAttribute('aria-pressed', 'true'))
+    flushFrames(5000)
+    flushFrames(7000)
+    expect(pause).not.toHaveBeenCalled()
+    expect(play.mock.contexts[1]).toBe(play.mock.contexts[0])
+    expect(audioOf(play).volume).toBeCloseTo(0.75)
+  })
+
+  it('does not let a queued pause event turn off resumed playback', async () => {
+    const play = jest.mocked(HTMLMediaElement.prototype.play)
+    render(
+      <CinematicHome posts={items} transmissions={items} projects={items} />,
+    )
+    const button = screen.getByRole('button', { name: 'Sound' })
+    await waitFor(() => expect(button).toHaveAttribute('aria-pressed', 'true'))
+    fireEvent.click(button)
+    flushFrames(1000)
+    flushFrames(1500)
+    fireEvent.click(button)
+    await waitFor(() => expect(button).toHaveAttribute('aria-pressed', 'true'))
+    const audio = audioOf(play)
+    Object.defineProperty(audio, 'paused', { configurable: true, value: false })
+    act(() => audio.dispatchEvent(new Event('pause')))
+    expect(button).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('ignores stale play promises after a rapid off/on toggle', async () => {
+    const pending: (() => void)[] = []
+    const play = jest
+      .mocked(HTMLMediaElement.prototype.play)
+      .mockImplementation(
+        () => new Promise<void>((resolve) => pending.push(resolve)),
+      )
+    render(
+      <CinematicHome posts={items} transmissions={items} projects={items} />,
+    )
+    await waitFor(() => expect(play).toHaveBeenCalledTimes(1))
+    const button = screen.getByRole('button', { name: 'Sound' })
+    fireEvent.click(button)
+    fireEvent.click(button)
+    await act(async () => pending[0]())
+    expect(button).toHaveAttribute('aria-pressed', 'false')
+    await act(async () => pending[1]())
+    expect(button).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('works when localStorage is unavailable and reflects unexpected pauses', async () => {
+    jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('private')
+    })
+    jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('private')
+    })
+    const play = jest.mocked(HTMLMediaElement.prototype.play)
+    render(
+      <CinematicHome posts={items} transmissions={items} projects={items} />,
+    )
+    const button = screen.getByRole('button', { name: 'Sound' })
+    await waitFor(() => expect(button).toHaveAttribute('aria-pressed', 'true'))
+    act(() => audioOf(play).dispatchEvent(new Event('pause')))
+    expect(button).toHaveAttribute('aria-pressed', 'false')
+    fireEvent.click(button)
+    await waitFor(() => expect(button).toHaveAttribute('aria-pressed', 'true'))
+    fireEvent.click(screen.getByRole('button', { name: 'menu' }))
+    expect(button.closest('[inert]')).toBeNull()
+    expect(button).toBeEnabled()
+  })
+
+  it('snaps sound waves through six half-second frames without transforms', () => {
+    const css = readFileSync(join(__dirname, 'style.module.css'), 'utf8')
+    const sound = css.slice(
+      css.indexOf('.sound-wave-inner,'),
+      css.indexOf('.menu-button {'),
+    )
+    expect(sound).toContain('animation: sound-steps 1s steps(1, end) infinite;')
+    expect(sound).not.toMatch(/transform|ease|fade|animation-delay/)
+    const opacityAt = (name: string, progress: number) => {
+      const body = sound.match(
+        new RegExp(`@keyframes ${name} \{([\\s\\S]*?)\n\}`),
+      )![1]
+      const frames = Array.from(
+        body.matchAll(/([\d.%,\s]+)\{\s*opacity: ([01]);/g),
+      )
+        .flatMap((match) =>
+          Array.from(match[1].matchAll(/(\d+(?:\.\d+)?)%/g), (percent) => ({
+            at: Number(percent[1]),
+            opacity: Number(match[2]),
+          })),
+        )
+        .sort((a, b) => a.at - b.at)
+      return frames.filter((frame) => frame.at <= progress).at(-1)!.opacity
+    }
+    for (const [progress, expected] of [
+      [100 / 12, [1, 0, 0]],
+      [300 / 12, [1, 1, 0]],
+      [500 / 12, [1, 1, 1]],
+      [700 / 12, [0, 1, 1]],
+      [900 / 12, [0, 0, 1]],
+      [1100 / 12, [0, 0, 0]],
+    ] as const) {
+      expect(
+        ['sound-steps', 'sound-steps-middle', 'sound-steps-outer'].map((name) =>
+          opacityAt(name, progress),
+        ),
+      ).toEqual(expected)
+    }
+  })
+
+  it('keeps sound waves static under reduced motion and hidden when off', () => {
+    const css = readFileSync(join(__dirname, 'style.module.css'), 'utf8')
+    expect(css).toMatch(
+      /@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.sound-wave-inner,[\s\S]*?animation: none;[\s\S]*?opacity: 1;/,
+    )
+    expect(css).toMatch(
+      /\.sound-button\[aria-pressed="false"\]\s+:is\([\s\S]*?visibility: hidden;/,
+    )
   })
 
   it('pauses and releases the audio when leaving the home page', async () => {

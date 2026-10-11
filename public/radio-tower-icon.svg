@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" fill="none" aria-label="Art Deco radio transmission tower">
+  <title>Roe the Dev — Art Deco Radio Tower</title>
+  <g fill="#FFF3D8" stroke="#FFF3D8" stroke-linejoin="miter" stroke-linecap="square">
+    <!-- Transmission waves, intentionally bold for small UI sizes -->
+    <path d="M350 171 C272 223 259 351 342 390" stroke-width="37" fill="none"/>
+    <path d="M401 222 C351 268 344 332 364 355" stroke-width="33" fill="none"/>
+    <path d="M445 264 C417 292 411 328 429 344" stroke-width="29" fill="none"/>
+    <path d="M650 171 C728 223 741 351 658 390" stroke-width="37" fill="none"/>
+    <path d="M599 222 C649 268 656 332 636 355" stroke-width="33" fill="none"/>
+    <path d="M555 264 C583 292 589 328 571 344" stroke-width="29" fill="none"/>
+    <!-- Needle and transmission node -->
+    <path d="M500 48 L485 252 H515 Z" stroke="none"/>
+    <circle cx="500" cy="297" r="51" stroke="none"/>
+    <!-- Structural tower: tapered frame -->
+    <path d="M483 346 L322 834" stroke-width="26"/>
+    <path d="M517 346 L678 834" stroke-width="26"/>
+    <!-- Central Art Deco stepped shaft -->
+    <path d="M500 362 V836" stroke-width="30"/>
+    <path d="M468 836 V503 L500 483 L532 503 V836" stroke-width="23"/>
+    <!-- Geometric stepped internal braces -->
+    <path d="M402 596 L470 533 M598 596 L530 533" stroke-width="24"/>
+    <path d="M374 694 L468 616 M626 694 L532 616" stroke-width="24"/>
+    <path d="M342 793 L418 727 H466 M658 793 L582 727 H534" stroke-width="25"/>
+    <!-- Grounded stepped base -->
+    <path d="M290 859 H435 M565 859 H710" stroke-width="27"/>
+    <path d="M247 898 H753" stroke-width="31"/>
+  </g>
+</svg>

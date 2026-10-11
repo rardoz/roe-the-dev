@@ -34,7 +34,8 @@ import {
   sectionPositions,
 } from './motion'
 import { keyRotation } from './tumble'
-import { useLoopingAmbientAudio } from './ambient-audio'
+import { useAmbientSound } from './ambient-audio'
+import { SoundIcon } from './sound-icon'
 import { headingInkBottom } from './heading'
 import { editorialFramePath } from './post-frame'
 import styles from './style.module.css'
@@ -288,7 +289,7 @@ export default function CinematicHome({
   const t = useTranslations('Cinema')
   const about = useTranslations('About')
   const locale = useLocale()
-  useLoopingAmbientAudio()
+  const { isPlaying, toggle } = useAmbientSound()
   const container = useRef<HTMLDivElement>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
   const handle = useRef<HTMLDivElement>(null)
@@ -608,17 +609,28 @@ export default function CinematicHome({
             priority
           />
         </UnstyledLink>
-        <button
-          ref={menuButton}
-          className={styles['menu-button']}
-          aria-label={t('menu')}
-          aria-expanded={menuOpen}
-          aria-controls="film-menu"
-          onClick={() => setMenuOpen((value) => !value)}
-        >
-          <span />
-          <span />
-        </button>
+        <div className={styles['header-controls']}>
+          <button
+            type="button"
+            className={styles['sound-button']}
+            aria-label={t('sound')}
+            aria-pressed={isPlaying}
+            onClick={toggle}
+          >
+            <SoundIcon />
+          </button>
+          <button
+            ref={menuButton}
+            className={styles['menu-button']}
+            aria-label={t('menu')}
+            aria-expanded={menuOpen}
+            aria-controls="film-menu"
+            onClick={() => setMenuOpen((value) => !value)}
+          >
+            <span />
+            <span />
+          </button>
+        </div>
       </header>
       <main id="film-content" tabIndex={-1} inert={menuOpen}>
         {postsStack && !reading && postsSection}

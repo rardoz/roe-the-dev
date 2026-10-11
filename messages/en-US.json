@@ -4,6 +4,7 @@
     "description": "Roe is a creative technologist and artist. Read his blog, view their portfolio, and see their experiments."
   },
   "Cinema": {
+    "sound": "Sound",
     "skip": "Skip to content",
     "menu": "Menu",
     "close": "Close",

@@ -51,6 +51,102 @@
   filter: grayscale(1) brightness(0) invert(1);
 }
 
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sound-button {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #ececec;
+}
+
+.sound-icon {
+  width: 50px;
+  height: 50px;
+}
+
+.sound-button[aria-pressed="false"] .sound-icon {
+  opacity: 0.55;
+}
+
+.sound-wave-inner,
+.sound-wave-middle,
+.sound-wave-outer {
+  animation: sound-steps 1s steps(1, end) infinite;
+}
+
+.sound-wave-middle {
+  animation-name: sound-steps-middle;
+}
+
+.sound-wave-outer {
+  animation-name: sound-steps-outer;
+}
+
+.sound-button[aria-pressed="false"]
+  :is(.sound-wave-inner, .sound-wave-middle, .sound-wave-outer) {
+  visibility: hidden;
+  animation: none;
+}
+
+@keyframes sound-steps {
+  0% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes sound-steps-middle {
+  0% {
+    opacity: 0;
+  }
+
+  16.666667% {
+    opacity: 1;
+  }
+
+  66.666667%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes sound-steps-outer {
+  0% {
+    opacity: 0;
+  }
+
+  33.333333% {
+    opacity: 1;
+  }
+
+  83.333333%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sound-wave-inner,
+  .sound-wave-middle,
+  .sound-wave-outer {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 .menu-button {
   width: 48px;
   height: 48px;
