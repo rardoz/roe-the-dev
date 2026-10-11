@@ -3,6 +3,9 @@ import '@testing-library/jest-dom'
 import CinematicHome from './index'
 import { createFilmScene } from './scene'
 import { headingInkBottom } from './heading'
+import { advancePlanetClouds, planetFragment, planetMapWidth } from './planet'
+
+jest.mock('three', () => ({}))
 import {
   editorialFrameLines,
   editorialFramePath,
@@ -77,6 +80,33 @@ beforeEach(() => {
 })
 
 describe('continuous scroll film', () => {
+  it('drifts cloud formations slowly and freezes their phase with reduced motion', () => {
+    expect(advancePlanetClouds(0, 5, false)).toBeCloseTo(0.06)
+    expect(advancePlanetClouds(0.7, 5, true)).toBe(0.7)
+    expect(advancePlanetClouds(0.7, 0, false)).toBe(0.7)
+    const stepped = Array.from({ length: 100 }).reduce<number>(
+      (phase) => advancePlanetClouds(phase, 0.05, false),
+      0,
+    )
+    expect(stepped).toBeCloseTo(advancePlanetClouds(0, 5, false))
+    expect(advancePlanetClouds(Math.PI * 2 - 0.01, 1, false)).toBeCloseTo(0.002)
+  })
+
+  it('selects bounded map sizes and desaturates painted values without tone mapping', () => {
+    expect(planetMapWidth(390, 3)).toBe(2048)
+    expect(planetMapWidth(1440, 2)).toBe(4096)
+    expect(planetMapWidth(1440, 1)).toBe(4096)
+    expect(planetFragment).toContain('dot(paint.rgb,vec3(.2126,.7152,.0722))')
+    expect(planetFragment).toContain('mix(.025,pow(grey,1.18)*.9,paint.a)')
+    expect(planetFragment).toContain(
+      'texture2D(uMap,(vUv+vec2(cloudLongitudeOffset+uCloudDrift/6.28318530718,0.))*uCloudRepeat)',
+    )
+    expect(planetFragment).not.toMatch(/projectClouds|cloudTile|textureGrad/)
+    expect(planetFragment).not.toMatch(
+      /stormDensity|horizonFade|tonemapping_fragment/,
+    )
+  })
+
   it('anchors to glyph ink rather than the linebox whitespace', () => {
     const heading = document.createElement('h2')
     heading.innerHTML =

@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { createWorld, disposeWorld } from './world'
+import { advancePlanetClouds } from './planet'
 import { disposeObject, loadAsteroid } from './asteroid'
 import { documentFilmProgress, filmState, mix, smooth } from './motion'
 import { createSpatialContent, updateSpatialContent } from './spatial-content'
@@ -77,7 +78,12 @@ export async function createFilmScene({
   const backLight = new THREE.DirectionalLight('#ffffff', 0)
   scene.add(backLight, backLight.target)
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1600)
-  const world = createWorld(scene, asteroidModel)
+  const world = createWorld(scene, asteroidModel, {
+    width: window.innerWidth,
+    pixelRatio: window.devicePixelRatio || 1,
+    anisotropy: renderer.capabilities.getMaxAnisotropy(),
+    onLoad: () => requestDraw(),
+  })
   const asteroidVertices: THREE.Vector3[] = []
   world.asteroid.updateMatrixWorld()
   world.asteroid.traverse((object) => {
@@ -336,6 +342,8 @@ export async function createFilmScene({
     world.debris.rotation.y = p * 0.7
     world.debris.position.y = mix(45, -45, asteroidTravel)
     world.debris.visible = p < 0.48
+    const drift = world.earth.material.uniforms.uCloudDrift
+    drift.value = advancePlanetClouds(drift.value, dt, reduced)
     world.earth.position.y = mobile ? -185 : -200
     world.atmosphere.position.copy(world.earth.position)
     world.earth.visible = p < 0.3

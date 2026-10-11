@@ -19,7 +19,7 @@ float hash(vec3 p) {
 }
 float noise(vec3 p) {
   vec3 i=floor(p), f=fract(p);
-  f=f*f*(3.-2.*f);
+  f=f*f*f*(f*(f*6.-15.)+10.);
   return mix(mix(mix(hash(i),hash(i+vec3(1,0,0)),f.x),mix(hash(i+vec3(0,1,0)),hash(i+vec3(1,1,0)),f.x),f.y),mix(mix(hash(i+vec3(0,0,1)),hash(i+vec3(1,0,1)),f.x),mix(hash(i+vec3(0,1,1)),hash(i+vec3(1,1,1)),f.x),f.y),f.z);
 }
 float smoothUnion(float a,float b,float k) {
@@ -80,40 +80,4 @@ void main() {
   vec4 clip=uViewProjection*uModel*vec4(uCamera+ray*hitTravel,1.);
   gl_FragDepth=clip.z/clip.w*.5+.5;
   gl_FragColor=vec4(color/max(opacity,.001),opacity);
-}`
-
-export const planetVertex = `
-varying vec3 vNormal;
-varying vec3 vView;
-varying vec3 vPosition;
-void main() {
-  vec4 p=modelViewMatrix*vec4(position,1.);
-  vNormal=normalize(normalMatrix*normal);
-  vView=normalize(-p.xyz);
-  vPosition=normalize(position);
-  gl_Position=projectionMatrix*p;
-}`
-
-export const planetFragment = `
-varying vec3 vNormal;
-varying vec3 vView;
-varying vec3 vPosition;
-float planetHash(vec3 p) {
-  p=fract(p*.3183099+vec3(.11,.37,.79));p*=17.;
-  return fract(p.x*p.y*p.z*(p.x+p.y+p.z));
-}
-float planetNoise(vec3 p) {
-  vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
-  return mix(mix(mix(planetHash(i),planetHash(i+vec3(1,0,0)),f.x),mix(planetHash(i+vec3(0,1,0)),planetHash(i+vec3(1,1,0)),f.x),f.y),mix(mix(planetHash(i+vec3(0,0,1)),planetHash(i+vec3(1,0,1)),f.x),mix(planetHash(i+vec3(0,1,1)),planetHash(i+vec3(1,1,1)),f.x),f.y),f.z);
-}
-void main() {
-  float coast=planetNoise(vPosition*7.)*.55+planetNoise(vPosition*15.)*.3+planetNoise(vPosition*31.)*.15;
-  float earth=step(.57,coast);
-  vec3 drift=vec3(planetNoise(vPosition*5.),planetNoise(vPosition*5.+4.),planetNoise(vPosition*5.-3.));
-  float bank=planetNoise(vPosition*29.+drift*2.)*.58+planetNoise(vPosition*63.)*.29+planetNoise(vPosition*121.)*.13;
-  float clouds=smoothstep(.54,.61,bank);
-  float rim=pow(1.-abs(dot(vNormal,vView)),11.);
-  float light=max(0.,dot(vNormal,normalize(vec3(-.45,.9,.35))));
-  float tone=(.016+earth*.035+clouds*.64)*(.32+light*.68)+rim*.9;
-  gl_FragColor=vec4(vec3(tone),1.);
 }`

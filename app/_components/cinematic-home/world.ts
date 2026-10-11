@@ -1,10 +1,6 @@
 import * as THREE from 'three'
-import {
-  cloudVertex,
-  cloudFragment,
-  planetVertex,
-  planetFragment,
-} from './cloud-shader'
+import { cloudVertex, cloudFragment } from './cloud-shader'
+import { createPlanet } from './planet'
 import { createDebris } from './asteroid'
 
 export function seededRandom(seed: number) {
@@ -639,7 +635,16 @@ function wasteland() {
   return { group, scorpion, tumbleweed }
 }
 
-export function createWorld(scene: THREE.Scene, asteroidModel: THREE.Object3D) {
+export function createWorld(
+  scene: THREE.Scene,
+  asteroidModel: THREE.Object3D,
+  planetOptions = {
+    width: 1440,
+    pixelRatio: 1,
+    anisotropy: 1,
+    onLoad: () => {},
+  },
+) {
   const asteroidGroup = new THREE.Group()
   asteroidGroup.add(asteroidModel)
   const city = industrialCity()
@@ -647,14 +652,12 @@ export function createWorld(scene: THREE.Scene, asteroidModel: THREE.Object3D) {
   const arrivalLight = openingLight()
   const cloud = mushroomCloud()
   const desert = wasteland()
-  const earth = new THREE.Mesh(
-    new THREE.SphereGeometry(260, 96, 64),
-    new THREE.ShaderMaterial({
-      vertexShader: planetVertex,
-      fragmentShader: planetFragment,
-    }),
+  const { earth } = createPlanet(
+    planetOptions.width,
+    planetOptions.pixelRatio,
+    planetOptions.anisotropy,
+    planetOptions.onLoad,
   )
-  earth.position.set(0, -260, -220)
   const atmosphere = new THREE.Mesh(
     new THREE.SphereGeometry(260.5, 96, 64),
     new THREE.ShaderMaterial({
@@ -669,6 +672,7 @@ export function createWorld(scene: THREE.Scene, asteroidModel: THREE.Object3D) {
     }),
   )
   atmosphere.position.copy(earth.position)
+  atmosphere.renderOrder = 2
   const random = seededRandom(533)
   const debris = createDebris(54)
   const haze = cloudBanks()
