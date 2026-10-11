@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
+import { StrictMode } from 'react'
 import CinematicHome from './index'
 import { createFilmScene } from './scene'
 import { headingInkBottom } from './heading'
@@ -77,6 +78,15 @@ beforeEach(() => {
     disconnect() {}
     unobserve() {}
   }
+  jest
+    .spyOn(HTMLMediaElement.prototype, 'play')
+    .mockImplementation(() => Promise.resolve())
+  jest.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {})
+  jest.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => {})
+})
+
+afterEach(() => {
+  jest.restoreAllMocks()
 })
 
 describe('continuous scroll film', () => {
@@ -593,5 +603,111 @@ describe('semantic content and native controls', () => {
     expect(screen.getByRole('button', { name: 'next' })).toBeDisabled()
     expect(document.querySelector('#film-portfolio button')).toBeNull()
     expect(document.querySelector('#film-posts button')).toBeNull()
+  })
+})
+
+describe('home ambient audio', () => {
+  let frames: FrameRequestCallback[]
+
+  beforeEach(() => {
+    frames = []
+    jest
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => frames.push(callback))
+    jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {})
+  })
+
+  const flushFrames = (time: number) => {
+    const pending = frames
+    frames = []
+    pending.forEach((callback) => callback(time))
+  }
+
+  const audioOf = (play: jest.SpyInstance) =>
+    play.mock.contexts[0] as HTMLAudioElement
+
+  it('attempts looping playback of the void on mount', async () => {
+    const play = jest.mocked(HTMLMediaElement.prototype.play)
+    render(
+      <CinematicHome posts={items} transmissions={items} projects={items} />,
+    )
+    await waitFor(() => expect(play).toHaveBeenCalledTimes(1))
+    const audio = audioOf(play)
+    expect(audio.loop).toBe(true)
+    expect(audio.src).toMatch(/\/the-void\.mp3$/)
+    expect(audio.volume).toBe(0)
+  })
+
+  it('silently ignores blocked autoplay without fading', async () => {
+    const error = jest.spyOn(console, 'error')
+    const play = jest
+      .mocked(HTMLMediaElement.prototype.play)
+      .mockRejectedValue(new DOMException('blocked', 'NotAllowedError'))
+    render(
+      <CinematicHome posts={items} transmissions={items} projects={items} />,
+    )
+    await waitFor(() => expect(play).toHaveBeenCalled())
+    await Promise.resolve()
+    await Promise.resolve()
+    flushFrames(5000)
+    expect(audioOf(play).volume).toBe(0)
+    expect(
+      error.mock.calls
+        .flat()
+        .some((arg) => /NotAllowed|blocked/.test(`${arg}`)),
+    ).toBe(false)
+  })
+
+  it('fades in to 0.75 over two seconds once playing', async () => {
+    const play = jest.mocked(HTMLMediaElement.prototype.play)
+    render(
+      <CinematicHome posts={items} transmissions={items} projects={items} />,
+    )
+    await waitFor(() => expect(play).toHaveBeenCalled())
+    const audio = audioOf(play)
+    await waitFor(() => expect(frames.length).toBeGreaterThan(0))
+    let volume = 0
+    for (const time of [1000, 1000, 2000, 3000, 3500]) {
+      flushFrames(time)
+      expect(audio.volume).toBeGreaterThanOrEqual(volume)
+      volume = audio.volume
+      if (time === 2000) expect(audio.volume).toBeCloseTo(0.375)
+    }
+    expect(audio.volume).toBeCloseTo(0.75)
+    expect(frames).toHaveLength(0)
+  })
+
+  it('pauses and releases the audio when leaving the home page', async () => {
+    const play = jest.mocked(HTMLMediaElement.prototype.play)
+    const pause = jest.mocked(HTMLMediaElement.prototype.pause)
+    const load = jest.mocked(HTMLMediaElement.prototype.load)
+    const { unmount } = render(
+      <CinematicHome posts={items} transmissions={items} projects={items} />,
+    )
+    await waitFor(() => expect(frames.length).toBeGreaterThan(0))
+    const audio = audioOf(play)
+    unmount()
+    expect(pause.mock.contexts).toContain(audio)
+    expect(load.mock.contexts).toContain(audio)
+    expect(audio.hasAttribute('src')).toBe(false)
+    expect(window.cancelAnimationFrame).toHaveBeenCalled()
+    flushFrames(10000)
+    expect(audio.volume).toBe(0)
+  })
+
+  it('keeps a single audio instance under Strict Mode remounts', async () => {
+    const play = jest.mocked(HTMLMediaElement.prototype.play)
+    const pause = jest.mocked(HTMLMediaElement.prototype.pause)
+    render(
+      <StrictMode>
+        <CinematicHome posts={items} transmissions={items} projects={items} />
+      </StrictMode>,
+    )
+    await waitFor(() => expect(play).toHaveBeenCalled())
+    await Promise.resolve()
+    expect(play).toHaveBeenCalledTimes(1)
+    const audio = audioOf(play)
+    expect(audio.src).toMatch(/\/the-void\.mp3$/)
+    expect(pause.mock.contexts).not.toContain(audio)
   })
 })

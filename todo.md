@@ -85,3 +85,7 @@
   - Card cap/parity refinement independently verified: outer card footprint is min(viewport - 40px, approximately 422px), with 350px at 390px and approximately 422px from 699-1000px. Stacked cards use the shared desktop frame geometry and SVG ornament. Desktop (>=1001px) hides the SVG and renders the WebGL frame. A leftover outer box-shadow rectangle was removed; screenshots at 390 and 974 match the 1440 desktop frame. Keyboard focus shows a visible 2px outline.
   - Latest checks: 35 cinematic-home tests, repository lint, TypeScript, and diff checks pass. Direct CSS-module Stylelint reports only the three preexisting errors. Ready for manual review; not done or committed.
   - User approved Featured Posts on 2026-10-10. Not committed.
+
+- [x] **done** — Play the background audio (public/the-void.mp3) in a loop on the home page.
+  - Confirmed: try to autoplay on load; if the browser blocks it, do nothing (no click fallback). No sound control for now. Home page only; stop and clean up when the visitor leaves. Do not remember preferences. Volume 75%, fade in over about 2 seconds. Use React. Do not change visuals.
+  - Implemented as the React hook useLoopingAmbientAudio (ambient-audio.ts), called from CinematicHome. Headless Chrome check: with autoplay allowed it loops, fading 0 to 0.75 in about 2s; with the default policy it is blocked silently with no errors; leaving the home page stops it. Strict Mode creates only one instance. 44 tests, lint, TypeScript, and diff check pass. Not committed.

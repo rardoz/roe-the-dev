@@ -34,6 +34,7 @@ import {
   sectionPositions,
 } from './motion'
 import { keyRotation } from './tumble'
+import { useLoopingAmbientAudio } from './ambient-audio'
 import { headingInkBottom } from './heading'
 import { editorialFramePath } from './post-frame'
 import styles from './style.module.css'
@@ -287,6 +288,7 @@ export default function CinematicHome({
   const t = useTranslations('Cinema')
   const about = useTranslations('About')
   const locale = useLocale()
+  useLoopingAmbientAudio()
   const container = useRef<HTMLDivElement>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
   const handle = useRef<HTMLDivElement>(null)
