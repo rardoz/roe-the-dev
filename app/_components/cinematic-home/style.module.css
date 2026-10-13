@@ -1,6 +1,8 @@
 .film {
   position: relative;
-  min-height: calc(1700svh + var(--posts-extra, 0px));
+  min-height: calc(
+    1700svh + var(--posts-extra, 0px) + var(--atmosphere-extra, 0px)
+  );
   color: #e9e6df;
   background: #030303;
   font-family: Arial, Helvetica, sans-serif;

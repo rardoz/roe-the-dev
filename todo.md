@@ -1,0 +1,17 @@
+- [ ] **testing** — Refine the atmospheric descent between Featured Posts and About.
+  - Assigned: Andy for implementation; Tiffany for visual review and shared task tracking.
+  - Scope: the atmospheric background and its scroll timing. Preserve the approved opening/Earth, Featured Posts and About layouts, content, interactions, and later scenes.
+  - Remove the white central light ball and the old dark left/right forms completely.
+  - Use separate, unique 3D clouds at different depths, ready for future objects to pass around and between them. Do not stretch the opening Earth's cloud artwork across the transition.
+  - Show the meteor descending through roughly ten cloud layers. Clouds become smaller closer to the city and linger around the tallest peaks.
+  - Clouds must remain absent until the Featured Posts cards have completely cleared. They should move upward and out as the meteor descends, with irregular spacing rather than a uniform diagonal or paired sideways flow.
+  - Latest direction 2026-10-12: add several scrolls of cloud-only travel before the city and About enter. Bring the city into view continuously near the end of that interval; retain the About layout and controls.
+  - Current constraint: do not create or run tests, benchmarks, or metric fixtures for this visual work. Focus on appearance, usability, and browser inspection. Existing tests remain untouched; the new cloud test file has been removed.
+  - Previous visual revisions were rejected: screen-bound cloud curtains, stretched Earth-map banks, early clouds behind the cards, and a repeated diagonal flow. Their verification records do not constitute design approval.
+  - Implemented: three viewport heights of cloud-only scroll travel after the cards clear. Clouds rise independently at fixed lateral positions; the city enters continuously near the end. About and its asteroid controls stay hidden until that passage ends, then resume their original entrance and dwell. Section navigation includes the added distance.
+  - Roe's feedback 2026-10-12: the current direction looks incredible; continue polishing this transition. Keep the approved look and scope, refine cloud motion and the city/About handoff through visual inspection, and retain the no-tests constraint.
+  - Polished: separated overlapping cloud silhouettes, maintained cloud presence later in the descent, removed the exposed horizon circle during card departure/cloud travel, cleared the mobile About link, and continued passing-cloud motion smoothly into About instead of freezing overhead. Small clouds remain around the city peaks.
+  - Reviewed: Tiffany inspected rendered desktop and emulated phone previews of card departure, cloud passage, city arrival, About entrance/settled, and reverse arrival. Andy reviewed native-wheel forward/reverse motion. Approved opening, section layouts/content, and later scenes are preserved.
+  - Validation: final repository lint passes under nvm Node 24.21.0; cinematic CSS-module lint also passes. No tests or benchmarks run during the final visual revision and polish. No commit requested.
+  - Review evidence: /private/tmp/andy-atmosphere-motion-polish-{desktop,phone}-{city-arrival,about-entering,about-settled,reverse-arrival}.png, with the preceding cloud passage in /private/tmp/andy-atmosphere-gap-v2-{desktop,phone}-{clouds-early,clouds-mid,clouds-late}.png.
+  - Ready for Roe's final visual review. Mark done after approval; no later task started.

@@ -1,8 +1,13 @@
 import * as THREE from 'three'
 import { createWorld, disposeWorld } from './world'
 import { advancePlanetClouds } from './planet'
+import {
+  atmosphericDescent,
+  updateAtmosphericDescent,
+} from './atmospheric-descent'
 import { disposeObject, loadAsteroid } from './asteroid'
-import { documentFilmProgress, filmState, mix, smooth } from './motion'
+import { filmState, mix, postsStacked, smooth } from './motion'
+import { aboutReplay, filmScrollFrame } from './film-scroll'
 import { createSpatialContent, updateSpatialContent } from './spatial-content'
 import {
   createTumble,
@@ -153,6 +158,10 @@ export async function createFilmScene({
   let lastDraw = -1
   let progress = 0
   let smoothProgress = 0
+  let atmosphere = -1
+  let smoothAtmosphere = -1
+  let postsProgress = 0
+  let aboutReady = false
   let tumble = createTumble()
   let lastTime = -1
   let lastScrollY = window.scrollY
@@ -177,12 +186,19 @@ export async function createFilmScene({
 
   const readProgress = () => {
     const extra = Number(container.dataset.postsExtra || 0)
-    const length = container.offsetHeight - window.innerHeight - extra
-    progress = documentFilmProgress(
+    const atmosphereExtra = Number(container.dataset.atmosphereExtra || 0)
+    const length =
+      container.offsetHeight - window.innerHeight - extra - atmosphereExtra
+    const scrollFrame = filmScrollFrame(
       window.scrollY - container.offsetTop,
       length,
       extra,
+      Math.max(0, atmosphereExtra - length * aboutReplay),
     )
+    progress = scrollFrame.sceneProgress
+    postsProgress = scrollFrame.postsProgress
+    atmosphere = scrollFrame.atmosphere
+    aboutReady = scrollFrame.aboutReady
   }
 
   const handleOpen = (p: number) =>
@@ -251,6 +267,14 @@ export async function createFilmScene({
       ? progress
       : mix(smoothProgress, progress, 1 - Math.exp(-step / 0.0956))
     if (Math.abs(smoothProgress - progress) < 0.00001) smoothProgress = progress
+    smoothAtmosphere =
+      atmosphere < 0
+        ? -1
+        : reduced || smoothAtmosphere < 0
+          ? atmosphere
+          : mix(smoothAtmosphere, atmosphere, 1 - Math.exp(-step / 0.0956))
+    if (Math.abs(smoothAtmosphere - atmosphere) < 0.00001)
+      smoothAtmosphere = atmosphere
     pointer.lerp(pointerTarget, 1 - Math.exp(-step / 0.325))
     const rawSpeed =
       dt > 0 ? (window.scrollY - lastScrollY) / window.innerHeight / dt : 0
@@ -345,7 +369,11 @@ export async function createFilmScene({
     world.asteroid.scale.set(rockScale, rockScale, rockScale)
     world.asteroid.visible = p < 0.516
     const aboutPhase = aboutAsteroidState(p)
-    if (aboutPhase.active && container.dataset.aboutControl === 'true') {
+    if (
+      aboutReady &&
+      aboutPhase.active &&
+      container.dataset.aboutControl === 'true'
+    ) {
       camera.updateMatrixWorld()
       world.asteroid.updateMatrixWorld()
       aboutPoint.copy(world.asteroid.position).project(camera)
@@ -438,29 +466,31 @@ export async function createFilmScene({
       )
       sun.quaternion.copy(camera.quaternion)
     }
-    world.cityDisc.visible = p > 0.24 && p < 0.55
     // Rays and searchlight beams stay out of the Featured Posts backdrop and return for the city.
     const rays = smooth(0.315, 0.35, p)
+    const atmosphericBlend = atmosphericDescent(smoothAtmosphere, p)
     ;(world.city.userData.beamMaterial as THREE.MeshBasicMaterial).opacity =
-      0.07 * rays
-    ;(
-      (world.cityDisc.children[0] as THREE.Mesh)
-        .material as THREE.ShaderMaterial
-    ).uniforms.uRays.value = rays
+      0.07 * rays * (1 - atmosphericBlend)
     // The city's illuminated ribs project as vertical shafts behind the posts.
-    world.city.visible = state.postsBackdropClear
+    const cityArrival = smooth(0.67, 1, smoothAtmosphere)
+    const cityOffset = smoothAtmosphere < 0 ? -210 : mix(-210, 0, cityArrival)
+    world.city.position.y = cityOffset
+    world.city.visible = postsProgress >= 0.315
     world.city.scale.y = mix(1, 0.35, state.impact)
     world.city.rotation.z = state.impact * -0.035
     world.cloud.visible = state.impact > 0.001
     const cloudSize = smooth(0.49, 0.57, p)
     world.cloud.scale.setScalar(cloudSize)
     world.cloud.rotation.y = state.portfolio * -0.28
-    world.haze.visible = p > 0.245 && p < 0.53
-    world.haze.children.forEach((bank, index) => {
-      bank.position.x = (index ? 1 : -1) * mix(28, 58, smooth(0.3, 0.445, p))
-    })
-    world.haze.position.y = mix(5, -1, smooth(0.32, 0.5, p))
-    world.haze.rotation.y = p * 0.14
+    updateAtmosphericDescent(
+      world.atmosphericClouds,
+      smoothAtmosphere,
+      mobile,
+      camera,
+      postsStacked(width),
+      cityOffset,
+      p,
+    )
     world.shockwave.visible = p > 0.486 && p < 0.565
     world.shockwave.scale.setScalar(mix(1, 95, smooth(0.486, 0.565, p)))
     ;(world.shockwave.material as THREE.MeshBasicMaterial).opacity =
@@ -479,7 +509,8 @@ export async function createFilmScene({
       world.blastDebris.setMatrixAt(index, debrisPose.matrix)
     })
     world.blastDebris.instanceMatrix.needsUpdate = true
-    world.desert.group.visible = p > 0.15
+    world.desert.group.visible =
+      p > 0.15 && ((atmosphere < 0 && p < 0.285) || aboutReady)
     world.desert.tumbleweed.position.x = mix(-8, 7, state.retreat)
     world.desert.tumbleweed.rotation.z = state.retreat * -13
     world.desert.scorpion.position.x = -6 + state.retreat * 1.4
@@ -508,7 +539,7 @@ export async function createFilmScene({
     const postsAnimating = updateSpatialContent(
       postFrames,
       camera,
-      p,
+      atmosphere >= 0 ? Math.max(0.315, p) : p,
       mobile,
       'posts',
       container,
@@ -549,6 +580,7 @@ export async function createFilmScene({
       (world.asteroid.visible ||
         postsAnimating ||
         Math.abs(progress - smoothProgress) > 0.000001 ||
+        Math.abs(atmosphere - smoothAtmosphere) > 0.000001 ||
         pointer.distanceTo(pointerTarget) > 0.001)
     )
       frame = requestAnimationFrame(frameScene)

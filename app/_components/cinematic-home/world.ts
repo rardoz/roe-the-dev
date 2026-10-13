@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { cloudVertex, cloudFragment } from './cloud-shader'
 import { createPlanet } from './planet'
 import { createDebris } from './asteroid'
+import { createAtmosphericDescent } from './atmospheric-descent'
 
 export function seededRandom(seed: number) {
   let state = seed >>> 0
@@ -379,36 +380,6 @@ function industrialCity() {
   return group
 }
 
-function atmosphericDisc() {
-  const group = new THREE.Group()
-  const material = new THREE.ShaderMaterial({
-    transparent: true,
-    depthWrite: false,
-    uniforms: { uRays: { value: 0 } },
-    vertexShader:
-      'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-    fragmentShader: `uniform float uRays;varying vec2 vUv;
-void main(){
-  vec2 p=(vUv-.5)*2.;
-  float r=length(p);
-  float angle=atan(p.y,p.x);
-  float sun=1.-smoothstep(.43,.46,r);
-  float ring=smoothstep(.47,.49,r)*(1.-smoothstep(.495,.51,r))*.7;
-  float ring2=smoothstep(.55,.565,r)*(1.-smoothstep(.57,.585,r))*.32;
-  float rays=step(.5,fract(angle*5.7295))*smoothstep(.46,.62,r)*(1.-smoothstep(.62,1.,r))*.26*uRays;
-  float halo=exp(-pow(max(r-.43,0.),2.)*34.)*.5*(1.-sun);
-  float shade=.7+.3*smoothstep(.35,-.45,p.y);
-  float alpha=clamp(sun*.97+ring+ring2+rays+halo,0.,1.)*(1.-smoothstep(.9,1.,r));
-  gl_FragColor=vec4(vec3(mix(1.,shade,sun)),alpha);
-}`,
-    side: THREE.DoubleSide,
-  })
-  const disc = new THREE.Mesh(new THREE.PlaneGeometry(208, 208), material)
-  disc.position.set(-3, 44, -78)
-  group.add(disc)
-  return group
-}
-
 function openingLight() {
   const group = new THREE.Group()
   const material = new THREE.ShaderMaterial({
@@ -424,35 +395,6 @@ function openingLight() {
   const light = new THREE.Mesh(new THREE.CircleGeometry(22, 64), material)
   light.position.set(0, 33, -135)
   group.add(light)
-  return group
-}
-
-function cloudBanks() {
-  const group = new THREE.Group()
-  const random = seededRandom(73)
-  const material = new THREE.ShaderMaterial({
-    vertexShader: rockVertex,
-    fragmentShader: `varying vec3 vNormal;varying vec3 vWorld;void main(){float light=max(0.,dot(normalize(vNormal),normalize(vec3(-.5,.85,.1))));float rim=pow(1.-abs(dot(normalize(vNormal),normalize(cameraPosition-vWorld))),5.);float band=floor(light*4.)/4.;gl_FragColor=vec4(vec3(.02+band*.36+light*.1+rim*.16),1.);}`,
-  })
-  for (const side of [-1, 1]) {
-    const bank = new THREE.Group()
-    for (let index = 0; index < 34; index++) {
-      const cloud = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(1, 3),
-        material,
-      )
-      cloud.position.set(
-        side * (14 + random() * 27),
-        random() * 34 - 7,
-        random() * 28,
-      )
-      cloud.scale.set(7 + random() * 9, 4 + random() * 7, 6 + random() * 8)
-      cloud.rotation.set(random() * 0.6, random() * 2, random() * 0.4)
-      bank.add(cloud)
-    }
-    bank.position.set(side * 28, 14, 34)
-    group.add(bank)
-  }
   return group
 }
 
@@ -648,7 +590,6 @@ export function createWorld(
   const asteroidGroup = new THREE.Group()
   asteroidGroup.add(asteroidModel)
   const city = industrialCity()
-  const cityDisc = atmosphericDisc()
   const arrivalLight = openingLight()
   const cloud = mushroomCloud()
   const desert = wasteland()
@@ -675,7 +616,10 @@ export function createWorld(
   atmosphere.renderOrder = 2
   const random = seededRandom(533)
   const debris = createDebris(54)
-  const haze = cloudBanks()
+  const atmosphericClouds = createAtmosphericDescent(
+    planetOptions.width,
+    planetOptions.onLoad,
+  )
   const shockwave = new THREE.Mesh(
     new THREE.TorusGeometry(1, 0.035, 4, 100),
     new THREE.MeshBasicMaterial({
@@ -696,28 +640,26 @@ export function createWorld(
   scene.add(
     asteroidGroup,
     city,
-    cityDisc,
     arrivalLight,
     cloud,
     desert.group,
     earth,
     atmosphere,
     debris,
-    haze,
+    atmosphericClouds,
     shockwave,
     blastDebris,
   )
   return {
     asteroid: asteroidGroup,
     city,
-    cityDisc,
     arrivalLight,
     cloud,
     desert,
     earth,
     atmosphere,
     debris,
-    haze,
+    atmosphericClouds,
     shockwave,
     blastDebris,
     blastPaths,

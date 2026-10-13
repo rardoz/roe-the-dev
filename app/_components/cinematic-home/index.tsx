@@ -23,8 +23,6 @@ import {
   clamp,
   POST_FRAME,
   crossingCard,
-  documentFilmOffset,
-  documentFilmProgress,
   filmState,
   helixCard,
   mobilePostWidth,
@@ -33,6 +31,7 @@ import {
   postsStacked,
   sectionPositions,
 } from './motion'
+import { aboutReplay, filmScrollFrame, filmScrollOffset } from './film-scroll'
 import { keyRotation } from './tumble'
 import { useAmbientSound } from './ambient-audio'
 import { SoundIcon } from './sound-icon'
@@ -297,7 +296,10 @@ export default function CinematicHome({
   const menu = useRef<HTMLDivElement>(null)
   const [hadWebGL, setHadWebGL] = useState(false)
   const [renderer, setRenderer] = useState('loading')
-  const [progress, setProgress] = useState(0)
+  const [scrollFrame, setScrollFrame] = useState(() => filmScrollFrame(0, 1))
+  const { progress, postsProgress, atmosphere, aboutReady } = scrollFrame
+  const [scrollFraction, setScrollFraction] = useState(0)
+  const [atmosphereExtra, setAtmosphereExtra] = useState(0)
   const [mobile, setMobile] = useState(false)
   const [viewportWidth, setViewportWidth] = useState(1440)
   const [reduced, setReduced] = useState(false)
@@ -308,7 +310,14 @@ export default function CinematicHome({
   const [mobileEntries, setMobileEntries] = useState<number[]>([])
   const reading =
     reduced || readingSelected || (renderer === 'fallback' && !hadWebGL)
-  const state = filmState(progress)
+  const postsState = filmState(postsProgress)
+  const state = {
+    ...filmState(progress),
+    postsOpacity: postsState.postsOpacity,
+    postsCardsOpacity: postsState.postsCardsOpacity,
+    postsRise: postsState.postsRise,
+    aboutOpacity: aboutReady ? filmState(progress).aboutOpacity : 0,
+  }
   const postsStack = postsStacked(viewportWidth)
   useEffect(() => {
     if (postsStack || reading || renderer === 'webgl') return
@@ -372,15 +381,33 @@ export default function CinematicHome({
           container.current.querySelector<HTMLElement>('#film-posts')
         const extra = postsStack && !reading ? postsExtra : 0
         const distance =
-          container.current.offsetHeight - window.innerHeight - extra
+          container.current.offsetHeight -
+          window.innerHeight -
+          extra -
+          (reading ? 0 : atmosphereExtra)
         setPostsTop(distance * 0.14)
-        setProgress(
-          documentFilmProgress(
+        const cloudDistance = reading
+          ? 0
+          : Math.max(0, atmosphereExtra - distance * aboutReplay)
+        setScrollFrame(
+          filmScrollFrame(
             window.scrollY - container.current.offsetTop,
             distance,
             extra,
+            cloudDistance,
           ),
         )
+        setScrollFraction(
+          clamp(
+            (window.scrollY - container.current.offsetTop) /
+              Math.max(1, container.current.offsetHeight - window.innerHeight),
+          ),
+        )
+        const neededAtmosphere = reading
+          ? 0
+          : window.innerHeight * 3 + distance * aboutReplay
+        if (Math.abs(neededAtmosphere - atmosphereExtra) > 1)
+          setAtmosphereExtra(neededAtmosphere)
         if (postsStack && !reading && section) {
           const cards = section.querySelectorAll<HTMLElement>(
             '[data-spatial-card]',
@@ -423,7 +450,7 @@ export default function CinematicHome({
       query.removeEventListener('change', sync)
       observer.disconnect()
     }
-  }, [postsStack, reading, postsExtra])
+  }, [postsStack, reading, postsExtra, atmosphereExtra])
 
   useEffect(() => {
     if (!menuOpen) return
@@ -466,12 +493,19 @@ export default function CinematicHome({
       window.scrollTo({
         top:
           container.current.offsetTop +
-          documentFilmOffset(
+          filmScrollOffset(
             postsStack && name === 'posts' ? 0.14 : sectionPositions[name],
             container.current.offsetHeight -
               window.innerHeight -
-              (postsStack && !reading ? postsExtra : 0),
+              (postsStack && !reading ? postsExtra : 0) -
+              atmosphereExtra,
             postsStack && !reading ? postsExtra : 0,
+            atmosphereExtra -
+              (container.current.offsetHeight -
+                window.innerHeight -
+                (postsStack ? postsExtra : 0) -
+                atmosphereExtra) *
+                aboutReplay,
           ),
         behavior: 'smooth',
       })
@@ -579,10 +613,13 @@ export default function CinematicHome({
       data-renderer={renderer}
       data-mode={reading ? 'reading' : 'cinema'}
       data-progress={progress.toFixed(5)}
+      data-atmosphere={atmosphere.toFixed(5)}
+      data-atmosphere-extra={reading ? 0 : atmosphereExtra}
       data-posts-document={postsStack && !reading}
       data-posts-extra={postsStack && !reading ? postsExtra : 0}
       style={
         {
+          '--atmosphere-extra': `${reading ? 0 : atmosphereExtra}px`,
           '--posts-extra': `${postsStack && !reading ? postsExtra : 0}px`,
           '--posts-top': `${postsTop}px`,
         } as CSSProperties
@@ -701,7 +738,7 @@ export default function CinematicHome({
             opacity={state.aboutOpacity}
             reading={reading}
             mobile={mobile}
-            blocked={menuOpen}
+            blocked={menuOpen || !aboutReady}
           />
           <section
             id="film-impact"
@@ -810,7 +847,7 @@ export default function CinematicHome({
         ))}
       </nav>
       <div className={styles['progress-line']} aria-hidden="true">
-        <span style={{ transform: `scaleX(${progress})` }} />
+        <span style={{ transform: `scaleX(${scrollFraction})` }} />
       </div>
       {menuOpen && (
         <div
