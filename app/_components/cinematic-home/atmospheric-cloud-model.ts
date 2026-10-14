@@ -153,7 +153,7 @@ const cloudX = [
   -31, 34, 47, -44,
 ]
 
-export const cloudPlacements = Array.from({ length: 20 }, (_, slot) => {
+const originalCloudPlacements = Array.from({ length: 20 }, (_, slot) => {
   const layer = Math.floor(slot / 2)
   const index = slot % 2
   const city = layer / 9
@@ -181,6 +181,44 @@ export const cloudPlacements = Array.from({ length: 20 }, (_, slot) => {
   }
 })
 
+const addedCloudArrival = [
+  0.035, 0.119, 0.22, 0.308, 0.403, 0.493, 0.595, 0.686, 0.785, 0.891,
+]
+const addedCloudX = [126, -122, 110, -122, 122, -118, 106, -112, 94, -96]
+
+const addedCloudPlacements = Array.from({ length: 10 }, (_, layer) => {
+  const index = 2
+  const city = layer / 9
+  const seed = 137 + layer * 379 + index * 153
+  const random = randomSequence(seed)
+  const size = mix(63, 9, city) * (0.73 + random() * 0.42)
+  const z = layer >= 8 ? -59 + random() * 14 : -103 + random() * 75
+  return {
+    seed,
+    layer,
+    city,
+    arrival: addedCloudArrival[layer],
+    duration: 0.27 + random() * 0.045,
+    x: addedCloudX[layer],
+    y:
+      layer >= 8
+        ? 81 + random() * 5
+        : 13 + (145 - z) * 0.625 - 118 + random() * 35,
+    z,
+    scale: [
+      size,
+      size * (0.54 + random() * 0.22),
+      size * (0.6 + random() * 0.12),
+    ],
+    turn: (random() - 0.5) * 0.7,
+  }
+})
+
+export const cloudPlacements = [
+  ...originalCloudPlacements,
+  ...addedCloudPlacements,
+]
+
 export type CloudPlacement = (typeof cloudPlacements)[number]
 
 export function cloudPose(
@@ -204,14 +242,14 @@ export function cloudPose(
     : passage
   return {
     position: [
-      x * (mobile ? 0.36 : 1),
+      x,
       y +
         (lingering
           ? cityOffset + travel * 1.5 - (mobile ? 13 : 0)
           : travel * mix(315, 285, city)),
       z + travel * (lingering ? 3 : 12),
     ] as const,
-    scale: [scale[0] * (mobile ? 0.6 : 1), scale[1], scale[2]] as const,
+    scale: [scale[0], scale[1], scale[2]] as const,
     opacity: opacity * (stacked ? 0.92 : 1),
     steps: mobile ? 32 : 48,
   }

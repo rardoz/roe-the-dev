@@ -619,6 +619,7 @@ export function createWorld(
   const atmosphericClouds = createAtmosphericDescent(
     planetOptions.width,
     planetOptions.onLoad,
+    planetOptions.anisotropy,
   )
   const shockwave = new THREE.Mesh(
     new THREE.TorusGeometry(1, 0.035, 4, 100),

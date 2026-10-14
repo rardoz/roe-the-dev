@@ -1,4 +1,4 @@
-- [ ] **testing** — Refine the atmospheric descent between Featured Posts and About.
+- [x] **done** — Refine the atmospheric descent between Featured Posts and About.
   - Assigned: Andy for implementation; Tiffany for visual review and shared task tracking.
   - Scope: the atmospheric background and its scroll timing. Preserve the approved opening/Earth, Featured Posts and About layouts, content, interactions, and later scenes.
   - Remove the white central light ball and the old dark left/right forms completely.
@@ -14,4 +14,88 @@
   - Reviewed: Tiffany inspected rendered desktop and emulated phone previews of card departure, cloud passage, city arrival, About entrance/settled, and reverse arrival. Andy reviewed native-wheel forward/reverse motion. Approved opening, section layouts/content, and later scenes are preserved.
   - Validation: final repository lint passes under nvm Node 24.21.0; cinematic CSS-module lint also passes. No tests or benchmarks run during the final visual revision and polish. No commit requested.
   - Review evidence: /private/tmp/andy-atmosphere-motion-polish-{desktop,phone}-{city-arrival,about-entering,about-settled,reverse-arrival}.png, with the preceding cloud passage in /private/tmp/andy-atmosphere-gap-v2-{desktop,phone}-{clouds-early,clouds-mid,clouds-late}.png.
-  - Ready for Roe's final visual review. Mark done after approval; no later task started.
+  - Approved by Roe 2026-10-12. No later task started.
+
+- [ ] **testing** — Increase the static atmospheric cloud count from 20 to 30.
+  - Assigned: Andy for implementation; Tiffany for browser review and shared task tracking.
+  - Use the supplied seamless 1024×1024 `public/cloud-texture.png` as shared volumetric detail.
+  - Preserve every approved cloud shape, placement, depth layer, meteor relationship, separation speed, city arrival, camera path, and section timing.
+  - Give each cloud seeded texture scale/orientation/offset variation so the source does not repeat recognizably.
+  - Target the reference's luminous sculpted crowns, charcoal shadow pockets, and tighter irregular feathered edges without hard cutouts or a broad soft halo.
+  - Scope: atmospheric cloud rendering only. Do not alter layouts, content, controls, scroll choreography, later scenes, or the opening Earth.
+  - Constraint: do not add, modify, or run tests or benchmarks. Inspect the real desktop and phone transition, then run the required linters with nvm Node 24.
+  - Move to testing only after Tiffany's visual review; mark done only after Roe's approval. No commit or deployment requested.
+  - Implemented: one shared grayscale texture with repeat wrapping, mipmap filtering, renderer anisotropy, and redraw on load; the procedural volume remains the silhouette and failure fallback.
+  - Variation: every cloud receives seeded three-axis projection, offsets, rotation, and two texture scales so broad billows and fine breakup remain distinct across the ten layers.
+  - Finish: tightened the broad halo into a narrow broken feather while increasing luminous crown and charcoal-pocket separation in the approved monochrome palette.
+  - Review: desktop early, middle, and city-approach frames preserve the meteor's front/behind relationships, cloud separation, city arrival, and section timing. No WebGL or shader console errors were found.
+  - Validation: ESLint and Stylelint pass with nvm Node 24.21.0. No tests or benchmarks were added, modified, or run.
+  - Roe review: desktop composition is good, but the rendered surface still does not match the supplied reference. Refine the internal billows and edge breakup before returning to testing.
+  - Mobile correction: preserve each cloud's natural proportions and spacing; allow clouds to extend beyond the left and right viewport edges instead of compressing or clustering them into view.
+  - Edge correction: replace stiff cotton-ball contours with tighter, irregular smoky feathering and small wisps like the reference.
+  - Revision implemented: sharper three-axis texture projection preserves the supplied broad turbulence; the first visible volume surface now drives luminous relief and broad charcoal cavities, while the finer sample only breaks the low-density boundary into narrow wisps.
+  - Mobile implemented: removed the mobile-only horizontal squeeze and position clustering. Clouds retain their natural proportions and world spacing, including intentional offscreen extension and viewport cropping.
+  - Revision validation: ESLint and Stylelint pass with nvm Node 24.21.0. No tests or benchmarks were added, modified, or run.
+  - Status remains pending until the revised render can be visually reviewed; the built-in preview is live but is not currently exposed to Tiffany's browser-control session.
+  - Roe rejected revision two: the texture still appears smeared and does not look related to the supplied reference render.
+  - Revision three direction: replace the texture-accumulating volume treatment rather than tuning it again. Shade a stable first cloud surface with anchored texture detail and volume-derived sculpting; keep translucency limited to the narrow broken edge and wisps.
+  - Revision three implemented: the raymarch now uses procedural density only to find the first stable surface crossing, then samples the supplied texture once at that anchored surface. The former volume-integrated texture/color path was removed.
+  - Sculpting: six density neighbors form the surface normal and five short light-direction samples form transmittance, producing exposed white crowns and connected charcoal valleys without smearing the texture through the volume.
+  - Edge treatment: only rays without a solid surface may render the narrow low-density fringe; a separate fine texture sample erodes that fringe into low-opacity broken wisps.
+  - Validation: the existing localhost server compiled the revision successfully and ESLint/Stylelint pass on nvm Node 24.21.0. No tests or benchmarks were added, modified, or run.
+  - Roe rejected revision three as visually worse. Do not continue tuning the first-surface raymarch.
+  - Revision four direction: replace the cloud material with layered textured impostors that preserve the supplied image's visible brushwork. Use the procedural cloud data only for distinct silhouettes/depth, with textured erosion for irregular wisps; retain the approved choreography and mobile proportions.
+  - Revision four implemented: removed the 3D texture shader and raymarch path. Each seeded procedural volume is projected once on the CPU into a distinct 2D density/illumination mask, then rendered as three camera-facing planes with rear, middle, and front depth separation.
+  - Texture fidelity: the shared source image is now read directly in stable seeded 2D UVs at one broad scale. A separate fine read affects only the low-density fringe, preserving the body brushwork while breaking the perimeter into wisps.
+  - Layering: the three planes use staggered depth, scale, tone, and opacity while retaining depth testing/writes and the existing world placement so meteor front/behind relationships remain intact.
+  - Validation: localhost compiled the rewrite successfully and Node 24 lint passes. No tests or benchmarks were added, modified, or run. Status remains pending for Roe's visual review.
+  - Roe review of revision four: the layered-impostor direction is approximately 60% toward the target. Continue refining this architecture rather than replacing it.
+  - Revision five direction: unify the three planes into one coherent mass, emphasize the reference's large crown/valley hierarchy, reduce recognizable repetition, and vary the smoky perimeter without changing choreography, layout, or mobile proportions.
+  - Revision five implemented: rear and middle planes are now narrow, low-opacity shadow shells around the dominant front plane, removing the repeated-card silhouette while retaining depth.
+  - Each layer now receives an independent seeded texture crop, rotation, and scale. Broad source texture, projected illumination, and a top-left key bias organize large white crowns and connected charcoal valleys.
+  - Broad texture values remove or preserve whole perimeter regions; an independently rotated fine sample contributes only occasional wisps instead of a uniform fuzzy ring.
+  - Validation: localhost compiled the refinement successfully and Node 24 lint passes. No tests or benchmarks were added, modified, or run. Status remains pending for Roe's review.
+  - Roe rejected revision six as a regression to roughly 40%: the added structural/key lighting is visually poor and suppresses the supplied texture's character.
+  - Revision seven direction: restore the revision-five baseline first, remove the added structural lighting field, and make only restrained texture-led refinements. The source image must control tonal character; procedural data should be limited to silhouette and subtle depth.
+  - Revision seven implemented: fully removed revision six's structural sample, regional edge classifier, artificial crown/exposure lighting, and shared layer transforms; restored the revision-five silhouette, shell, edge, and seeded layer behavior.
+  - Texture-led refinement: the loaded source now supplies nearly all visible tone with only gentle gamma and clipping control. Projected illumination applies a shallow 0.92–1.06 depth modulation and does not choose highlight locations.
+  - Validation: localhost compiled the corrected pass successfully and Node 24 lint passes. No tests or benchmarks were added, modified, or run. Status remains pending for Roe's review.
+  - Roe review of revision seven: interior texture is approved at roughly 70%; the remaining major problem is the cloud perimeter.
+  - Revision eight direction: lock interior tone/texture exactly and rebuild only the silhouette band. Add an expanded edge field so vapor can extend beyond the rounded projected mask, then use broad, medium, and fine erosion to create the reference's irregular smoky contour and selective wisps.
+  - Revision eight implemented: projected mask R/G body density and illumination remain unchanged; B now stores a tapered 4–5 pixel morphology expansion and A stores normalized neighboring body support.
+  - Edge shader: the expanded field permits vapor outside the previous rounded silhouette. Broad texture chunks entire regions, a separately rotated medium sample forms torn vapor, and fine detail permits only isolated low-support tendrils with low opacity and outward taper.
+  - Interior lock: source sampling, tone, gamma, depth modulation, layer transforms, geometry, and opacity remain unchanged from the approved revision-seven interior.
+  - Validation: localhost compiled the edge pass successfully and Node 24 lint passes. No tests or benchmarks were added, modified, or run. Status remains pending for Roe's review.
+  - Roe review of revision eight: no meaningful visual change was visible. The edge treatment is too subtle at rendered scale.
+  - Revision nine direction: keep the interior locked but materially reshape the contour. Build a wider threshold-based exterior field from the dense body, erode farther into the smooth mask at multiple scales, render torn vapor with readable opacity, then taper into sparse wisps.
+  - Revision nine implemented: the edge expansion now starts only from meaningful dense body pixels, uses a 7–10 pixel radius, and stores a clear distance falloff/support field instead of propagating every faint mask value.
+  - Contour reshaping: broad and medium texture fields materially erode the rounded body below the interior boundary. The exterior band uses stronger gated torn-vapor opacity and lower-support fine tendrils, with no continuous ring.
+  - Interior lock: the approved source texture, tone, gamma, depth modulation, layer geometry, and transforms remain unchanged.
+  - Validation: localhost compiled the stronger edge pass successfully and Node 24 lint passes. No tests or benchmarks were added, modified, or run. Status remains pending for Roe's review.
+  - Roe rejected revision nine as far from the target. The expanded exterior vapor and tendrils overshot the reference.
+  - Revision ten direction: fully restore the revision-seven 70% baseline, remove exterior expansion, and rebuild only a narrow inward feather using a signed-distance edge band modulated by the same source texture. No halo, invented protrusions, extra lighting, or separate vapor shapes.
+  - Revision ten implemented: removed all revision-eight/nine morphology expansion, exterior vapor, tendrils, stronger erosion, and altered body thresholds; restored the revision-seven baseline first.
+  - Edge algorithm: the projected mask now stores only a 4–5 pixel inward distance from the existing silhouette. The same broad source texture plus modest correlated detail modulates opacity inside that narrow band, then blends exactly back to the restored body at the core.
+  - No outside pixel receives coverage, and the approved interior source, tone, gamma, depth, layer geometry, transforms, choreography, and responsive behavior remain unchanged.
+  - Validation: localhost compiled the final edge pass successfully and Node 24 lint passes. No tests or benchmarks were added, modified, or run. Status remains pending for Roe's review.
+  - Roe ended the generated-cloud approach. Replace it entirely with the 20 transparent PNG assets in `public/assets/clouds`.
+  - Static asset direction: assign `cloud_01.png` through `cloud_20.png` sequentially to atmospheric cloud instances and wrap with modulo only if more than 20 instances are needed. Remove procedural texture generation, CPU projection, shaders, and layered cloud construction.
+  - Preserve the existing world placements, arrivals, motion, depth ordering around the meteor, scroll/city/About timing, and natural mobile cropping while displaying each PNG at its intrinsic 2:1 aspect ratio.
+  - Implemented: all shader, raymarch, procedural sculpting, projection, morphology, DataTexture, and layered-impostor code was removed from the atmospheric renderer.
+  - Mapping: the current twenty placements receive `cloud_01.png` through `cloud_20.png` exactly once; modulo mapping loops future additional placements back to `cloud_01.png`.
+  - Rendering: each placement is one camera-facing 2:1 image plane using the PNG alpha, sRGB color, mipmap filtering, anisotropy, alpha testing, and depth writes to retain meteor/cloud ordering.
+  - Scope preserved: cloud placements, arrivals, motion, scroll/city/About timing, camera behavior, desktop composition logic, and mobile natural spacing/offscreen cropping are unchanged.
+  - Validation: all twenty assets are transparent 1024×512 PNGs, localhost compiled successfully, and ESLint/Stylelint pass on nvm Node 24.21.0. No tests or benchmarks were added, modified, or run.
+  - Ready for Roe's manual visual approval. No commit or deployment requested.
+  - Roe approved the static PNG appearance and requested ten additional clouds.
+  - Add one new placement to each of the ten existing depth layers while preserving the original twenty placements byte-for-behavior. New placement indices 20–29 must exercise the modulo mapping and use `cloud_01.png` through `cloud_10.png` again.
+  - Implemented: appended one deterministic third placement to each depth layer with staggered arrivals and alternating outer-screen X positions; original placement indices 0–19 remain unchanged.
+  - Asset loop verified: new placement indices 20–29 reuse `cloud_01.png` through `cloud_10.png` in order.
+  - Validation: localhost compiled successfully and ESLint/Stylelint pass on nvm Node 24.21.0. No tests or benchmarks were added, modified, or run.
+  - Ready for Roe's visual approval. No commit or deployment requested.
+  - Roe review of revision five: approximately 65–70% toward the reference. Keep the current architecture and continue refining.
+  - Revision six direction: reduce the remaining textured-cutout appearance with broader connected shadow basins, localized crown highlights, softer internal billow transitions, and perimeter regions that alternate between dense lobes, torn vapor, and disappearing wisps.
+  - Revision six implemented: a new low-frequency structural field groups the source brushwork into large billows and connected shadow basins; fine brush detail contributes surface character without defining the entire form.
+  - Crown light is now gated by both upper exposure and structure, keeping white highlights localized to exposed masses while low structural regions form broader charcoal valleys.
+  - The perimeter now selects among dense body, medium vapor, and sparse fine wisps by region. Layer transforms share one cloud seed with small controlled deviations, producing coherent parallax without duplicate silhouettes.
+  - Validation: localhost compiled the refinement successfully and Node 24 lint passes. No tests or benchmarks were added, modified, or run. Status remains pending for Roe's review.
