@@ -836,6 +836,7 @@ export default function CinematicHome({
       </main>
       <nav
         className={styles['bottom-nav']}
+        style={{ display: 'none' }}
         aria-label={t('sectionNavigation')}
         inert={menuOpen}
       >
