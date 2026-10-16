@@ -45,7 +45,8 @@
     "react-sketch-canvas": "^8.0.0",
     "react-transition-state": "^2.4.0",
     "react-zoom-pan-pinch": "^4.2.0",
-    "swagger-ui-react": "^5.33.1"
+    "swagger-ui-react": "^5.33.1",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
@@ -57,6 +58,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/swagger-ui-react": "^5.18.0",
+    "@types/three": "^0.186.0",
     "@typescript/native": "npm:typescript@^7.0.2",
     "autoprefixer": "^10.6.1",
     "babel-jest": "^30.5.2",
