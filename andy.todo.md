@@ -1,4 +1,57 @@
-- [ ] **pending** — Refine atmospheric cloud texture and edge treatment
+- [ ] **pending** — Keep the city distant beneath About, then approach after reading
+  - Roe rejected growth during About. Replace that pass with a true elevated distant view: only the tallest city peaks and their clouds sit along the bottom, beneath the actual About content.
+  - Hold the distant pose until About has cleared at progress .455, then move into the approved final city framing by .485. Preserve the final 133% fit, all later camera poses, foreground meteor, and absence of impact collapse/shrink.
+  - Measure About composition bounds on resize/content-size changes. Use real geometry/camera placement rather than an overlay mask, preserve the main cloud passage, and attach only lingering city clouds to distant peaks.
+  - Use nvm Node 24 for lint. No tests, benchmarks, commits, or staging.
+  - Reopened: Roe reports desktop city is invisible. Investigate actual About bounds and navigation occlusion; guarantee a visible band of building tops with hovering clouds beneath About. Preserve the approved close destination.
+  - Implemented a fixed-scale city with a genuinely elevated distant camera. Cached geometry and the six peak-cloud bounds determine its optical angle; the measured About composition, maximum entrance rise, portrait outset, and a 24 px gap determine the protected screen area. Resize/content-size changes refresh this calculation without per-frame layout reads.
+  - Hold the distant pose through progress .455; approach the exact approved .485 camera and 133% city fit only after About clears. Preserve the main cloud and meteor screen paths with the original-to-current camera transform, including the meteor's size and tumble. The desert stays below view until the approach, avoiding a horizon disc or ground plane behind About.
+  - Keep the original global fog, main-cloud rendering, and meteor haze unchanged. Compensate fog depth only for the city and its six relocated peak clouds, restoring the original fog depth by .485. Cloud PNG color and alpha remain unchanged.
+  - Offline geometry review at 1440×900, assuming the highest About composition bottom is 680 px: protected boundary 738 px; city/cloud tops at 762.1/753.9 px throughout .335–.455. At 390×844 with an assumed 710 px About bottom: protected boundary 748 px; city/cloud tops at 786.8/775.5 px. These leave visible peak strips of approximately 138 px and 57 px while keeping the content clear. Runtime uses the actual measured content bounds; on short screens, content clearance takes priority over exposing peaks.
+  - Distant camera positions are approximately [0,858,329] desktop and [0,360,240] phone, with downward optical pitches 40.55° and 23.64°. Local haze retains approximately 78%/94% city-top transmission. At .47 the city/cloud tops are 779.5/767.9 px desktop and 700.4/687.7 px phone; .485 restores [9,65,130/170] and the approved final framing exactly.
+  - Validation: repository ESLint and Stylelint pass under nvm Node 24.21.0; scoped ESLint and diff checks pass after the final edits. Manual projection calculations confirm the camera-remapped meteor follows its original screen geometry to floating-point precision. No tests or benchmarks were added, changed, or run. Built-in browser control is unavailable, so live motion and actual DOM-bound visual review remain for Roe. Awaiting Roe's visual approval before marking done.
+
+- [x] **done** — Reframe city-v2 and restore foreground meteor
+  - Roe approved the final city size and the exit-camera view.
+  - New direction supersedes rear-lane placement: the meteor falls in front of the city at its established scale, with no landing shrink.
+  - Frame the supplied city to approximately 133% of the viewport width with balanced left/right cropping on desktop and phone. Preserve model proportions; calculate framing on load/resize instead of changing asset scale continuously during scrolling.
+  - Remove city impact squash/shrink and collapse roll. Preserve the supplied GLB materials, section timing, cloud assets, and existing UI controls.
+  - Return atomic-cloud/impact effects to their original origin and remove the rear-impact migration.
+  - Use nvm Node 24 for lint. No tests, benchmarks, commits, or staging. Leave pending for Tiffany's visual review.
+  - Implemented a fixed-reference framing calculation on asset load and viewport resize. Actual model vertices within the visible vertical band determine the 133% width; offscreen bridge tips and points behind/too close to the camera are excluded. Uniform model scale and X recentering balance the crop without stretching the asset or changing scale during scrolling.
+  - Measured at the impact reference view: desktop 1440×900 uses scale 174.39 and X offset 2.21; phone 390×844 uses scale 61.13 and X offset 3.77. Both project to NDC edges approximately -1.33/+1.33. Larger model heights receive a deeper pre-arrival offset so the skyline stays hidden during the earlier cloud-only interval.
+  - Removed the meteor's rear-lane interpolation and landing shrink. It retains the established `entryScale` and original descent path. Removed city impact compression and roll. Atomic cloud, shockwave, and debris return to their original origin with no rear migration.
+  - Tiffany reviewed the numerical framing and offline desktop/phone projections: the enlarged city has a balanced crop and the phone composition remains natural. Live browser inspection remains unavailable.
+  - Validation: repository ESLint and Stylelint pass under nvm Node 24.21.0, and scoped `git diff --check` passes. No tests, benchmarks, commits, or staging. Roe approved the final size and exit-camera framing.
+
+- [ ] **testing** — Layer atmospheric clouds in front of and behind the meteor
+  - Roe rejected the stencil pass visually: the designated foreground set followed the meteor's center path while many stencil-tested background clouds stayed off-axis, so visible crossings still read as foreground. Analyze projected desktop/mobile intersections and revise the visible front/back sequence while preserving the valid per-pixel stencil mask.
+  - Roe rejected the camera-distance pass because every cloud still reads in front. Inspect the meteor and cloud material/depth pipeline to identify the actual cause, then implement an unmistakable deterministic front/back split without changing approved assets, scale, alpha, choreography, mobile behavior, or layouts.
+  - Keep all approved cloud assets, 30 mappings, 1.25× scale, alpha shader and fade, placement, motion, timing, and city behavior unchanged.
+  - Projection analysis at the actual atmospheric scene progress found the same strong crossing order on desktop and mobile: indices 1, 2, 5, 7, 9, 10, then 13. Indices 15 and 19 from the rejected foreground set do not materially intersect the meteor; selecting 2, 7, and 10 made too many readable crossings foreground.
+  - Foreground selection is now only placement indices 5 and 10. The visible sequence becomes rear 1, rear 2, front 5, rear 7, rear 9, front 10, rear 13; the other 28 placements remain stencil-tested background. Every cloud retains clear `meteorLayer` metadata.
+  - Root cause: the opaque asteroid already writes ordinary depth correctly. The rejected pass compared object-center Euclidean distances, which cannot represent the meteor's per-pixel projected silhouette or guarantee that a cloud fragment lies behind the visible rock surface.
+  - Implemented an explicit 8-bit stencil buffer. The asteroid's opaque material writes reference 1 only for depth-passing rendered fragments, so its true on-screen silhouette becomes the background-cloud mask and clears automatically each frame.
+  - The 25 background cloud materials use `NotEqualStencilFunc` against reference 1 with keep-only stencil operations, retaining their approved depth testing/writing while rejecting every fragment inside the visible meteor silhouette.
+  - The two foreground clouds temporarily use `depthTest: false`, `depthWrite: false`, and render order 10 only while the meteor is visible. When it hides, they return to normal depth testing/writing and order 0, preserving lingering city behavior and avoiding transparent rectangular occlusion.
+  - Removed all camera-distance correction, cloud ray movement, proportional rescaling, and asteroid-position plumbing. `updateAtmosphericDescent` now receives only meteor visibility after the existing scene progress argument.
+  - No tests or benchmarks. Run repository lint with nvm Node 24 and `git diff --check`; leave pending for Tiffany's visual review.
+  - Validation: repository ESLint and Stylelint pass under nvm Node 24.21.0, and `git diff --check` passes. No tests or benchmarks were run.
+  - Browser review limitation: computer-use inventory returned no browser surface, and the in-app browser was unavailable, so the stencil result is ready for Roe's live visual review.
+
+- [x] **done** — Brighten and enlarge static atmospheric clouds
+  - Roe approved the 1.25× scale and alpha-based brightness correction.
+  - Roe approved the exact 1.25× size and requested an alpha-based brightness correction. Remove the RGB lift, normalize the known stacked 0.92 factor in the renderer, and reshape source alpha independently from a dedicated fade uniform. Leave pending for Tiffany's visual review.
+  - Increase every rendered atmospheric cloud by exactly 25% on both plane axes while preserving each PNG's native 2:1 aspect ratio and mobile offscreen cropping.
+  - Preserve all 30 mappings, placements, motion, depth, timing, camera, meteor, city, and About behavior while correcting the alpha presentation independently from the source RGB.
+  - Implemented presentation scale: the shared 2:1 plane keeps uniform X/Y scaling and now multiplies both axes by exactly 1.25 after `cloudPose`; world positions and the existing depth offset remain unchanged.
+  - Removed the rejected RGB lift entirely. Material opacity remains 1, while each material owns a dedicated `cloudFade` uniform with the stable cache key `atmospheric-cloud-alpha-v1`.
+  - Source-alpha shaping preserves alpha unchanged through 0.18, then blends toward `smoothstep(0, 0.78, alpha)` with influence `smoothstep(0.18, 0.55, alpha)`. Transparent and opaque endpoints remain 0 and 1; mid/high-alpha bodies become substantially more solid while low feathering stays sourced from the PNG.
+  - Renderer fade normalization divides only stacked poses by the known 0.92 factor and clamps at 1. Non-stacked opacity and the arrival/exit curve remain unchanged; shaped source alpha is multiplied by this normalized fade uniform.
+  - No tests or benchmarks. Run repository lint under nvm Node 24 after implementation; leave pending for Tiffany's visual review.
+  - Validation: repository ESLint and Stylelint pass under nvm Node 24.21.0; `git diff --check` passes. No tests or benchmarks were run.
+
+- [x] **done** — Refine atmospheric cloud texture and edge treatment
   - Roe approved the static PNG result and requested ten additional atmospheric clouds. Add one placement to each existing depth layer while preserving all approved placements and rendering behavior; leave pending for Tiffany's next visual review.
   - Added placements remain appended at indices 20–29, leaving indices 0–19 byte-for-behavior unchanged. Each depth layer receives deterministic local index 2 with the existing seed, size, Z, duration, Y, scale, and rotation formulas.
   - New arrivals sit between each layer's approved pair: 0.035, 0.119, 0.220, 0.308, 0.403, 0.493, 0.595, 0.686, 0.785, and 0.891. Their X positions alternate across distinct outer regions: 126, -122, 110, -122, 122, -118, 106, -112, 94, and -96.

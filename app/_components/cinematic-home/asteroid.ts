@@ -239,6 +239,7 @@ export const asteroidMaterial = new THREE.ShaderMaterial({
 
 const ASSET_ROOT = '/assets/asteroid'
 const ASTEROID_WIDTH = 36
+export const ASTEROID_STENCIL_REF = 1
 
 export class AsteroidAssetError extends Error {
   constructor(message: string, cause?: unknown) {
@@ -312,6 +313,12 @@ export async function loadAsteroid(anisotropy: number) {
       roughness: 0.92,
       metalness: 0,
     })
+    material.stencilWrite = true
+    material.stencilRef = ASTEROID_STENCIL_REF
+    material.stencilFunc = THREE.AlwaysStencilFunc
+    material.stencilFail = THREE.KeepStencilOp
+    material.stencilZFail = THREE.KeepStencilOp
+    material.stencilZPass = THREE.ReplaceStencilOp
     material.onBeforeCompile = (shader) => {
       shader.fragmentShader = shader.fragmentShader.replace(
         '#include <opaque_fragment>',

@@ -3,6 +3,7 @@ import { cloudVertex, cloudFragment } from './cloud-shader'
 import { createPlanet } from './planet'
 import { createDebris } from './asteroid'
 import { createAtmosphericDescent } from './atmospheric-descent'
+import { createCity } from './city'
 
 export function seededRandom(seed: number) {
   let state = seed >>> 0
@@ -12,43 +13,6 @@ export function seededRandom(seed: number) {
   }
 }
 
-const rockVertex = `
-varying vec3 vNormal;
-varying vec3 vWorld;
-void main(){
-  vec4 local=vec4(position,1.);
-  vec3 surfaceNormal=normal;
-  #ifdef USE_INSTANCING
-    mat3 instanceNormal=mat3(instanceMatrix);
-    surfaceNormal/=vec3(dot(instanceNormal[0],instanceNormal[0]),dot(instanceNormal[1],instanceNormal[1]),dot(instanceNormal[2],instanceNormal[2]));
-    surfaceNormal=instanceNormal*surfaceNormal;
-    local=instanceMatrix*local;
-  #endif
-  vNormal=normalize(mat3(modelMatrix)*surfaceNormal);
-  vWorld=(modelMatrix*local).xyz;
-  gl_Position=projectionMatrix*modelViewMatrix*local;
-}`
-const carvedFragment = `
-varying vec3 vNormal;
-varying vec3 vWorld;
-void main(){
-  vec3 normal=normalize(vNormal);
-  vec3 view=normalize(cameraPosition-vWorld);
-  float key=dot(normal,normalize(vec3(-.56,.83,.07)));
-  float back=dot(normal,normalize(vec3(.42,.3,-.86)));
-  float facet=key>.78?.66:key>.58?.28:key>.38?.1:key>.12?.032:.004;
-  float edge=pow(1.-abs(dot(normal,view)),3.);
-  float rim=smoothstep(.2,.9,back)*edge;
-  float seam=sin(vWorld.x*2.7+vWorld.y*1.9)*sin(vWorld.z*3.1-vWorld.y*.7);
-  float strata=.5+.5*sin(vWorld.y*5.3+vWorld.x*.9);
-  float tone=facet*(.84+.16*step(-.25,seam))*(.93+.07*strata)+rim*.78+edge*.035;
-  gl_FragColor=vec4(vec3(min(tone,1.)),1.);
-  #include <colorspace_fragment>
-}`
-const carved = new THREE.ShaderMaterial({
-  vertexShader: rockVertex,
-  fragmentShader: carvedFragment,
-})
 const concrete = new THREE.MeshStandardMaterial({
   color: '#c8c5b8',
   roughness: 1,
@@ -97,287 +61,6 @@ function sphere(
   mesh.scale.set(scale[0], scale[1], scale[2])
   parent.add(mesh)
   return mesh
-}
-
-function industrialCity() {
-  const group = new THREE.Group()
-  const random = seededRandom(909)
-  const footprint = new THREE.Shape()
-  footprint.moveTo(-0.42, -0.5)
-  footprint.lineTo(0.42, -0.5)
-  footprint.lineTo(0.5, -0.42)
-  footprint.lineTo(0.5, 0.42)
-  footprint.lineTo(0.42, 0.5)
-  footprint.lineTo(-0.42, 0.5)
-  footprint.lineTo(-0.5, 0.42)
-  footprint.lineTo(-0.5, -0.42)
-  footprint.closePath()
-  const bodyGeometry = new THREE.ExtrudeGeometry(footprint, {
-    depth: 1,
-    bevelEnabled: false,
-  })
-  bodyGeometry.rotateX(-Math.PI / 2)
-  const ribGeometry = new THREE.BoxGeometry(1, 1, 1)
-  const crownGeometry = new THREE.ConeGeometry(0.7, 1, 4)
-  const drumGeometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 10).translate(
-    0,
-    0.5,
-    0,
-  )
-  const needleGeometry = new THREE.CylinderGeometry(0.04, 0.12, 1, 4).translate(
-    0,
-    0.5,
-    0,
-  )
-  const buildings = new THREE.InstancedMesh(bodyGeometry, carved, 2600)
-  const ribs = new THREE.InstancedMesh(ribGeometry, concrete, 14000)
-  const crowns = new THREE.InstancedMesh(crownGeometry, carved, 420)
-  const drums = new THREE.InstancedMesh(drumGeometry, carved, 360)
-  const needles = new THREE.InstancedMesh(needleGeometry, concrete, 420)
-  const transform = new THREE.Object3D()
-  let buildingIndex = 0,
-    ribIndex = 0,
-    crownIndex = 0,
-    drumIndex = 0,
-    needleIndex = 0
-  const place = (
-    mesh: THREE.InstancedMesh,
-    index: number,
-    x: number,
-    y: number,
-    z: number,
-    sx: number,
-    sy: number,
-    sz: number,
-  ) => {
-    transform.position.set(x, y, z)
-    transform.scale.set(sx, sy, sz)
-    transform.updateMatrix()
-    mesh.setMatrixAt(index, transform.matrix)
-  }
-  function tower(
-    x: number,
-    z: number,
-    width: number,
-    height: number,
-    depth: number,
-    tiers: number,
-  ) {
-    let lower = 0
-    for (let tier = 0; tier < tiers; tier++) {
-      const segment = tier === 0 ? height * 0.52 : height * (0.34 / tiers) * 1.4
-      const scale = 1 - tier * 0.16
-      if (buildingIndex >= 2600) break
-      place(
-        buildings,
-        buildingIndex++,
-        x,
-        lower,
-        z,
-        width * scale,
-        segment,
-        depth * scale,
-      )
-      const strips = Math.min(7, 3 + Math.floor(width / 2))
-      for (let rib = 0; rib < strips && ribIndex < 14000; rib++) {
-        place(
-          ribs,
-          ribIndex++,
-          x + ((rib - (strips - 1) / 2) / strips) * width * scale * 1.1,
-          lower + segment * 0.5,
-          z + depth * scale * 0.52,
-          0.06 + width * 0.014,
-          segment * 0.94,
-          0.13,
-        )
-      }
-      lower += segment * (tier === 0 ? 1 : 0.92)
-    }
-    const spireHeight = Math.max(2, height - lower)
-    if (crownIndex < 420)
-      place(
-        crowns,
-        crownIndex++,
-        x,
-        lower + spireHeight * 0.5,
-        z,
-        width * 0.3,
-        spireHeight,
-        depth * 0.3,
-      )
-    if (needleIndex < 420)
-      place(
-        needles,
-        needleIndex++,
-        x,
-        lower + spireHeight,
-        z,
-        1,
-        height * 0.1,
-        1,
-      )
-  }
-  function industrial(x: number, z: number, radius: number, height: number) {
-    if (drumIndex >= 360) return
-    place(drums, drumIndex++, x, 0, z, radius * 2, height, radius * 2)
-    place(
-      drums,
-      drumIndex++,
-      x,
-      height,
-      z,
-      radius * 1.45,
-      height * 0.24,
-      radius * 1.45,
-    )
-    place(
-      drums,
-      drumIndex++,
-      x,
-      height * 1.24,
-      z,
-      radius * 0.55,
-      height * 0.36,
-      radius * 0.55,
-    )
-  }
-  // A vast massing envelope: low flanks rising toward a single monumental core.
-  for (let index = 0; index < 330; index++) {
-    const x = (random() * 2 - 1) * 105
-    const z = -70 + random() * 100
-    const center = Math.pow(1 - Math.min(1, Math.abs(x + 3) / 105), 1.7)
-    const depthBoost = 1 - Math.min(1, Math.max(0, z + 70) / 130)
-    const height =
-      5 + random() * 15 + center * (16 + random() * 40) * (0.55 + depthBoost)
-    const width = 1.5 + random() * 4.5
-    if (random() < 0.17 && Math.abs(x) > 16)
-      industrial(x, z, 1.3 + random() * 2, 8 + random() * 22)
-    else
-      tower(
-        x,
-        z,
-        width,
-        height,
-        width * (0.6 + random() * 0.8),
-        3 + Math.floor(random() * 3),
-      )
-  }
-  const core: number[][] = [
-    [-3, -7, 8, 87, 9, 5],
-    [-13, -12, 5, 63, 7, 5],
-    [8, -14, 5, 68, 6, 5],
-    [-7, -23, 6, 75, 7, 5],
-    [1, -25, 5, 70, 6, 5],
-    [-21, -20, 4, 49, 5, 4],
-    [18, -18, 4, 52, 5, 4],
-    [-4, -3, 2.3, 99, 2.5, 5],
-    [-26, -9, 4.5, 56, 5, 5],
-    [22, -8, 4.2, 58, 5, 5],
-    [-34, -16, 5, 46, 6, 4],
-    [30, -20, 5, 50, 6, 4],
-    [-16, 2, 3.2, 41, 4, 4],
-    [11, 3, 3.4, 44, 4, 4],
-  ]
-  core.forEach((args) => {
-    const [x, z, width, height, depth, tiers] = args
-    tower(x, z, width, height, depth, tiers)
-  })
-  buildings.count = buildingIndex
-  ribs.count = ribIndex
-  crowns.count = crownIndex
-  drums.count = drumIndex
-  needles.count = needleIndex
-  group.add(buildings, ribs, crowns, drums, needles)
-  for (let index = 0; index < 20; index++) {
-    const side = index % 2 ? 1 : -1
-    const fin = new THREE.Mesh(
-      new THREE.BoxGeometry(0.2, 37 + (index % 5) * 4, 2.5),
-      carved,
-    )
-    fin.position.set(
-      -3 + side * (3.7 + Math.floor(index / 2) * 0.75),
-      18 + (index % 5) * 2,
-      0,
-    )
-    group.add(fin)
-  }
-  const bridge = (
-    x1: number,
-    x2: number,
-    y: number,
-    z: number,
-    thickness = 1.3,
-  ) => {
-    const span = new THREE.Mesh(
-      new THREE.BoxGeometry(Math.abs(x2 - x1), thickness, 1.8),
-      carved,
-    )
-    span.position.set((x1 + x2) / 2, y, z)
-    const rail = new THREE.Mesh(
-      new THREE.BoxGeometry(Math.abs(x2 - x1), 0.14, 2),
-      concrete,
-    )
-    rail.position.set((x1 + x2) / 2, y + thickness / 2 + 0.07, z)
-    group.add(span, rail)
-  }
-  bridge(-13, -3, 38, -12)
-  bridge(-3, 8, 46, -14)
-  bridge(-21, -7, 30, -20)
-  bridge(1, 18, 33, -20)
-  bridge(-26, -13, 24, -10)
-  bridge(8, 22, 28, -10)
-  bridge(-34, -21, 18, -18, 1.6)
-  bridge(18, 30, 20, -19, 1.6)
-  // Searchlights rake the cloud from crown spires.
-  const beamMaterial = new THREE.MeshBasicMaterial({
-    color: '#fff',
-    transparent: true,
-    opacity: 0.07,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
-    side: THREE.DoubleSide,
-  })
-  group.userData.beamMaterial = beamMaterial
-  ;[
-    [-13, 63, -12, 0.22],
-    [8, 68, -14, -0.2],
-    [-26, 56, -9, 0.38],
-    [22, 58, -8, -0.36],
-  ].forEach(([x, y, z, tilt]) => {
-    const beam = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.2, 5, 90, 12, 1, true).translate(0, 45, 0),
-      beamMaterial,
-    )
-    beam.position.set(x, y, z)
-    beam.rotation.z = tilt
-    group.add(beam)
-  })
-  const slab = new THREE.Mesh(new THREE.BoxGeometry(250, 1.2, 160), dark)
-  slab.position.set(-3, -0.55, -20)
-  group.add(slab)
-  for (let side = -1; side <= 1; side += 2) {
-    const road = new THREE.Mesh(
-      new THREE.BoxGeometry(0.55, 0.18, 120),
-      concrete,
-    )
-    road.position.set(-3 + side * 9, 0.1, 58)
-    group.add(road)
-    for (let index = 0; index < 18; index++) {
-      const pavement = new THREE.Mesh(
-        new THREE.BoxGeometry(5.5, 0.22, 6.8),
-        dark,
-      )
-      pavement.position.set(-3 + side * 5, 0.15, index * 7 + 8)
-      group.add(pavement)
-    }
-    const arch = new THREE.Mesh(new THREE.BoxGeometry(3.5, 21, 5), carved)
-    arch.position.set(-3 + side * 10, 10.5, 2)
-    group.add(arch)
-  }
-  const portal = new THREE.Mesh(new THREE.BoxGeometry(24, 3, 5), carved)
-  portal.position.set(-3, 21, 2)
-  group.add(portal)
-  return group
 }
 
 function openingLight() {
@@ -585,11 +268,16 @@ export function createWorld(
     pixelRatio: 1,
     anisotropy: 1,
     onLoad: () => {},
+    onCityError: (error: unknown) => console.error(error),
   },
 ) {
   const asteroidGroup = new THREE.Group()
   asteroidGroup.add(asteroidModel)
-  const city = industrialCity()
+  const city = createCity(
+    planetOptions.anisotropy,
+    planetOptions.onLoad,
+    planetOptions.onCityError,
+  )
   const arrivalLight = openingLight()
   const cloud = mushroomCloud()
   const desert = wasteland()

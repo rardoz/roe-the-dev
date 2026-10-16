@@ -194,7 +194,7 @@ export function AboutRoe({
       inert={blocked || (!reading && opacity < 0.05)}
       data-alternate={revealed}
     >
-      <div className={styles['about-composition']}>
+      <div className={styles['about-composition']} data-about-composition>
         <div className={styles['about-copy']}>
           <h2 className={styles['section-title']}>
             <span ref={heading} className={styles['about-heading']}>

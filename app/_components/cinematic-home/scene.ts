@@ -1,11 +1,9 @@
 import * as THREE from 'three'
 import { createWorld, disposeWorld } from './world'
 import { advancePlanetClouds } from './planet'
-import {
-  atmosphericDescent,
-  updateAtmosphericDescent,
-} from './atmospheric-descent'
+import { updateAtmosphericDescent } from './atmospheric-descent'
 import { disposeObject, loadAsteroid } from './asteroid'
+import { cityImpactView, fitCityToViewport, type DistantCityView } from './city'
 import { filmState, mix, postsStacked, smooth } from './motion'
 import { aboutReplay, filmScrollFrame } from './film-scroll'
 import { createSpatialContent, updateSpatialContent } from './spatial-content'
@@ -58,6 +56,7 @@ export async function createFilmScene({
       canvas,
       antialias: true,
       alpha: false,
+      stencil: true,
       powerPreference: 'high-performance',
     })
   } catch {
@@ -89,11 +88,17 @@ export async function createFilmScene({
   const backLight = new THREE.DirectionalLight('#ffffff', 0)
   scene.add(backLight, backLight.target)
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1600)
+  const cloudCamera = camera.clone()
   const world = createWorld(scene, asteroidModel, {
     width: window.innerWidth,
     pixelRatio: window.devicePixelRatio || 1,
     anisotropy: renderer.capabilities.getMaxAnisotropy(),
     onLoad: () => requestDraw(),
+    onCityError: (error: unknown) => {
+      console.error('City asset failed to load', error)
+      canvas.dataset.assetError = 'city'
+      requestDraw()
+    },
   })
   const asteroidVertices: THREE.Vector3[] = []
   world.asteroid.updateMatrixWorld()
@@ -183,6 +188,38 @@ export async function createFilmScene({
   let aboutOutline: Point[] | null = null
   const aboutPoint = new THREE.Vector3()
   const aboutDirection = new THREE.Vector3()
+  const distantRotation = new THREE.Quaternion()
+  const distantEuler = new THREE.Euler()
+  const passageTransform = new THREE.Matrix4()
+  const passageRotation = new THREE.Quaternion()
+  const aboutComposition = container.querySelector<HTMLElement>(
+    '[data-about-composition]',
+  )
+  const bottomNavigation = container.querySelector<HTMLElement>(':scope > nav')
+  let aboutContentBottom = 0
+  let aboutMoves = false
+  let navigationTop = 0
+  const measureAboutClearance = () => {
+    if (container.dataset.mode === 'reading') return
+    const canvasBounds = canvas.getBoundingClientRect()
+    navigationTop =
+      (bottomNavigation?.getBoundingClientRect().top ?? canvasBounds.bottom) -
+      canvasBounds.top
+    if (!aboutComposition) return
+    const transform = getComputedStyle(aboutComposition).transform
+    aboutMoves = transform !== 'none'
+    const translation = aboutMoves ? new DOMMatrixReadOnly(transform).m42 : 0
+    const bottom = Math.max(
+      ...Array.from(
+        aboutComposition.children,
+        (child) =>
+          child.getBoundingClientRect().bottom +
+          (child.querySelector('img') ? 14 : 0),
+      ),
+    )
+    aboutContentBottom = bottom - canvasBounds.top - translation
+    requestDraw()
+  }
 
   const readProgress = () => {
     const extra = Number(container.dataset.postsExtra || 0)
@@ -289,6 +326,23 @@ export async function createFilmScene({
     })
     const p = smoothProgress
     const state = filmState(p)
+    const cityArrival = smooth(0.67, 1, smoothAtmosphere)
+    const distantView = world.city.userData.distantView as
+      DistantCityView | undefined
+    const distantBlend = distantView
+      ? (aboutReady ? 1 : cityArrival) *
+        (1 - smooth(0.455, 0.485, Math.min(p, progress)))
+      : 0
+    const aboutBottom =
+      aboutContentBottom +
+      (aboutMoves ? mix(80, -40, aboutAsteroidState(progress).travel) : 0)
+    const aboutProtectedTop = Math.max(
+      aboutBottom + 24,
+      navigationTop - Math.min(160, height * 0.2),
+    )
+    const fogDensity = mix(0.0022, 0.005, smooth(0.18, 0.35, p))
+    const cityFogDepthScale = mix(1, 0.00065 / fogDensity, distantBlend)
+    world.city.userData.fogDepthScale.value = cityFogDepthScale
     const asteroidTravel =
       smooth(0.02, 0.465, p) * 0.35 + smooth(0.465, 0.49, p) * 0.65
     // Start about twice as close (≈2x apparent width) while clearing the rock
@@ -331,9 +385,9 @@ export async function createFilmScene({
         eye: [2, 13, mobile ? 169 : 141],
         target: [0, mobile ? 98 : 105, -7],
       },
-      { p: 0.485, eye: [9, 23, mobile ? 139 : 96], target: [0, 28, 0] },
-      { p: 0.55, eye: [10, 41, mobile ? 164 : 126], target: [0, 32, 0] },
-      { p: 0.63, eye: [8, 48, mobile ? 159 : 122], target: [0, 34, 0] },
+      { p: 0.485, ...cityImpactView(mobile) },
+      { p: 0.55, eye: [10, 55, mobile ? 164 : 126], target: [0, 29, -6] },
+      { p: 0.63, eye: [8, 58, mobile ? 159 : 122], target: [0, 31, -6] },
       { p: 0.67, eye: [0, 68, mobile ? 119 : 88], target: [0, 48, 0] },
       { p: 0.89, eye: [0, 13, mobile ? 112 : 82], target: [0, 13, 0] },
       { p: 1, eye: [0, 7, mobile ? 222 : 194], target: [0, 19, 0] },
@@ -357,6 +411,17 @@ export async function createFilmScene({
     eye.y += pointer.y * 0.8 * pointerStrength
     camera.position.copy(eye)
     camera.lookAt(target)
+    cloudCamera.copy(camera)
+    cloudCamera.updateMatrixWorld()
+    if (distantView && distantBlend > 0) {
+      const pitch =
+        distantView.minimumAngle +
+        Math.atan((1 - (aboutProtectedTop / height) * 2) * verticalField)
+      distantRotation.setFromEuler(distantEuler.set(-pitch, 0, 0))
+      camera.position.lerp(distantView.eye, distantBlend)
+      camera.quaternion.slerp(distantRotation, distantBlend)
+    }
+    camera.updateMatrixWorld()
     world.asteroid.position.set(
       mix(0, -3, asteroidTravel),
       mix(110, 2, asteroidTravel),
@@ -365,7 +430,19 @@ export async function createFilmScene({
     world.asteroid.quaternion
       .copy(spin.setFromAxisAngle(xAxis, tumble.angle))
       .multiply(tilt)
-    const rockScale = entryScale(p) * (1 - smooth(0.48, 0.515, p))
+    if (distantBlend > 0) {
+      passageTransform.multiplyMatrices(
+        camera.matrixWorld,
+        cloudCamera.matrixWorldInverse,
+      )
+      passageRotation
+        .copy(cloudCamera.quaternion)
+        .invert()
+        .premultiply(camera.quaternion)
+      world.asteroid.position.applyMatrix4(passageTransform)
+      world.asteroid.quaternion.premultiply(passageRotation)
+    }
+    const rockScale = entryScale(p)
     world.asteroid.scale.set(rockScale, rockScale, rockScale)
     world.asteroid.visible = p < 0.516
     const aboutPhase = aboutAsteroidState(p)
@@ -466,18 +543,11 @@ export async function createFilmScene({
       )
       sun.quaternion.copy(camera.quaternion)
     }
-    // Rays and searchlight beams stay out of the Featured Posts backdrop and return for the city.
-    const rays = smooth(0.315, 0.35, p)
-    const atmosphericBlend = atmosphericDescent(smoothAtmosphere, p)
-    ;(world.city.userData.beamMaterial as THREE.MeshBasicMaterial).opacity =
-      0.07 * rays * (1 - atmosphericBlend)
-    // The city's illuminated ribs project as vertical shafts behind the posts.
-    const cityArrival = smooth(0.67, 1, smoothAtmosphere)
-    const cityOffset = smoothAtmosphere < 0 ? -210 : mix(-210, 0, cityArrival)
+    const cityStart = world.city.userData.arrivalOffset ?? -210
+    const cityOffset =
+      smoothAtmosphere < 0 ? cityStart : mix(cityStart, 0, cityArrival)
     world.city.position.y = cityOffset
     world.city.visible = postsProgress >= 0.315
-    world.city.scale.y = mix(1, 0.35, state.impact)
-    world.city.rotation.z = state.impact * -0.035
     world.cloud.visible = state.impact > 0.001
     const cloudSize = smooth(0.49, 0.57, p)
     world.cloud.scale.setScalar(cloudSize)
@@ -490,6 +560,10 @@ export async function createFilmScene({
       postsStacked(width),
       cityOffset,
       p,
+      world.asteroid.visible,
+      distantBlend > 0 ? cloudCamera : undefined,
+      distantView?.cloudAnchors,
+      cityFogDepthScale,
     )
     world.shockwave.visible = p > 0.486 && p < 0.565
     world.shockwave.scale.setScalar(mix(1, 95, smooth(0.486, 0.565, p)))
@@ -510,7 +584,10 @@ export async function createFilmScene({
     })
     world.blastDebris.instanceMatrix.needsUpdate = true
     world.desert.group.visible =
-      p > 0.15 && ((atmosphere < 0 && p < 0.285) || aboutReady)
+      p > 0.15 &&
+      distantBlend < 0.999 &&
+      ((atmosphere < 0 && p < 0.285) || aboutReady)
+    world.desert.group.position.y = -1000 * distantBlend
     world.desert.tumbleweed.position.x = mix(-8, 7, state.retreat)
     world.desert.tumbleweed.rotation.z = state.retreat * -13
     world.desert.scorpion.position.x = -6 + state.retreat * 1.4
@@ -518,11 +595,7 @@ export async function createFilmScene({
     light.intensity =
       3.5 * mix(0.08, 1, smooth(0.03, 0.13, p)) +
       (reduced ? 0 : state.flash * 3)
-    ;(scene.fog as THREE.FogExp2).density = mix(
-      0.0022,
-      0.005,
-      smooth(0.18, 0.35, p),
-    )
+    ;(scene.fog as THREE.FogExp2).density = fogDensity
     camera.updateMatrixWorld()
     world.cloud.updateMatrixWorld()
     const cloudUniforms = (world.cloud.material as THREE.ShaderMaterial)
@@ -559,6 +632,13 @@ export async function createFilmScene({
       .add(new THREE.Vector3(0, mix(48, 13, state.portfolio), 0))
       .project(camera)
     canvas.dataset.progress = p.toFixed(5)
+    canvas.dataset.cityAsset = world.city.userData.assetState
+    canvas.dataset.cityBand = JSON.stringify({
+      contentBottom: +aboutBottom.toFixed(1),
+      protectedTop: +aboutProtectedTop.toFixed(1),
+      navigationTop: +navigationTop.toFixed(1),
+      distantBlend: +distantBlend.toFixed(3),
+    })
     canvas.dataset.camera = JSON.stringify(
       camera.position.toArray().map((value) => +value.toFixed(3)),
     )
@@ -599,13 +679,16 @@ export async function createFilmScene({
       frame = requestAnimationFrame(frameScene)
   }
   const resize = () => {
-    width = window.innerWidth
-    height = window.innerHeight
+    const bounds = canvas.getBoundingClientRect()
+    width = bounds.width || window.innerWidth
+    height = bounds.height || window.innerHeight
     mobile = width < 700
     aboutOutline = null
     camera.aspect = width / height
     camera.fov = mobile ? 52 : 45
     camera.updateProjectionMatrix()
+    fitCityToViewport(world.city, width, height)
+    measureAboutClearance()
     fitOpeningAsteroid()
     renderer.setPixelRatio(
       Math.min(window.devicePixelRatio || 1, mobile ? 1.35 : 1.6),
@@ -724,7 +807,13 @@ export async function createFilmScene({
     } else requestDraw()
   })
   observer.observe(container)
-  const modeObserver = new MutationObserver(requestDraw)
+  const aboutObserver = new ResizeObserver(measureAboutClearance)
+  if (aboutComposition) aboutObserver.observe(aboutComposition)
+  if (bottomNavigation) aboutObserver.observe(bottomNavigation)
+  const modeObserver = new MutationObserver(() => {
+    measureAboutClearance()
+    requestDraw()
+  })
   modeObserver.observe(container, {
     attributes: true,
     attributeFilter: ['data-mode', 'data-about-control'],
@@ -752,6 +841,7 @@ export async function createFilmScene({
     disposed = true
     cancelAnimationFrame(frame)
     observer.disconnect()
+    aboutObserver.disconnect()
     modeObserver.disconnect()
     endDrag()
     handle?.removeEventListener('pointerdown', startDrag)
