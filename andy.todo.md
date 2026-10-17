@@ -1,4 +1,16 @@
-- [ ] **testing** — Keep the city distant beneath About, then approach after reading
+- [ ] **testing** — Build the monochrome ocean and rocky city island.
+  - Use supplied normal/foam textures; Tiffany will provide findings from the video reference.
+  - Calm slow-moving choppy waves, steep cliff-sided island beneath all city buildings, bridges extending past the shoreline, meteor landing in the city center.
+  - Preserve approved city framing/scale/camera, cloud passage, content/layouts and controls. Lightweight GPU waves, reduced motion, mobile detail and proper texture disposal/redraw.
+  - Node 24 through nvm; lint only. No tests, benchmarks, commits or staging. Testing after Tiffany's browser review; done only after Roe's approval.
+  - Implemented the core island/ocean module and scene integration. Tiffany completed visual refinement: taller visible cliff faces, rock outcrops, rock-surface detail, darker localized reflections, responsive water geometry, and a foundation that remains attached to the city.
+  - Both supplied textures load once per scene as rendering data; shoreline foam uses a cached distance texture fitted to the island. Ocean animation follows existing reduced-motion/visibility/disposal handling.
+  - Meteor and impact effects align to clear central-plaza space; the later gallery cloud position is restored smoothly. Approved city camera/scale and cloud passage are retained.
+  - Tiffany reviewed desktop/phone, forward approach, central impact, and reverse return in the built-in browser. Evidence: `/tmp/roe-ocean-desktop.png`, `/tmp/roe-ocean-phone.png`, `/tmp/roe-ocean-city-impact.png`.
+  - Final Node 24 ESLint/Stylelint and diff checks pass. No tests or benchmarks were added or run. No commit or staging. Awaiting Roe's visual approval.
+
+- [x] **done** — Keep the city distant beneath About, then approach after reading
+  - Approved by Roe: “That looks good.”
   - Current pass: increase the initial viewing elevation for a clear bird's-eye perspective. Preserve apparent size, raised framing, final camera, section timing, and meteor/main-cloud screen paths. No tests or benchmarks.
   - Applied a 72° elevation orbit about the upper city, retaining camera distance and existing skyline/cloud framing. Tiffany reviewed the live overhead view at 2035×1314 and the unchanged later city scene; capture: `/tmp/roe-city-birds-eye.png`.
   - Tiffany completed Node 24 ESLint/Stylelint and diff checks after the change. No tests, benchmarks, commits, or staging. Awaiting Roe's visual approval.

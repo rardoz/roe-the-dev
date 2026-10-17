@@ -4,6 +4,7 @@ import { advancePlanetClouds } from './planet'
 import { updateAtmosphericDescent } from './atmospheric-descent'
 import { disposeObject, loadAsteroid } from './asteroid'
 import { cityImpactView, fitCityToViewport, type DistantCityView } from './city'
+import { updateCityIsland } from './city-island'
 import { filmState, mix, postsStacked, smooth } from './motion'
 import { aboutReplay, filmScrollFrame } from './film-scroll'
 import { createSpatialContent, updateSpatialContent } from './spatial-content'
@@ -192,6 +193,8 @@ export async function createFilmScene({
   const distantEuler = new THREE.Euler()
   const passageTransform = new THREE.Matrix4()
   const passageRotation = new THREE.Quaternion()
+  const impactPoint = new THREE.Vector3()
+  const landingPoint = new THREE.Vector3()
   const aboutComposition = container.querySelector<HTMLElement>(
     '[data-about-composition]',
   )
@@ -342,6 +345,14 @@ export async function createFilmScene({
     const fogDensity = mix(0.0022, 0.005, smooth(0.18, 0.35, p))
     const cityFogDepthScale = mix(1, 0.00065 / fogDensity, distantBlend)
     world.city.userData.fogDepthScale.value = cityFogDepthScale
+    const cityFraming = world.city.userData.finalFraming as
+      { scale: number; offsetX: number } | undefined
+    impactPoint.set(
+      cityFraming?.offsetX ?? -3,
+      0,
+      cityFraming ? 5 - cityFraming.scale * 0.25 : -7,
+    )
+    landingPoint.copy(impactPoint).y = 2
     const asteroidTravel =
       smooth(0.02, 0.465, p) * 0.35 + smooth(0.465, 0.49, p) * 0.65
     // Start about twice as close (≈2x apparent width) while clearing the rock
@@ -426,6 +437,7 @@ export async function createFilmScene({
       mix(110, 2, asteroidTravel),
       mix(0, -7, asteroidTravel),
     )
+    world.asteroid.position.lerp(landingPoint, smooth(0.465, 0.49, p))
     world.asteroid.quaternion
       .copy(spin.setFromAxisAngle(xAxis, tumble.angle))
       .multiply(tilt)
@@ -547,7 +559,17 @@ export async function createFilmScene({
       smoothAtmosphere < 0 ? cityStart : mix(cityStart, 0, cityArrival)
     world.city.position.y = cityOffset
     world.city.visible = postsProgress >= 0.315
+    const oceanAnimating = updateCityIsland(
+      world.island,
+      world.city,
+      dt,
+      reduced,
+      fogDensity,
+    )
     world.cloud.visible = state.impact > 0.001
+    world.cloud.position
+      .copy(impactPoint)
+      .multiplyScalar(1 - smooth(0.55, 0.655, p))
     const cloudSize = smooth(0.49, 0.57, p)
     world.cloud.scale.setScalar(cloudSize)
     world.cloud.rotation.y = state.portfolio * -0.28
@@ -565,11 +587,13 @@ export async function createFilmScene({
       cityFogDepthScale,
     )
     world.shockwave.visible = p > 0.486 && p < 0.565
+    world.shockwave.position.copy(impactPoint).y = 1
     world.shockwave.scale.setScalar(mix(1, 95, smooth(0.486, 0.565, p)))
     ;(world.shockwave.material as THREE.MeshBasicMaterial).opacity =
       0.65 * (1 - smooth(0.495, 0.565, p))
     const blast = smooth(0.486, 0.565, p)
     world.blastDebris.visible = p > 0.486 && p < 0.565
+    world.blastDebris.position.copy(impactPoint)
     world.blastPaths.forEach((path, index) => {
       debrisPose.position.set(
         Math.cos(path.angle) * path.distance * blast,
@@ -585,6 +609,7 @@ export async function createFilmScene({
     world.desert.group.visible =
       p > 0.15 &&
       distantBlend < 0.999 &&
+      !world.island.group.visible &&
       ((atmosphere < 0 && p < 0.285) || aboutReady)
     world.desert.group.position.y = -1000 * distantBlend
     world.desert.tumbleweed.position.x = mix(-8, 7, state.retreat)
@@ -657,6 +682,7 @@ export async function createFilmScene({
     if (
       !reduced &&
       (world.asteroid.visible ||
+        oceanAnimating ||
         postsAnimating ||
         Math.abs(progress - smoothProgress) > 0.000001 ||
         Math.abs(atmosphere - smoothAtmosphere) > 0.000001 ||

@@ -4,6 +4,7 @@ import { createPlanet } from './planet'
 import { createDebris } from './asteroid'
 import { createAtmosphericDescent } from './atmospheric-descent'
 import { createCity } from './city'
+import { createCityIsland } from './city-island'
 
 export function seededRandom(seed: number) {
   let state = seed >>> 0
@@ -281,6 +282,11 @@ export function createWorld(
   const arrivalLight = openingLight()
   const cloud = mushroomCloud()
   const desert = wasteland()
+  const island = createCityIsland(
+    planetOptions.width,
+    planetOptions.anisotropy,
+    planetOptions.onLoad,
+  )
   const { earth } = createPlanet(
     planetOptions.width,
     planetOptions.pixelRatio,
@@ -329,6 +335,7 @@ export function createWorld(
   scene.add(
     asteroidGroup,
     city,
+    island.group,
     arrivalLight,
     cloud,
     desert.group,
@@ -342,6 +349,7 @@ export function createWorld(
   return {
     asteroid: asteroidGroup,
     city,
+    island,
     arrivalLight,
     cloud,
     desert,

@@ -158,7 +158,7 @@
   - Removed city impact compression and collapse roll, meteor rear-lane movement and landing shrink, and rearward movement of the impact effects. Meteor descent and blast now occupy the foreground again.
   - Validation: Node 24 ESLint/Stylelint pass; localhost compiles and returns HTTP 200. No tests or benchmarks were added or run. Built-in browser inspection remains unavailable; ready for Roe's visual review. No commit or staging.
   - Roe approved the city size and camera point of view while angling out of About. Follow-up work adds a smaller arrival before that approved framing.
-- [ ] **testing** — Keep the distant city below About, then descend into it after About.
+- [x] **done** — Keep the distant city below About, then descend into it after About.
   - Assigned: Andy for implementation; Tiffany for framing and content-clearance review.
   - Replaces the rejected 100%→133% growth behind About: during About, show only distant city peaks and clouds along the bottom, below the actual content.
   - Use a distant elevated/top-down view, then move closer into the approved large city framing as About clears. Preserve the approved exit destination, foreground meteor, source proportions, and lack of impact squash/shrink.
@@ -178,3 +178,18 @@
   - Current pass: make the initial city angle more bird's-eye while retaining its enlarged size, raised placement, and approved final close view.
   - Applied: orbit the initial camera to 72° elevation around the upper city at the existing distance. Reuse the skyline/cloud anchoring and 100 px lift; preserve source scale, final camera, and scroll timing.
   - Reviewed the stronger overhead view in the built-in browser at 2035×1314, including return navigation from the later city scene. Screenshot: `/tmp/roe-city-birds-eye.png`. Node 24 ESLint/Stylelint and diff checks pass; no tests, benchmarks, commits, or staging. Awaiting Roe's approval.
+  - Approved by Roe: “That looks good.”
+
+- [ ] **testing** — Surround the city with a monochrome ocean and steep rocky island.
+  - Assigned: Andy for implementation; Tiffany for reference study and built-in browser review.
+  - Study `twin-peaks-ocean-reference-2.mov`; match calm, slow-moving, choppy waves in black and white using `/assets/ocean/water-map.png` and `/assets/ocean/foam-texture.png`.
+  - Ground the city on a rocky land mass with tall, abrupt cliffs. Keep the approach bridges extending past the island over the ocean; slight submersion is acceptable. Keep the meteor's impact in the city center.
+  - Preserve approved city size, bird's-eye entrance, camera approach, atmospheric clouds, content/layouts, and controls. Use lightweight shader waves, responsive detail and reduced-motion handling, existing redraw/disposal paths.
+  - Use nvm Node 24 and lint. No tests or benchmarks, commits, or staging. Mark testing after review and done after Roe's approval.
+  - Reference review: decoded six frames across the 8.53-second supplied video. Adapted its dark water, short choppy ripples, restrained motion, and localized silver reflection into grayscale; avoided broad white foam coverage.
+  - Implemented `city-island.ts`: an island outline fitted to the actual city-core vertex hull, fractured cliff bands and instanced rock outcrops, plus a single-pass wave shader using both supplied textures as linear data. Foam follows the cliff-base shoreline. The bridges continue beyond the island over the sea.
+  - Island and ocean share the approved city scale, offset, arrival motion, and local haze compensation. The foundation remains attached through later camera movement; the old desert ground is hidden while the ocean scene is visible. Content, controls, city framing, and atmospheric cloud motion remain unchanged.
+  - Terminal meteor descent now lands in the central plaza at source X=0/Z=-0.25, with shockwave/debris/cloud aligned to that impact. The mushroom cloud returns smoothly to its prior gallery position.
+  - Waves run on the existing render loop while visible, pause with reduced motion/offscreen/reading mode, and use lower mesh detail at phone widths. Existing disposal releases the new geometry, materials, and textures.
+  - Built-in browser review: desktop 2035×1314 and phone 390×844, stationary water, city approach, central impact/cloud, and reverse return to About. Refined initially flat cliff appearance and overly uniform highlights during review. Restored normal desktop viewport afterward.
+  - Evidence: `/tmp/roe-ocean-desktop.png`, `/tmp/roe-ocean-phone.png`, `/tmp/roe-ocean-city-impact.png`. Final Node 24.21.0 ESLint/Stylelint and diff checks pass. No tests or benchmarks were added or run; no commit or staging. Awaiting Roe's visual approval.
