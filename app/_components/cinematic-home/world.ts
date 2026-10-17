@@ -5,6 +5,7 @@ import { createDebris } from './asteroid'
 import { createAtmosphericDescent } from './atmospheric-descent'
 import { createCity } from './city'
 import { createCityIsland } from './city-island'
+import { createLandscapeClouds } from './landscape-clouds'
 
 export function seededRandom(seed: number) {
   let state = seed >>> 0
@@ -315,6 +316,8 @@ export function createWorld(
     planetOptions.onLoad,
     planetOptions.anisotropy,
   )
+  const landscapeClouds = createLandscapeClouds(atmosphericClouds)
+  island.group.add(landscapeClouds)
   const shockwave = new THREE.Mesh(
     new THREE.TorusGeometry(1, 0.035, 4, 100),
     new THREE.MeshBasicMaterial({
@@ -350,6 +353,7 @@ export function createWorld(
     asteroid: asteroidGroup,
     city,
     island,
+    landscapeClouds,
     arrivalLight,
     cloud,
     desert,

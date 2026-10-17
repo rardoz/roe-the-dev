@@ -5,6 +5,7 @@ import { updateAtmosphericDescent } from './atmospheric-descent'
 import { disposeObject, loadAsteroid } from './asteroid'
 import { cityImpactView, fitCityToViewport, type DistantCityView } from './city'
 import { updateCityIsland } from './city-island'
+import { updateLandscapeClouds } from './landscape-clouds'
 import { filmState, mix, postsStacked, smooth } from './motion'
 import { aboutReplay, filmScrollFrame } from './film-scroll'
 import { createSpatialContent, updateSpatialContent } from './spatial-content'
@@ -565,6 +566,12 @@ export async function createFilmScene({
       dt,
       reduced,
       fogDensity,
+    )
+    updateLandscapeClouds(
+      world.landscapeClouds,
+      camera,
+      world.island.uniforms.uTime.value,
+      p,
     )
     world.cloud.visible = state.impact > 0.001
     world.cloud.position

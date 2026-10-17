@@ -1,17 +1,28 @@
 import * as THREE from 'three'
 
+const coastalWaveCoordinates = `
+uniform float uWaveTravel;
+uniform vec3 uCoastBend;
+vec3 coastalCoordinates(vec2 p) {
+  float along = p.y - uCoastBend.x;
+  float widthSquared = uCoastBend.y * uCoastBend.y;
+  float bow = uCoastBend.z * exp(-.5 * along * along / widthSquared);
+  float bowSlope = -bow * along / widthSquared;
+  return vec3(along, p.x - bow, bowSlope);
+}`
+
 const waterVertex = `
-uniform float uTime;
+${coastalWaveCoordinates}
 varying vec2 vSurface;
 varying vec2 vSlope;
 varying vec3 vWorld;
 varying float vDepth;
 void main() {
   vec3 p = position;
-  float a = p.x * 5.8 + p.z * 3.7 - uTime * .32;
-  float b = p.x * -8.4 + p.z * 10.2 - uTime * .21;
-  p.y += sin(a) * .005 + sin(b) * .002;
-  vSlope = vec2(cos(a) * .029 - cos(b) * .0168, cos(a) * .0185 + cos(b) * .0204);
+  vec3 coast = coastalCoordinates(p.xz);
+  float phase = (coast.y - uWaveTravel * .006) * 7.;
+  p.y += sin(phase) * .005;
+  vSlope = vec2(1., -coast.z) * cos(phase) * .035;
   vSurface = p.xz;
   vec4 world = modelMatrix * vec4(p, 1.);
   vWorld = world.xyz;
@@ -21,7 +32,7 @@ void main() {
 }`
 
 const waterFragment = `
-uniform float uTime;
+${coastalWaveCoordinates}
 uniform float uFogDensity;
 uniform sampler2D uNormal;
 uniform sampler2D uFoam;
@@ -32,9 +43,10 @@ varying vec3 vWorld;
 varying float vDepth;
 void main() {
   vec2 p = vSurface;
-  vec3 first = texture2D(uNormal, p * 1.7 + vec2(uTime * .008, -uTime * .004)).xyz * 2. - 1.;
-  vec3 second = texture2D(uNormal, mat2(.8, -.6, .6, .8) * p * 3.1 + vec2(-uTime * .005, uTime * .006)).xyz * 2. - 1.;
-  vec2 ripple = first.xy * .42 + second.xy * .22;
+  vec3 coast = coastalCoordinates(p);
+  vec2 flow = (coast.xy - vec2(uWaveTravel * .006, 0.)) * 1.7;
+  vec3 surfaceNormal = texture2D(uNormal, flow).xyz * 2. - 1.;
+  vec2 ripple = vec2(surfaceNormal.y, surfaceNormal.x - coast.z * surfaceNormal.y) * .56;
   vec3 normal = normalize(vec3(ripple.x - vSlope.x, 1., ripple.y - vSlope.y));
   vec3 view = normalize(cameraPosition - vWorld);
   vec3 light = normalize(vec3(-.48, .78, .4));
@@ -45,9 +57,8 @@ void main() {
   float reflectionPatch = .035 + .965 * exp(-pow((p.x + .8) * .65, 2.));
   float value = .0028 + reflectionPatch * (sheen * .038 + glint * .14) + fresnel * .025;
   float distanceToShore = (texture2D(uShore, (p + 1.6) / 3.2).r - .5) * 1.2;
-  float foamTexture = texture2D(uFoam, p * 4.5 + vec2(uTime * .006, uTime * .003)).r;
-  float shorePulse = .6 + .4 * sin(distanceToShore * 110. - uTime * .65 + first.x * 2.);
-  float foam = exp(-abs(distanceToShore - .018) * 48.) * smoothstep(.42, .84, foamTexture) * shorePulse;
+  float foamTexture = texture2D(uFoam, (coast.xy - vec2(uWaveTravel * .006, 0.)) * 4.5).r;
+  float foam = exp(-abs(distanceToShore - .018) * 48.) * smoothstep(.42, .84, foamTexture) * .65;
   value += foam * .19;
   float haze = 1. - exp(-pow(vDepth * uFogDensity, 2.));
   gl_FragColor = vec4(mix(vec3(value), vec3(.00091), haze), 1.);
@@ -118,8 +129,8 @@ function cliffGeometry(outline: THREE.Vector2[]) {
     .multiplyScalar(1 / coast.length)
   const positions: number[] = []
   const colors: number[] = []
-  const ringHeights = [-0.006, -0.045, -0.13, -0.24, -0.36, -0.5]
-  const ringWidths = [1, 1.03, 1.055, 1.1, 1.18, 1.21]
+  const ringHeights = [-0.006, -0.085, -0.17, -0.26, -0.36, -0.5]
+  const ringWidths = [0.94, 1, 1.055, 1.1, 1.18, 1.21]
   const rings = ringHeights.map((height, ring) =>
     coast.map((point, index) => {
       const jagged = Math.sin(index * 7.13 + ring * 3.1) * 0.018
@@ -235,12 +246,12 @@ function placeCliffOutcrops(
       .clone()
       .lerp(outline[(edge + 1) % outline.length], variation)
       .sub(center)
-      .multiplyScalar(1.06 + variation * 0.12)
+      .multiplyScalar(1.1 + variation * 0.1)
       .add(center)
-    pose.position.set(point.x, -0.12 - variation * 0.2, point.y)
+    pose.position.set(point.x, -0.2 - variation * 0.16, point.y)
     pose.scale.set(
       0.025 + variation * 0.037,
-      0.045 + variation * 0.06,
+      0.03 + variation * 0.035,
       0.03 + variation * 0.04,
     )
     pose.rotation.set(index * 0.7, index * 2.4, index * 0.23)
@@ -332,6 +343,8 @@ export function createCityIsland(
   fallbackNormal.needsUpdate = fallbackFoam.needsUpdate = true
   const uniforms = {
     uTime: { value: 0 },
+    uWaveTravel: { value: 0 },
+    uCoastBend: { value: new THREE.Vector3(-0.33, 1.1, 1.8) },
     uFogDensity: { value: 0.005 },
     uNormal: { value: fallbackNormal as THREE.Texture },
     uFoam: { value: fallbackFoam as THREE.Texture },
@@ -432,7 +445,10 @@ export function updateCityIsland(
   island.group.position.set(frame.offsetX, city.position.y, 5)
   island.fogDepthScale.value = city.userData.fogDepthScale.value
   island.uniforms.uFogDensity.value = fogDensity * island.fogDepthScale.value
-  if (island.group.visible && !reduced)
-    island.uniforms.uTime.value += Math.min(dt, 0.05)
+  if (island.group.visible && !reduced) {
+    const elapsed = Math.min(dt, 0.05)
+    island.uniforms.uTime.value += elapsed
+    island.uniforms.uWaveTravel.value += elapsed
+  }
   return island.group.visible && !reduced
 }
