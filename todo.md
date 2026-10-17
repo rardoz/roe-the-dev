@@ -158,7 +158,7 @@
   - Removed city impact compression and collapse roll, meteor rear-lane movement and landing shrink, and rearward movement of the impact effects. Meteor descent and blast now occupy the foreground again.
   - Validation: Node 24 ESLint/Stylelint pass; localhost compiles and returns HTTP 200. No tests or benchmarks were added or run. Built-in browser inspection remains unavailable; ready for Roe's visual review. No commit or staging.
   - Roe approved the city size and camera point of view while angling out of About. Follow-up work adds a smaller arrival before that approved framing.
-- [ ] **pending** — Keep the distant city below About, then descend into it after About.
+- [ ] **testing** — Keep the distant city below About, then descend into it after About.
   - Assigned: Andy for implementation; Tiffany for framing and content-clearance review.
   - Replaces the rejected 100%→133% growth behind About: during About, show only distant city peaks and clouds along the bottom, below the actual content.
   - Use a distant elevated/top-down view, then move closer into the approved large city framing as About clears. Preserve the approved exit destination, foreground meteor, source proportions, and lack of impact squash/shrink.
@@ -168,3 +168,13 @@
   - Reviewed source and desktop/phone projections. With assumed content boundaries, city/cloud tops remain below the protected area; runtime measures actual content on resize/content changes. Built-in browser controls report no available browser, so live appearance remains for Roe's review.
   - Node 24.21.0 ESLint and Stylelint pass; final diff check passes and localhost returns HTTP 200. No tests or benchmarks were added or run, and no commit or staging. Await Roe's visual approval before marking done.
   - Reopened: Roe reports the desktop city is invisible. Correct the actual content measurement/framing so building tops and nearby clouds are visibly held above the bottom navigation and below About. The prior assumed-boundary projection review did not establish live acceptance.
+  - Current pass: Roe can see the city but wants its initial appearance approximately 75% larger. Increase apparent size through the distant camera framing, keep its upper edge below About, and preserve the approved final close view.
+  - Applied: move only the distant camera closer with a 0.6 distance multiplier. At the actual 2035×1314 review frame, projected city width grows 535→928 px (approximately 74%) while its top remains below About. Phone projection grows approximately 73%; final close framing remains unchanged.
+  - Reviewed the enlarged city and hovering clouds in the built-in browser after reloading the retained scene. Screenshot: `/tmp/roe-city-initial-larger.png`. This live review supersedes the earlier unavailable-browser note.
+  - Node 24 ESLint/Stylelint and diff checks pass. No tests or benchmarks, commits, or staging. Awaiting Roe's visual approval.
+  - Current feedback at 1490×750: lift the initial city and its nearby clouds approximately 100 px so more of the skyline is visible. Preserve the enlarged initial size and approved final camera.
+  - Applied a 100 CSS-pixel upward offset to the distant skyline framing. Verified in the built-in browser at 1490×750: skyline target moves 651.6→551.5 px and building tops/clouds are more visible. Screenshot: `/tmp/roe-city-raised-100px.png`. Initial camera distance and final close view remain unchanged.
+  - Node 24 ESLint/Stylelint and diff checks pass; no tests, benchmarks, commit, or staging. Awaiting Roe's approval.
+  - Current pass: make the initial city angle more bird's-eye while retaining its enlarged size, raised placement, and approved final close view.
+  - Applied: orbit the initial camera to 72° elevation around the upper city at the existing distance. Reuse the skyline/cloud anchoring and 100 px lift; preserve source scale, final camera, and scroll timing.
+  - Reviewed the stronger overhead view in the built-in browser at 2035×1314, including return navigation from the later city scene. Screenshot: `/tmp/roe-city-birds-eye.png`. Node 24 ESLint/Stylelint and diff checks pass; no tests, benchmarks, commits, or staging. Awaiting Roe's approval.

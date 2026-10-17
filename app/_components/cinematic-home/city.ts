@@ -113,7 +113,13 @@ export function fitCityToViewport(
     0,
     Math.max(360, cityHeight * 4),
     Math.max(240, (bounds.max.z - bounds.min.z) * final.scale * 0.8 + 50),
-  )
+  ).multiplyScalar(0.6)
+  const upperCityY = cityHeight * 0.65
+  const upperCityZ = 5 - final.scale * 0.5
+  const distance = Math.hypot(eye.y - upperCityY, eye.z - upperCityZ)
+  const elevation = THREE.MathUtils.degToRad(72)
+  eye.y = upperCityY + Math.sin(elevation) * distance
+  eye.z = upperCityZ + Math.cos(elevation) * distance
   let minimumAngle = Math.PI / 2
   for (let index = 0; index < points.length; index += 3) {
     minimumAngle = Math.min(

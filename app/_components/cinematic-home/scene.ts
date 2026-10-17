@@ -336,10 +336,9 @@ export async function createFilmScene({
     const aboutBottom =
       aboutContentBottom +
       (aboutMoves ? mix(80, -40, aboutAsteroidState(progress).travel) : 0)
-    const aboutProtectedTop = Math.max(
-      aboutBottom + 24,
-      navigationTop - Math.min(160, height * 0.2),
-    )
+    const citySkylineTop =
+      Math.max(aboutBottom + 24, navigationTop - Math.min(160, height * 0.2)) -
+      100
     const fogDensity = mix(0.0022, 0.005, smooth(0.18, 0.35, p))
     const cityFogDepthScale = mix(1, 0.00065 / fogDensity, distantBlend)
     world.city.userData.fogDepthScale.value = cityFogDepthScale
@@ -416,7 +415,7 @@ export async function createFilmScene({
     if (distantView && distantBlend > 0) {
       const pitch =
         distantView.minimumAngle +
-        Math.atan((1 - (aboutProtectedTop / height) * 2) * verticalField)
+        Math.atan((1 - (citySkylineTop / height) * 2) * verticalField)
       distantRotation.setFromEuler(distantEuler.set(-pitch, 0, 0))
       camera.position.lerp(distantView.eye, distantBlend)
       camera.quaternion.slerp(distantRotation, distantBlend)
@@ -635,7 +634,7 @@ export async function createFilmScene({
     canvas.dataset.cityAsset = world.city.userData.assetState
     canvas.dataset.cityBand = JSON.stringify({
       contentBottom: +aboutBottom.toFixed(1),
-      protectedTop: +aboutProtectedTop.toFixed(1),
+      skylineTop: +citySkylineTop.toFixed(1),
       navigationTop: +navigationTop.toFixed(1),
       distantBlend: +distantBlend.toFixed(3),
     })
