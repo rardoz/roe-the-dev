@@ -3,7 +3,12 @@ import { createWorld, disposeWorld } from './world'
 import { advancePlanetClouds } from './planet'
 import { updateAtmosphericDescent } from './atmospheric-descent'
 import { disposeObject, loadAsteroid } from './asteroid'
-import { cityImpactView, fitCityToViewport, type DistantCityView } from './city'
+import {
+  CITY_ISLAND_IMMERSION,
+  cityImpactView,
+  fitCityToViewport,
+  type DistantCityView,
+} from './city'
 import { updateCityIsland } from './city-island'
 import { updateLandscapeClouds } from './landscape-clouds'
 import { filmState, mix, postsStacked, smooth } from './motion'
@@ -350,10 +355,10 @@ export async function createFilmScene({
       { scale: number; offsetX: number } | undefined
     impactPoint.set(
       cityFraming?.offsetX ?? -3,
-      0,
+      world.city.userData.foundationY ?? 0,
       cityFraming ? 5 - cityFraming.scale * 0.25 : -7,
     )
-    landingPoint.copy(impactPoint).y = 2
+    landingPoint.copy(impactPoint).y += 2
     const asteroidTravel =
       smooth(0.02, 0.465, p) * 0.35 + smooth(0.465, 0.49, p) * 0.65
     // Start about twice as close (≈2x apparent width) while clearing the rock
@@ -417,6 +422,13 @@ export async function createFilmScene({
       mix(left.target[1], right.target[1], interpolation),
       mix(left.target[2], right.target[2], interpolation),
     )
+    const cityCameraDrop =
+      CITY_ISLAND_IMMERSION *
+      (cityFraming?.scale ?? 0) *
+      smooth(0.43, 0.485, p) *
+      (1 - smooth(0.63, 0.67, p))
+    eye.y -= cityCameraDrop
+    target.y -= cityCameraDrop
     const pointerStrength = reduced ? 0 : 1 - smooth(0.44, 0.48, p)
     eye.x += pointer.x * 1.8 * pointerStrength
     eye.y += pointer.y * 0.8 * pointerStrength
@@ -594,7 +606,7 @@ export async function createFilmScene({
       cityFogDepthScale,
     )
     world.shockwave.visible = p > 0.486 && p < 0.565
-    world.shockwave.position.copy(impactPoint).y = 1
+    world.shockwave.position.copy(impactPoint).y += 1
     world.shockwave.scale.setScalar(mix(1, 95, smooth(0.486, 0.565, p)))
     ;(world.shockwave.material as THREE.MeshBasicMaterial).opacity =
       0.65 * (1 - smooth(0.495, 0.565, p))

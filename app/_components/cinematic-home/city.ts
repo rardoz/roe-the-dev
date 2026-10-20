@@ -3,6 +3,9 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { disposeObject } from './asteroid'
 import { cloudPlacements } from './atmospheric-cloud-model'
 
+export const CITY_FOUNDATION_ELEVATION = 0.12
+export const CITY_ISLAND_IMMERSION = 0.28
+
 export const cityImpactView = (mobile: boolean) => ({
   eye: [9, 65, mobile ? 170 : 130] as const,
   target: [0, 48, -25] as const,
@@ -102,11 +105,14 @@ export function fitCityToViewport(
   city.userData.projectedWidth = final.projectedWidth
   const bounds = city.userData.sourceBounds as THREE.Box3
   const cityHeight = (bounds.max.y - bounds.min.y) * final.scale
+  const foundationY =
+    (CITY_FOUNDATION_ELEVATION - CITY_ISLAND_IMMERSION) * final.scale
+  city.userData.foundationY = foundationY
   city.userData.arrivalOffset = -Math.max(210, cityHeight + 20)
   city.children[0].scale.setScalar(final.scale)
   city.children[0].position.set(
     final.offsetX - ((bounds.min.x + bounds.max.x) / 2) * final.scale,
-    -bounds.min.y * final.scale,
+    -bounds.min.y * final.scale + foundationY,
     5,
   )
   const eye = new THREE.Vector3(
@@ -114,7 +120,7 @@ export function fitCityToViewport(
     Math.max(360, cityHeight * 4),
     Math.max(240, (bounds.max.z - bounds.min.z) * final.scale * 0.8 + 50),
   ).multiplyScalar(0.6)
-  const upperCityY = cityHeight * 0.65
+  const upperCityY = cityHeight * 0.65 + foundationY
   const upperCityZ = 5 - final.scale * 0.5
   const distance = Math.hypot(eye.y - upperCityY, eye.z - upperCityZ)
   const elevation = THREE.MathUtils.degToRad(72)
@@ -125,7 +131,7 @@ export function fitCityToViewport(
     minimumAngle = Math.min(
       minimumAngle,
       Math.atan2(
-        eye.y - points[index + 1] * final.scale,
+        eye.y - (points[index + 1] - CITY_ISLAND_IMMERSION) * final.scale,
         eye.z - (points[index + 2] * final.scale + 5),
       ),
     )
@@ -142,6 +148,7 @@ export function fitCityToViewport(
       )
         peak.fromArray(points, index)
     }
+    peak.y -= CITY_ISLAND_IMMERSION
     peak.multiplyScalar(final.scale)
     peak.x += final.offsetX
     peak.z += 5
@@ -198,7 +205,7 @@ export function createCity(
             .applyMatrix4(object.matrixWorld)
           points.push(
             point.x - (bounds.min.x + bounds.max.x) / 2,
-            point.y - bounds.min.y,
+            point.y - bounds.min.y + CITY_FOUNDATION_ELEVATION,
             point.z,
           )
         }
