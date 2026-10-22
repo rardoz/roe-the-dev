@@ -3,6 +3,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { disposeObject } from './asteroid'
 import { CITY_FOUNDATION_ELEVATION, CITY_ISLAND_IMMERSION } from './city'
 
+const IRON_ISLAND_DECK_HEIGHT = 0.053
+
 export function shorelineHull(points: THREE.Vector2[]) {
   const sorted = points.slice().sort((a, b) => a.x - b.x || a.y - b.y)
   const cross = (a: THREE.Vector2, b: THREE.Vector2, c: THREE.Vector2) =>
@@ -31,7 +33,7 @@ export function createIslandAsset(
   group.name = 'island-asset'
   group.userData.assetState = 'loading'
   new GLTFLoader().load(
-    '/assets/island/island.glb',
+    '/assets/island/iron-island.glb',
     ({ scene }) => {
       if (group.userData.disposed) {
         disposeObject(scene)
@@ -128,8 +130,8 @@ export function fitIslandAsset(
   const depthScale = fittedScale * 1.1
   const heightScale = fittedScale * 1.3
   const foregroundOffset = (size.z * (depthScale - fittedScale)) / 2
-  const supportY = CITY_FOUNDATION_ELEVATION - CITY_ISLAND_IMMERSION - 0.003
-  const offsetY = supportY - bounds.max.y * heightScale
+  const supportY = CITY_FOUNDATION_ELEVATION - CITY_ISLAND_IMMERSION - 0.0005
+  const offsetY = supportY - IRON_ISLAND_DECK_HEIGHT * heightScale
   const waterline: THREE.Vector2[] = []
   asset.traverse((object) => {
     if (!(object instanceof THREE.Mesh)) return
