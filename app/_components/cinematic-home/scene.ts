@@ -8,6 +8,7 @@ import {
   cityImpactView,
   fitCityToViewport,
   type DistantCityView,
+  type CityView,
 } from './city'
 import { updateCityIsland } from './city-island'
 import { updateLandscapeClouds } from './landscape-clouds'
@@ -345,9 +346,10 @@ export async function createFilmScene({
     const aboutBottom =
       aboutContentBottom +
       (aboutMoves ? mix(80, -40, aboutAsteroidState(progress).travel) : 0)
-    const citySkylineTop =
-      Math.max(aboutBottom + 24, navigationTop - Math.min(160, height * 0.2)) -
-      100
+    const citySkylineTop = Math.max(
+      aboutBottom + 24,
+      navigationTop - Math.min(160, height * 0.2),
+    )
     const fogDensity = mix(0.0022, 0.005, smooth(0.18, 0.35, p))
     const cityFogDepthScale = mix(1, 0.00065 / fogDensity, distantBlend)
     world.city.userData.fogDepthScale.value = cityFogDepthScale
@@ -401,9 +403,21 @@ export async function createFilmScene({
         eye: [2, 13, mobile ? 169 : 141],
         target: [0, mobile ? 98 : 105, -7],
       },
-      { p: 0.485, ...cityImpactView(mobile) },
-      { p: 0.55, eye: [10, 55, mobile ? 164 : 126], target: [0, 29, -6] },
-      { p: 0.63, eye: [8, 58, mobile ? 159 : 122], target: [0, 31, -6] },
+      {
+        p: 0.485,
+        ...((world.city.userData.closeView as CityView) ??
+          cityImpactView(mobile)),
+      },
+      {
+        p: 0.55,
+        ...((world.city.userData.aftermathView as CityView) ??
+          cityImpactView(mobile)),
+      },
+      {
+        p: 0.63,
+        ...((world.city.userData.aftermathView as CityView) ??
+          cityImpactView(mobile)),
+      },
       { p: 0.67, eye: [0, 68, mobile ? 119 : 88], target: [0, 48, 0] },
       { p: 0.89, eye: [0, 13, mobile ? 112 : 82], target: [0, 13, 0] },
       { p: 1, eye: [0, 7, mobile ? 222 : 194], target: [0, 19, 0] },
@@ -422,13 +436,6 @@ export async function createFilmScene({
       mix(left.target[1], right.target[1], interpolation),
       mix(left.target[2], right.target[2], interpolation),
     )
-    const cityCameraDrop =
-      CITY_ISLAND_IMMERSION *
-      (cityFraming?.scale ?? 0) *
-      smooth(0.43, 0.485, p) *
-      (1 - smooth(0.63, 0.67, p))
-    eye.y -= cityCameraDrop
-    target.y -= cityCameraDrop
     const pointerStrength = reduced ? 0 : 1 - smooth(0.44, 0.48, p)
     eye.x += pointer.x * 1.8 * pointerStrength
     eye.y += pointer.y * 0.8 * pointerStrength
@@ -443,6 +450,21 @@ export async function createFilmScene({
       distantRotation.setFromEuler(distantEuler.set(-pitch, 0, 0))
       camera.position.lerp(distantView.eye, distantBlend)
       camera.quaternion.slerp(distantRotation, distantBlend)
+    }
+    if (cityFraming && world.city.userData.roof && p > 0.455 && p < 0.67) {
+      camera.updateMatrixWorld()
+      aboutPoint.copy(world.city.userData.roof)
+      aboutPoint.y -= CITY_ISLAND_IMMERSION
+      aboutPoint.multiplyScalar(cityFraming.scale)
+      aboutPoint.x += cityFraming.offsetX
+      aboutPoint.z += 5
+      aboutPoint.project(camera)
+      if (aboutPoint.y > 0.76) {
+        const correction =
+          Math.atan(aboutPoint.y * verticalField) -
+          Math.atan(0.76 * verticalField)
+        camera.rotateX(correction * (1 - smooth(0.63, 0.67, p)))
+      }
     }
     camera.updateMatrixWorld()
     world.asteroid.position.set(

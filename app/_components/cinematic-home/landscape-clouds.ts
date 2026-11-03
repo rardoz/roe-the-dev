@@ -10,7 +10,7 @@ export function createLandscapeClouds(atmosphericClouds: THREE.Group) {
     state = (1664525 * state + 1013904223) >>> 0
     return state / 4294967296
   }
-  for (let index = 0; index < 30; index++) {
+  for (let index = 0; index < 64; index++) {
     const source = atmosphericClouds.children[index % 20] as THREE.Mesh<
       THREE.PlaneGeometry,
       THREE.MeshBasicMaterial
@@ -26,10 +26,12 @@ export function createLandscapeClouds(atmosphericClouds: THREE.Group) {
     })
     const cloud = new THREE.Mesh(geometry, material)
     cloud.name = `landscape-cloud-${index + 1}`
-    const x = (random() - 0.5) * 4.4
-    const z = -2.8 + random() * 4.2
-    const altitude = 0.13 + random() * 0.26
-    const size = 0.075 + random() * 0.085
+    const angle = index * 2.399963 + random() * 0.7
+    const radius = 0.35 + Math.sqrt(random()) * 2.4
+    const x = Math.cos(angle) * radius
+    const z = Math.sin(angle) * radius - 0.25
+    const altitude = 0.18 + random() * 0.42
+    const size = 0.05 + random() * 0.065
     cloud.position.set(x, altitude, z)
     cloud.scale.setScalar(size)
     cloud.userData = {
@@ -38,7 +40,7 @@ export function createLandscapeClouds(atmosphericClouds: THREE.Group) {
       altitude,
       phase: random() * Math.PI * 2,
       speed: 0.65 + random() * 0.7,
-      opacity: 0.5 + random() * 0.32,
+      opacity: 0.38 + random() * 0.4,
     }
     group.add(cloud)
   }
@@ -55,7 +57,7 @@ export function updateLandscapeClouds(
   progress: number,
 ) {
   const visibility =
-    smooth(0.315, 0.35, progress) * (1 - smooth(0.52, 0.64, progress))
+    smooth(0.335, 0.355, progress) * (1 - smooth(0.52, 0.64, progress))
   group.visible = visibility > 0.001
   if (!group.visible) return
   group.updateWorldMatrix(true, false)
@@ -75,7 +77,7 @@ export function updateLandscapeClouds(
     )
     cloud.quaternion.copy(camera.quaternion)
     const distance = cameraLocal.distanceTo(cloud.position)
-    const horizonFade = 1 - smooth(4, 10, distance)
+    const horizonFade = 1 - smooth(7, 18, distance)
     projected
       .copy(cloud.position)
       .applyMatrix4(group.matrixWorld)

@@ -1,10 +1,5 @@
 import * as THREE from 'three'
-import { CITY_FOUNDATION_ELEVATION } from './city'
-import {
-  createIslandAsset,
-  fitIslandAsset,
-  shorelineHull,
-} from './island-asset'
+import { CITY_WATER_LEVEL } from './city'
 
 const coastalWaveCoordinates = `
 uniform float uWaveTravel;
@@ -143,23 +138,6 @@ void main() {
   #include <colorspace_fragment>
 }`
 
-function cityFootprint(points: Float32Array) {
-  const candidates: THREE.Vector2[] = []
-  for (let i = 0; i < points.length; i += 9) {
-    if (points[i + 1] > CITY_FOUNDATION_ELEVATION + 0.1 && points[i + 2] < 0.12)
-      candidates.push(new THREE.Vector2(points[i], points[i + 2]))
-  }
-  const hull = shorelineHull(candidates)
-  const center = hull
-    .reduce((sum, point) => sum.add(point), new THREE.Vector2())
-    .multiplyScalar(1 / hull.length)
-  return hull.map((point) =>
-    point
-      .clone()
-      .add(point.clone().sub(center).normalize().multiplyScalar(0.085)),
-  )
-}
-
 function shorelineTexture(outline: THREE.Vector2[]) {
   const size = 192
   const data = new Uint8Array(size * size)
@@ -211,8 +189,6 @@ export function createCityIsland(
   const group = new THREE.Group()
   group.name = 'city-island-ocean'
   group.visible = false
-  const fogDepthScale = { value: 1 }
-  const rocks = createIslandAsset(anisotropy, fogDepthScale, onLoad)
   const fallbackNormal = new THREE.DataTexture(
     new Uint8Array([128, 128, 255, 255]),
     1,
@@ -248,7 +224,7 @@ export function createCityIsland(
       fragmentShader: waterFragment,
     }),
   )
-  water.position.y = -0.36
+  water.position.y = CITY_WATER_LEVEL
   water.name = 'city-ocean'
   const loader = new THREE.TextureLoader()
   for (const [key, path] of [
@@ -276,13 +252,11 @@ export function createCityIsland(
       () => onLoad(),
     )
   }
-  group.add(rocks, water)
+  group.add(water)
   return {
     group,
-    rocks,
     water,
     uniforms,
-    fogDepthScale,
     detail: width < 700 ? 80 : 160,
     sourcePoints: undefined as Float32Array | undefined,
   }
@@ -307,16 +281,9 @@ export function updateCityIsland(
     island.water.geometry.rotateX(-Math.PI / 2)
     island.detail = detail
   }
-  if (
-    island.sourcePoints !== points &&
-    island.rocks.userData.assetState === 'ready'
-  ) {
-    const outline = cityFootprint(points)
-    const waterline = fitIslandAsset(
-      island.rocks,
-      outline,
-      island.water.position.y,
-    )
+  if (island.sourcePoints !== points) {
+    const waterline = city.userData.shoreline as THREE.Vector2[]
+    island.water.position.y = city.userData.waterLevel
     const previous = island.uniforms.uShore.value
     island.uniforms.uShore.value = shorelineTexture(waterline)
     if (previous !== island.uniforms.uFoam.value) previous.dispose()
@@ -324,8 +291,8 @@ export function updateCityIsland(
   }
   island.group.scale.setScalar(frame.scale)
   island.group.position.set(frame.offsetX, city.position.y, 5)
-  island.fogDepthScale.value = city.userData.fogDepthScale.value
-  island.uniforms.uFogDensity.value = fogDensity * island.fogDepthScale.value
+  island.uniforms.uFogDensity.value =
+    fogDensity * city.userData.fogDepthScale.value
   if (island.group.visible && !reduced) {
     const elapsed = Math.min(dt, 0.05)
     island.uniforms.uTime.value += elapsed

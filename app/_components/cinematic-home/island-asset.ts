@@ -4,6 +4,7 @@ import { disposeObject } from './asteroid'
 import { CITY_FOUNDATION_ELEVATION, CITY_ISLAND_IMMERSION } from './city'
 
 const IRON_ISLAND_DECK_HEIGHT = 0.053
+const BRIDGE_ALIGNED_ISLAND_DEPTH = 1.336
 
 export function shorelineHull(points: THREE.Vector2[]) {
   const sorted = points.slice().sort((a, b) => a.x - b.x || a.y - b.y)
@@ -127,7 +128,7 @@ export function fitIslandAsset(
   const fittedScale =
     Math.max(footprintSize.x / size.x, footprintSize.y / size.z) * 1.08
   const widthScale = fittedScale * 1.45
-  const depthScale = fittedScale * 1.1
+  const depthScale = fittedScale * BRIDGE_ALIGNED_ISLAND_DEPTH
   const heightScale = fittedScale * 1.3
   const foregroundOffset = (size.z * (depthScale - fittedScale)) / 2
   const supportY = CITY_FOUNDATION_ELEVATION - CITY_ISLAND_IMMERSION - 0.0005

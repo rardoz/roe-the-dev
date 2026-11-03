@@ -222,7 +222,14 @@ export function updateAtmosphericDescent(
     cloud.material.depthTest = !meteorForeground
     cloud.material.depthWrite = !meteorForeground
     cloud.renderOrder = meteorForeground ? 10 : 0
-    const renderedScale = pose.scale[0] * CLOUD_SCALE
+    const skylineScale = cityAnchor
+      ? THREE.MathUtils.lerp(
+          1,
+          0.24,
+          THREE.MathUtils.smoothstep(sceneProgress, 0.335, 0.35),
+        )
+      : 1
+    const renderedScale = pose.scale[0] * CLOUD_SCALE * skylineScale
     cloud.scale.set(renderedScale, renderedScale, 1)
     cloud.material.userData.fadeUniform.value = Math.min(
       1,
