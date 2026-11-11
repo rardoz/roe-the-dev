@@ -38,7 +38,7 @@ float cloudField(vec3 p) {
     head=smoothUnion(head,ellipsoid(p-center,vec3(9.,7.5,8.)),2.5);
   }
   float y=clamp(p.y/56.,0.,1.);
-  vec2 center=vec2(sin(p.y*.16)*1.2,cos(p.y*.11)*1.5);
+  vec2 center=vec2(sin(p.y*.16)*1.2,(cos(p.y*.11)-1.)*1.5);
   float radius=4.4+sin(p.y*.34)*.4+pow(y,7.)*8.;
   float stem=max(length(p.xz-center)-radius,abs(p.y-28.)-28.);
   float field=smoothUnion(head,stem,4.5);

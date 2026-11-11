@@ -22,32 +22,6 @@ const concrete = new THREE.MeshStandardMaterial({
 })
 const dark = new THREE.MeshStandardMaterial({ color: '#111110', roughness: 1 })
 
-function fracturedRock(seed: number, detail = 5) {
-  const random = seededRandom(seed)
-  const geometry = new THREE.IcosahedronGeometry(1, detail)
-  const positions = geometry.getAttribute('position')
-  const points = new Map<string, THREE.Vector3>()
-  for (let index = 0; index < positions.count; index++) {
-    const vertex = new THREE.Vector3().fromBufferAttribute(positions, index)
-    const key = vertex
-      .toArray()
-      .map((value) => value.toFixed(4))
-      .join(',')
-    if (!points.has(key)) {
-      const wave =
-        Math.sin(vertex.x * 11 + vertex.z * 7) *
-        Math.cos(vertex.y * 9 - vertex.z * 3)
-      vertex.multiplyScalar(0.78 + wave * 0.16 + random() * 0.29)
-      points.set(key, vertex)
-    }
-    const point = points.get(key)!
-    positions.setXYZ(index, point.x, point.y, point.z)
-  }
-  geometry.computeVertexNormals()
-  return geometry
-}
-const rockGeometry = fracturedRock(251, 3)
-
 function sphere(
   parent: THREE.Object3D,
   position: number[],
@@ -275,10 +249,84 @@ export function createWorld(
 ) {
   const asteroidGroup = new THREE.Group()
   asteroidGroup.add(asteroidModel)
+  const blastCityDebris = new THREE.Group()
+  const blastCityBatches: THREE.InstancedMesh[] = []
+  const blastFragmentCount = 120
   const city = createCity(
     planetOptions.anisotropy,
     planetOptions.onLoad,
     planetOptions.onCityError,
+    (asset) => {
+      const samples: THREE.Mesh[] = []
+      for (const pattern of [
+        /exposed_fractured_floor/,
+        /fallen_architectural_section.*graphite_panel/,
+        /lifted_torn_steel_plate/,
+      ]) {
+        let count = 0
+        asset.traverse((object) => {
+          if (
+            !(object instanceof THREE.Mesh) ||
+            !pattern.test(object.name) ||
+            count >= 2
+          )
+            return
+          const geometry = object.geometry
+            .clone()
+            .applyMatrix4(object.matrixWorld)
+          geometry.center()
+          geometry.computeBoundingBox()
+          const size = geometry.boundingBox!.getSize(new THREE.Vector3())
+          geometry.scale(
+            1 / Math.max(size.x, size.y, size.z),
+            1 / Math.max(size.x, size.y, size.z),
+            1 / Math.max(size.x, size.y, size.z),
+          )
+          const materials = (
+            Array.isArray(object.material) ? object.material : [object.material]
+          ).map((source: THREE.Material) => {
+            const material = source.clone()
+            if (material instanceof THREE.MeshStandardMaterial)
+              material.color.setRGB(
+                Math.max(0.22, material.color.r),
+                Math.max(0.22, material.color.g),
+                Math.max(0.22, material.color.b),
+              )
+            return material
+          })
+          samples.push(
+            new THREE.Mesh(
+              geometry,
+              Array.isArray(object.material) ? materials : materials[0],
+            ),
+          )
+          count++
+        })
+      }
+      if (samples.length !== 6) {
+        samples.forEach((sample) => {
+          sample.geometry.dispose()
+          const materials = Array.isArray(sample.material)
+            ? sample.material
+            : [sample.material]
+          materials.forEach((material) => material.dispose())
+        })
+        planetOptions.onCityError(
+          new Error('City debris requires floor, facade, and steel fragments'),
+        )
+        return
+      }
+      for (const sample of samples) {
+        const batch = new THREE.InstancedMesh(
+          sample.geometry,
+          sample.material,
+          blastFragmentCount / samples.length,
+        )
+        batch.instanceMatrix.setUsage(THREE.DynamicDrawUsage)
+        blastCityBatches.push(batch)
+        blastCityDebris.add(batch)
+      }
+    },
   )
   const arrivalLight = openingLight()
   const cloud = mushroomCloud()
@@ -328,13 +376,18 @@ export function createWorld(
   )
   shockwave.rotation.x = -Math.PI / 2
   shockwave.position.y = 1
-  const blastDebris = new THREE.InstancedMesh(rockGeometry, dark, 42)
-  const blastPaths = Array.from({ length: 42 }, () => ({
-    angle: random() * Math.PI * 2,
-    distance: 17 + random() * 51,
-    height: 12 + random() * 32,
-    size: 0.35 + random() * 1.2,
-  }))
+  const blastDebris = createDebris(blastFragmentCount)
+  blastDebris.instanceMatrix.setUsage(THREE.DynamicDrawUsage)
+  const blastPaths = Array.from(
+    { length: blastFragmentCount * 2 },
+    (_, index) => ({
+      angle: ((index + random()) / (blastFragmentCount * 2)) * Math.PI * 2,
+      distance: 45 + random() * 115,
+      height: 16 + random() * 62,
+      size: 0.2 + Math.pow(random(), 2.4) * 3.8,
+      spin: (random() < 0.5 ? -1 : 1) * (3 + random() * 9),
+    }),
+  )
   scene.add(
     asteroidGroup,
     city,
@@ -348,6 +401,7 @@ export function createWorld(
     atmosphericClouds,
     shockwave,
     blastDebris,
+    blastCityDebris,
   )
   return {
     asteroid: asteroidGroup,
@@ -363,7 +417,9 @@ export function createWorld(
     atmosphericClouds,
     shockwave,
     blastDebris,
+    blastCityDebris,
     blastPaths,
+    blastCityBatches,
   }
 }
 

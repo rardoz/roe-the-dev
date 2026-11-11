@@ -182,6 +182,13 @@ export function fitCityToViewport(
       -city.userData.groundY * final.scale + foundationY,
       5 - ((bounds.min.z + bounds.max.z) / 2) * final.scale,
     )
+    const craterCenter: unknown = asset.userData.craterCenter
+    if (craterCenter instanceof THREE.Vector3) {
+      city.userData.impactPoint = craterCenter
+        .clone()
+        .multiply(asset.scale)
+        .add(asset.position)
+    }
   }
   const landscapeBounds = bounds.clone()
   landscapeBounds.translate(
@@ -327,6 +334,7 @@ export function createCity(
   anisotropy: number,
   onLoad: () => void,
   onError: (error: unknown) => void,
+  onExplodedLoad?: (asset: THREE.Object3D) => void,
 ) {
   const city = new THREE.Group()
   city.name = 'city'
@@ -460,9 +468,23 @@ export function createCity(
         onError(new Error('Exploded city asset contains no geometry'))
         return
       }
+      const craterBounds = new THREE.Box3()
+      scene.traverse((object) => {
+        if (object.name.startsWith('Impact_crater'))
+          craterBounds.expandByObject(object)
+      })
+      if (craterBounds.isEmpty()) {
+        disposeObject(scene)
+        city.userData.explodedAssetState = 'error'
+        onError(new Error('Exploded city asset contains no impact crater'))
+        return
+      }
+      scene.userData.craterCenter = craterBounds.getCenter(new THREE.Vector3())
+      scene.userData.craterCenter.y = craterBounds.min.y
       scene.name = 'city-exploded-asset'
       scene.visible = false
       prepareCityMaterials(scene, anisotropy, fogDepthScale)
+      onExplodedLoad?.(scene)
       city.add(scene)
       const { width, height } = city.userData.viewport || {
         width: window.innerWidth,

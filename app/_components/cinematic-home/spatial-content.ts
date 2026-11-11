@@ -178,6 +178,7 @@ export function updateSpatialContent(
   mobile: boolean,
   namespace: 'posts' | 'projects',
   container: HTMLElement,
+  origin?: THREE.Vector3,
 ) {
   const isPosts = namespace === 'posts'
   const start = isPosts ? 0.155 : 0.67
@@ -192,7 +193,8 @@ export function updateSpatialContent(
     .clone()
     .add(
       direction.multiplyScalar(
-        (camera.position.z - z) / Math.max(0.01, -direction.z),
+        (camera.position.z - z - (origin?.z ?? 0)) /
+          Math.max(0.01, -direction.z),
       ),
     )
   const distance = camera.position.distanceTo(center)
@@ -325,9 +327,9 @@ export function updateSpatialContent(
       const angle = offset * 1.13
       const x = Math.sin(angle) * width * 1.3
       group.position.set(
-        mix(x, x * 0.18, centerWeight),
+        mix(x, x * 0.18, centerWeight) + (origin?.x ?? 0),
         center.y + offset * width * 0.72 * smooth(0.5, 1.15, absolute),
-        Math.cos(angle) * z,
+        Math.cos(angle) * z + (origin?.z ?? 0),
       )
       group.quaternion.copy(camera.quaternion)
       group.rotateY(-Math.sin(angle) * 0.55)

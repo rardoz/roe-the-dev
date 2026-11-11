@@ -15,6 +15,8 @@ import { updateCityIsland } from './city-island'
 import { updateLandscapeClouds } from './landscape-clouds'
 import {
   IMPACT_ASTEROID_GONE,
+  IMPACT_FLASH_PEAK,
+  clamp,
   filmState,
   mix,
   postsStacked,
@@ -362,11 +364,17 @@ export async function createFilmScene({
     world.city.userData.fogDepthScale.value = cityFogDepthScale
     const cityFraming = world.city.userData.finalFraming as
       { scale: number; offsetX: number } | undefined
+    const cityStart = world.city.userData.arrivalOffset ?? -210
+    const cityOffset =
+      smoothAtmosphere < 0 ? cityStart : mix(cityStart, 0, cityArrival)
     impactPoint.set(
       cityFraming?.offsetX ?? -3,
       world.city.userData.foundationY ?? 0,
       cityFraming ? 5 - cityFraming.scale * 0.25 : -7,
     )
+    const craterPoint: unknown = world.city.userData.impactPoint
+    if (craterPoint instanceof THREE.Vector3) impactPoint.copy(craterPoint)
+    impactPoint.y += cityOffset
     landingPoint.copy(impactPoint).y += 2
     const asteroidTravel =
       smooth(0.02, 0.465, p) * 0.35 + smooth(0.465, 0.49, p) * 0.65
@@ -425,8 +433,24 @@ export async function createFilmScene({
         ...((world.city.userData.aftermathView as CityView) ??
           cityImpactView(mobile)),
       },
-      { p: 0.67, eye: [0, 68, mobile ? 119 : 88], target: [0, 48, 0] },
-      { p: 0.89, eye: [0, 13, mobile ? 112 : 82], target: [0, 13, 0] },
+      {
+        p: 0.67,
+        eye: [
+          impactPoint.x,
+          impactPoint.y + 68,
+          impactPoint.z + (mobile ? 119 : 88),
+        ],
+        target: [impactPoint.x, impactPoint.y + 48, impactPoint.z],
+      },
+      {
+        p: 0.89,
+        eye: [
+          impactPoint.x,
+          impactPoint.y + 13,
+          impactPoint.z + (mobile ? 112 : 82),
+        ],
+        target: [impactPoint.x, impactPoint.y + 13, impactPoint.z],
+      },
       { p: 1, eye: [0, 7, mobile ? 222 : 194], target: [0, 19, 0] },
     ]
     const next = points.findIndex((point) => point.p > p)
@@ -475,9 +499,6 @@ export async function createFilmScene({
       }
     }
     camera.updateMatrixWorld()
-    const cityStart = world.city.userData.arrivalOffset ?? -210
-    const cityOffset =
-      smoothAtmosphere < 0 ? cityStart : mix(cityStart, 0, cityArrival)
     if (cityFraming && world.city.userData.roof && p >= 0.315) {
       aboutPoint.copy(world.city.userData.roof)
       aboutPoint.y -= CITY_ISLAND_IMMERSION
@@ -634,9 +655,7 @@ export async function createFilmScene({
       p,
     )
     world.cloud.visible = state.impact > 0.001
-    world.cloud.position
-      .copy(impactPoint)
-      .multiplyScalar(1 - smooth(0.55, 0.655, p))
+    world.cloud.position.copy(impactPoint)
     const cloudSize = smooth(0.49, 0.57, p)
     world.cloud.scale.setScalar(cloudSize)
     world.cloud.rotation.y = state.portfolio * -0.28
@@ -654,25 +673,50 @@ export async function createFilmScene({
       cityFogDepthScale,
     )
     world.shockwave.visible = p > 0.486 && p < 0.565
-    world.shockwave.position.copy(impactPoint).y += 1
+    world.shockwave.position.copy(impactPoint)
+    world.shockwave.position.y =
+      (world.city.userData.foundationY ?? 0) + cityOffset + 1
     world.shockwave.scale.setScalar(mix(1, 95, smooth(0.486, 0.565, p)))
     ;(world.shockwave.material as THREE.MeshBasicMaterial).opacity =
       0.65 * (1 - smooth(0.495, 0.565, p))
-    const blast = smooth(0.486, 0.565, p)
-    world.blastDebris.visible = p > 0.486 && p < 0.565
+    const blast = clamp((p - IMPACT_FLASH_PEAK) / (0.6 - IMPACT_FLASH_PEAK))
+    const blastTravel = 1 - Math.pow(1 - blast, 2.5)
+    world.blastDebris.visible = !reduced && blast > 0 && blast < 1
+    world.blastCityDebris.visible = world.blastDebris.visible
     world.blastDebris.position.copy(impactPoint)
+    world.blastCityDebris.position.copy(impactPoint)
     world.blastPaths.forEach((path, index) => {
       debrisPose.position.set(
-        Math.cos(path.angle) * path.distance * blast,
-        2 + Math.sin(blast * Math.PI) * path.height,
-        Math.sin(path.angle) * path.distance * blast,
+        Math.cos(path.angle) * path.distance * blastTravel,
+        2 + 4 * blast * (1 - blast) * path.height,
+        Math.sin(path.angle) * path.distance * blastTravel,
       )
-      debrisPose.scale.setScalar(path.size * (1 - blast * 0.8))
-      debrisPose.rotation.set(blast * 4 + index, blast * 5, blast * 3)
+      const isCity = index % 2 === 1
+      debrisPose.scale.setScalar(
+        path.size * (isCity ? 3 : 0.9) * (1 - smooth(0.78, 1, blast)),
+      )
+      debrisPose.rotation.set(
+        blast * path.spin + index,
+        blast * path.spin * 1.3,
+        blast * path.spin * 0.7 + path.angle,
+      )
       debrisPose.updateMatrix()
-      world.blastDebris.setMatrixAt(index, debrisPose.matrix)
+      const fragmentIndex = Math.floor(index / 2)
+      if (isCity) {
+        const batches = world.blastCityBatches
+        if (batches.length)
+          batches[fragmentIndex % batches.length].setMatrixAt(
+            Math.floor(fragmentIndex / batches.length),
+            debrisPose.matrix,
+          )
+      } else world.blastDebris.setMatrixAt(fragmentIndex, debrisPose.matrix)
     })
     world.blastDebris.instanceMatrix.needsUpdate = true
+    world.blastDebris.computeBoundingSphere()
+    for (const batch of world.blastCityBatches) {
+      batch.instanceMatrix.needsUpdate = true
+      batch.computeBoundingSphere()
+    }
     world.desert.group.visible =
       p > 0.15 &&
       distantBlend < 0.999 &&
@@ -715,6 +759,7 @@ export async function createFilmScene({
       mobile,
       'projects',
       container,
+      impactPoint,
     )
     renderer.render(scene, camera)
     frames++
@@ -726,6 +771,9 @@ export async function createFilmScene({
     canvas.dataset.cityAsset = world.city.userData.assetState
     canvas.dataset.cityExplodedAsset = world.city.userData.explodedAssetState
     canvas.dataset.cityVariant = world.city.userData.variant
+    canvas.dataset.impactPoint = JSON.stringify(impactPoint.toArray())
+    canvas.dataset.cloudOrigin = JSON.stringify(world.cloud.position.toArray())
+    canvas.dataset.blast = blast.toFixed(4)
     canvas.dataset.cityBand = JSON.stringify({
       contentBottom: +aboutBottom.toFixed(1),
       skylineTop: +citySkylineTop.toFixed(1),

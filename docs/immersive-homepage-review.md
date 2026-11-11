@@ -39,6 +39,18 @@ Both city GLBs load when the scene starts. At `IMPACT_FLASH_PEAK` (progress `0.4
 
 Both exports use the intact city's scale and position, including on resize, preserving the island, ocean, and camera alignment. Both receive the same fog/material treatment and scene disposal. If the exploded asset fails, the intact city remains visible and the existing city error handler reports the failure. Canvas diagnostics expose `data-city-variant` and `data-city-exploded-asset`. Tests were skipped for this pass at the owner's request.
 
+### Crater-centered mushroom cloud and debris
+
+The exploded export's `Impact crater | fractured sunken basin` mesh supplies the impact anchor: the horizontal center of its bounds at the basin floor. The loader finds its GLTF-sanitized `Impact_crater` name and reports an asset error if the crater geometry is missing. The anchor receives the same scale and translation as the city on every viewport fit, regardless of asset load order.
+
+The asteroid landing, mushroom-cloud base, and debris burst share that anchor. The shockwave uses the same horizontal center at foundation height. The cloud stays rooted in the crater instead of drifting to world origin; the later Portfolio camera and helix follow its translated axis, while the final Contact camera endpoint is unchanged.
+
+The mixed burst now contains 240 fragments: 120 architectural shards and 120 existing comet fragments. City pieces reuse six floor, graphite-facade, and torn-steel geometries from the exploded GLB, with cloned materials lifted to charcoal for separation against the black background; comet pieces reuse `createDebris` geometry and shading. The city model stays intact: only cloned, centered fragment geometry is animated. Sizes span tiny chips to a few large slabs (a 20:1 scale range), with independently varied tumble rates. Six city instance batches and one comet batch keep the increased density from requiring a draw call per fragment.
+
+Seeded fragments launch radially at impact (`0.49`) with a fast initial outward impulse that slows as they spread, reaching 45–160 world units from the crater. They rise and fall along varied parabolic arcs and shrink away by `0.6`. The flight remains visible after the full-white flash clears. All instance batches update their bounding spheres with their positions to prevent stale frustum culling. Motion is scroll-driven and reversible, with no random reseeding per frame or timed simulation; reduced-motion mode suppresses both kinds of debris. Shared materials and cloned geometry remain covered by scene disposal. Canvas diagnostics include `data-impact-point`, `data-cloud-origin`, and `data-blast`.
+
+Browser inspection covered the crater/cloud alignment and visible debris at `1440x900` and `390x844`, plus the desktop Portfolio transition and backward scrolling into the impact scene. Lint, TypeScript, and diff checks passed. Automated tests remain skipped at the owner's request.
+
 ### About Roe reveal
 
 `about.tsx` owns the About composition: professional biography on the left, the existing photograph in a neutral Art Deco frame on the right, and the city behind/below. `about-motion.ts` defines the reversible foreground window (`.3–.455`), attraction bounds, text-proximity sizing, and a silhouette hull derived from the actual asteroid mesh's projected vertices. The scene publishes the original asteroid projection and temporarily follows the foreground control; outside this window its original position, scale, rotation, and descent resume unchanged.
