@@ -17,6 +17,7 @@ import { updateMushroomCloud } from './mushroom-cloud'
 import {
   IMPACT_ASTEROID_GONE,
   IMPACT_FLASH_PEAK,
+  PROJECT_HELIX,
   clamp,
   filmState,
   mix,
@@ -404,6 +405,7 @@ export async function createFilmScene({
         edgeDepth(openingDistance) -
       OPENING_EDGE_OFFSET +
       rimYZ
+    const shaftHeight = (PROJECT_HELIX.bottom + PROJECT_HELIX.top) / 2
     const points = [
       {
         p: 0,
@@ -444,19 +446,19 @@ export async function createFilmScene({
         p: 0.67,
         eye: [
           impactPoint.x,
-          impactPoint.y + 68,
+          impactPoint.y + 52,
           impactPoint.z + (mobile ? 119 : 88),
         ],
-        target: [impactPoint.x, impactPoint.y + 48, impactPoint.z],
+        target: [impactPoint.x, impactPoint.y + shaftHeight, impactPoint.z],
       },
       {
         p: 0.89,
         eye: [
           impactPoint.x,
-          impactPoint.y + 13,
+          impactPoint.y + 43,
           impactPoint.z + (mobile ? 112 : 82),
         ],
-        target: [impactPoint.x, impactPoint.y + 13, impactPoint.z],
+        target: [impactPoint.x, impactPoint.y + shaftHeight, impactPoint.z],
       },
       { p: 1, eye: [0, 7, mobile ? 222 : 194], target: [0, 19, 0] },
     ]
@@ -799,7 +801,7 @@ export async function createFilmScene({
     frames++
     projected
       .copy(world.cloud.position)
-      .add(new THREE.Vector3(0, mix(48, 13, state.portfolio), 0))
+      .add(new THREE.Vector3(0, shaftHeight, 0))
       .project(camera)
     canvas.dataset.progress = p.toFixed(5)
     canvas.dataset.cityAsset = world.city.userData.assetState

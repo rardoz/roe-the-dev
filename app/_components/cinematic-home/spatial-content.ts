@@ -3,15 +3,15 @@ import type { EditorialItem } from './content'
 import { headingInkBottom } from './heading'
 import { editorialFrameLines } from './post-frame'
 import {
-  clamp,
   filmState,
+  helixCard,
   mix,
   POST_FRAME,
+  PROJECT_HELIX,
   postRow,
   postsPose,
   postsHeadingOffset,
   postsStacked,
-  smooth,
 } from './motion'
 
 const vertex = `varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`
@@ -112,7 +112,8 @@ export function createSpatialContent(
         uOpacity: { value: 1 },
       },
       side: THREE.DoubleSide,
-      transparent: namespace === 'posts',
+      transparent: true,
+      depthWrite: namespace !== 'projects',
     })
     const image = new THREE.Mesh(
       new THREE.PlaneGeometry(1, 0.61),
@@ -124,7 +125,8 @@ export function createSpatialContent(
       new THREE.MeshBasicMaterial({
         map: copyTexture(item, displayFont),
         side: THREE.DoubleSide,
-        transparent: namespace === 'posts',
+        transparent: true,
+        depthWrite: namespace !== 'projects',
       }),
     )
     title.position.set(0, -0.295, 0.007)
@@ -132,7 +134,8 @@ export function createSpatialContent(
       frameGeometry(),
       new THREE.LineBasicMaterial({
         color: '#b9b8b0',
-        transparent: namespace === 'posts',
+        transparent: true,
+        depthWrite: namespace !== 'projects',
       }),
     )
     const back = new THREE.Mesh(
@@ -140,7 +143,8 @@ export function createSpatialContent(
       new THREE.MeshBasicMaterial({
         color: '#070707',
         side: THREE.DoubleSide,
-        transparent: namespace === 'posts',
+        transparent: true,
+        depthWrite: namespace !== 'projects',
       }),
     )
     back.position.z = -0.003
@@ -181,13 +185,7 @@ export function updateSpatialContent(
   origin?: THREE.Vector3,
 ) {
   const isPosts = namespace === 'posts'
-  const start = isPosts ? 0.155 : 0.67
-  const duration = isPosts ? 0.14 : 0.215
-  const cursor = isPosts
-    ? 0
-    : clamp((progress - start) / duration) * Math.max(0, frames.length - 1)
-  const active = Math.round(cursor)
-  const z = isPosts ? 28 : 48
+  const z = isPosts ? 28 : PROJECT_HELIX.focusDepth
   const direction = camera.getWorldDirection(new THREE.Vector3())
   const center = camera.position
     .clone()
@@ -294,28 +292,26 @@ export function updateSpatialContent(
     const pointerY = Number(element?.style.getPropertyValue('--pointer-y') || 0)
     group.userData.pointerX = mix(group.userData.pointerX || 0, pointerX, 0.25)
     group.userData.pointerY = mix(group.userData.pointerY || 0, pointerY, 0.25)
-    const offset = index - cursor
-    const absolute = Math.abs(offset)
     const pose = isPosts
       ? postsPose(index, frames.length, progress, mobile, reach)
       : null
+    const projectPose = isPosts
+      ? null
+      : helixCard(index, frames.length, progress, mobile)
     if (pose) {
       const pitch = POST_FRAME.width + 0.08 + 28 / (width / worldPerPixel)
       pose.x += (index - (frames.length - 1) / 2) * (pitch - 1.4)
     }
-    const sectionOpacity = isPosts ? filmState(progress).postsCardsOpacity : 1
-    const opacity = pose ? pose.opacity * sectionOpacity : 1
+    const sectionOpacity = isPosts
+      ? filmState(progress).postsCardsOpacity
+      : filmState(progress).portfolioOpacity
+    const opacity =
+      (pose?.opacity ?? projectPose?.opacity ?? 0) * sectionOpacity
     if (pose && element) {
       element.style.visibility = pose.opacity > 0 ? 'visible' : 'hidden'
       element.setAttribute('aria-hidden', `${pose.opacity === 0}`)
     }
-    const visible = isPosts
-      ? opacity > 0.004
-      : progress > 0.645 && progress < 0.915
-    group.visible = isPosts
-      ? visible && !mobile
-      : visible && absolute < (mobile ? 2.1 : 2.7)
-    const centerWeight = 1 - smooth(0.22, 0.72, absolute)
+    group.visible = opacity > 0.004 && (!isPosts || !mobile)
     if (pose) {
       group.position
         .copy(center)
@@ -323,18 +319,23 @@ export function updateSpatialContent(
         .addScaledVector(camera.up, -pose.y * width)
         .addScaledVector(direction.clone().normalize(), pose.depth * width)
       group.quaternion.copy(camera.quaternion)
-    } else {
-      const angle = offset * 1.13
-      const x = Math.sin(angle) * width * 1.3
+    } else if (projectPose) {
       group.position.set(
-        mix(x, x * 0.18, centerWeight) + (origin?.x ?? 0),
-        center.y + offset * width * 0.72 * smooth(0.5, 1.15, absolute),
-        Math.cos(angle) * z + (origin?.z ?? 0),
+        Math.sin(projectPose.angle) * PROJECT_HELIX.radius + (origin?.x ?? 0),
+        projectPose.height + (origin?.y ?? 0),
+        Math.cos(projectPose.angle) * PROJECT_HELIX.radius + (origin?.z ?? 0),
       )
+      group.position.lerp(center, projectPose.focus)
       group.quaternion.copy(camera.quaternion)
-      group.rotateY(-Math.sin(angle) * 0.55)
+      group.rotateY(
+        -Math.sin(projectPose.angle) * 0.55 * (1 - projectPose.focus),
+      )
     }
-    group.scale.setScalar(width * (pose?.scale ?? 1))
+    group.scale.setScalar(
+      projectPose
+        ? mix(PROJECT_HELIX.cardWidth, width, projectPose.focus)
+        : width * (pose?.scale ?? 1),
+    )
     group.rotateY(group.userData.pointerX * 0.035)
     group.rotateX(group.userData.pointerY * -0.028)
     const frameMaterial = (group.children[3] as THREE.LineSegments)
@@ -356,13 +357,13 @@ export function updateSpatialContent(
         pose.color,
         group.userData.engage,
       )
-      imageMaterial.uniforms.uOpacity.value = opacity
-      group.children.forEach((child) => {
-        const material = (child as THREE.Mesh | THREE.LineSegments)
-          .material as THREE.Material
-        if (material !== imageMaterial) material.opacity = opacity
-      })
-    } else imageMaterial.uniforms.uColor.value = 1 - smooth(0.12, 0.7, absolute)
+    } else imageMaterial.uniforms.uColor.value = projectPose?.color ?? 0
+    imageMaterial.uniforms.uOpacity.value = opacity
+    group.children.forEach((child) => {
+      const material = (child as THREE.Mesh | THREE.LineSegments)
+        .material as THREE.Material
+      if (material !== imageMaterial) material.opacity = opacity
+    })
     group.updateMatrixWorld()
     if (!element) return
     projected.copy(group.position).project(camera)
@@ -415,10 +416,15 @@ export function updateSpatialContent(
       ? group.visible && pose.interactive && sectionOpacity > 0.7
         ? 'auto'
         : 'none'
-      : group.visible && index === active
+      : group.visible && projectPose?.active && opacity > 0.35
         ? 'auto'
         : 'none'
     element.dataset.opacity = opacity.toFixed(3)
+    element.dataset.scale = (pose?.scale ?? projectPose?.scale ?? 1).toFixed(3)
+    if (projectPose) {
+      element.dataset.helixHeight = projectPose.height.toFixed(3)
+      element.dataset.helixFocus = projectPose.focus.toFixed(3)
+    }
     element.dataset.color = (
       imageMaterial.uniforms.uColor.value as number
     ).toFixed(3)

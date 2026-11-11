@@ -19,6 +19,7 @@ import {
 import { editorialItems, type EditorialItem } from './content'
 import {
   POST_FRAME,
+  PROJECT_HELIX,
   documentFilmOffset,
   documentFilmProgress,
   filmState,
@@ -380,15 +381,42 @@ describe('continuous scroll film', () => {
 
   it('makes every project reachable in front of the helix with real depth between projects', () => {
     for (let index = 0; index < 6; index++) {
-      const progress = 0.67 + (index / 5) * 0.215
+      const progress =
+        PROJECT_HELIX.start +
+        ((index + PROJECT_HELIX.lead) / (5 + PROJECT_HELIX.lead * 2)) *
+          PROJECT_HELIX.duration
       const cards = Array.from({ length: 6 }, (_, project) =>
         helixCard(project, 6, progress, false),
       )
       expect(cards[index].x).toBeCloseTo(0)
       expect(cards[index].depth).toBeCloseTo(0)
       expect(cards[index].color).toBeCloseTo(1)
+      expect(cards[index].focus).toBeCloseTo(1)
+      expect(cards[index].scale).toBeCloseTo(1)
+      expect(
+        cards.every((card, project) => project === index || card.scale < 0.2),
+      ).toBe(true)
       expect(cards.filter((card) => card.active)).toHaveLength(1)
       expect(cards.some((card) => card.depth < -200)).toBe(true)
+    }
+  })
+
+  it('raises every project from a faded shaft base to a faded cap', () => {
+    for (let index = 0; index < 6; index++) {
+      const poses = [-2.5, -2, 0, 2, 2.5].map((travel) => {
+        const progress =
+          PROJECT_HELIX.start +
+          ((index + PROJECT_HELIX.lead + travel) /
+            (5 + PROJECT_HELIX.lead * 2)) *
+            PROJECT_HELIX.duration
+        return helixCard(index, 6, progress, false)
+      })
+      expect(poses[0].opacity).toBe(0)
+      expect(poses[4].opacity).toBe(0)
+      expect(poses[1].opacity).toBeGreaterThan(0)
+      expect(poses[3].opacity).toBeGreaterThan(0)
+      for (let step = 1; step < poses.length; step++)
+        expect(poses[step].height).toBeGreaterThan(poses[step - 1].height)
     }
   })
 

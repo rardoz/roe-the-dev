@@ -21,17 +21,27 @@ The final override governs the color system: near-black, charcoal, ivory, one di
 
 ## Scroll review landmarks
 
-| Fraction                     | Moment                                                          |
-| ---------------------------- | --------------------------------------------------------------- |
-| 0                            | Intro above the asteroid and curved planetary horizon           |
-| .19 / .225 / .275            | Opposing editorial trajectories with depth and color focus      |
-| .36 / .405                   | Real portrait/bio above the single monumental city              |
-| .475 / .49 / .515 / .54      | Final descent, bounded flash, shockwave/debris, cloud formation |
-| Atmospheric passage midpoint | Transmissions carousel between Featurettes and About            |
-| .67 through .885             | Portfolio helix moves from the cloud head down the same shaft   |
-| .945 / .99                   | Camera retreats into the final wasteland and integrated contact |
+| Fraction                     | Moment                                                                           |
+| ---------------------------- | -------------------------------------------------------------------------------- |
+| 0                            | Intro above the asteroid and curved planetary horizon                            |
+| .19 / .225 / .275            | Opposing editorial trajectories with depth and color focus                       |
+| .36 / .405                   | Real portrait/bio above the single monumental city                               |
+| .475 / .49 / .515 / .54      | Final descent, bounded flash, shockwave/debris, cloud formation                  |
+| Atmospheric passage midpoint | Transmissions carousel between Featurettes and About                             |
+| .645 through .91             | Small Portfolio cards spiral upward along the shaft, with front-center close-ups |
+| .945 / .99                   | Camera retreats into the final wasteland and integrated contact                  |
 
 Inspect `[data-renderer]` for renderer/mode/progress, and the canvas for camera, asteroid, impact, flash, frame count, and cloud-axis diagnostics. Semantic links carry `data-spatial-card`, projected bounds, actual world position, and image-load diagnostics.
+
+### Portfolio shaft helix
+
+Portfolio frames follow a tight upward spiral centered on the crater-rooted mushroom-cloud shaft: a 16-unit radius, 6-unit vertical pitch, and small 3.2-unit-wide cards. The shaft passage is limited to local heights 18–47 rather than the whole cloud. Forward scrolling raises the cards; each enters at the base and leaves beneath the cap. Extra travel before the first focus and after the last lets every project complete that passage.
+
+As a card reaches front-center, that same object smoothly leaves the small orbit, moves toward the camera, and enlarges to the previous focused screen size. It shrinks back into the tight spiral as scrolling continues. Only this close-up deliberately exceeds the shaft boundary. Shared `helixCard` state drives focus, color, size, phase, height, and opacity. The Portfolio camera now stays aimed at the shaft midpoint rather than descending from the cap to the ground.
+
+All frame surfaces (image, copy, backing, and ornament) fade together over the bottom six and top six units of the shaft passage. Transparent frames retain depth testing, so smoke naturally conceals the back of the orbit. Only the focused, sufficiently visible project accepts pointer input; reading-mode links are unchanged. The model, approved glow, and mist are unchanged. Card diagnostics expose `data-helix-height` and `data-helix-focus` to distinguish the shaft path from the close-up.
+
+Browser validation covered all six close-ups on desktop (`1440x900`) and mobile (`390x844`), reverse scrolling, 16-unit radii for non-focused cards, small orbiting frames, matching clickable close-ups, and hidden cards outside the shaft passage. A forward pass measured one project's height increasing from 17.532 to 47.467, opacity rising from zero through 0.369 to full, then falling through 0.384 to zero. Focused widths stayed approximately 427px on desktop and 313px on mobile. No browser console errors were observed on the final reload. Targeted ESLint, TypeScript, and whitespace checks passed. Regression cases were updated for the new focus timing and upward fade path; automated test suites remain unrun at the owner's request.
 
 Transmissions is centered in the atmospheric scroll passage after Featurettes and before About, not in the city aftermath. Its opacity uses passage progress: fade in from `0.15` to `0.35`, remain fully visible through `0.65`, and fade out by `0.85`. The equal fade intervals are reversible and independent of the main cinematic progress, which pauses during this passage. Outside the passage the carousel is hidden and inert; reading mode places it between Featurettes and About in document order. City impact and debris are now unobstructed by Transmissions, without changing their timing or the mushroom cloud.
 

@@ -157,25 +157,60 @@ export function crossingCard(
   return postsPose(index, count, progress, mobile, reach)
 }
 
+export const PROJECT_HELIX = {
+  radius: 16,
+  pitch: 6,
+  bottom: 18,
+  top: 47,
+  fade: 6,
+  cardWidth: 3.2,
+  focusDepth: 48,
+  start: 0.645,
+  duration: 0.265,
+  lead: 2.5,
+} as const
+
 export function helixCard(
   index: number,
   count: number,
   progress: number,
   mobile: boolean,
 ) {
-  const cursor = clamp((progress - 0.67) / 0.215) * Math.max(0, count - 1)
+  const cursor =
+    clamp((progress - PROJECT_HELIX.start) / PROJECT_HELIX.duration) *
+      (Math.max(0, count - 1) + PROJECT_HELIX.lead * 2) -
+    PROJECT_HELIX.lead
   const offset = index - cursor
-  const angle = offset * 1.13
+  const absolute = Math.abs(offset)
+  const angle = offset * 1.6
   const cosine = Math.cos(angle)
+  const focus = 1 - smooth(0.05, 0.65, absolute)
+  const height =
+    (PROJECT_HELIX.bottom + PROJECT_HELIX.top) / 2 -
+    offset * PROJECT_HELIX.pitch
   return {
-    x: Math.sin(angle) * (mobile ? 91 : 42),
-    y: offset * (mobile ? 29 : 25),
-    depth: (cosine - 1) * 490,
-    rotation: -Math.sin(angle) * 38,
-    scale: mix(0.53, 1, (cosine + 1) / 2),
+    offset,
+    angle,
+    height,
+    focus,
+    x: +(Math.sin(angle) * (mobile ? 12 : 5) * (1 - focus)).toFixed(6),
+    y: offset * (mobile ? 12 : 10) * (1 - focus),
+    depth: +((cosine - 1) * 490).toFixed(6),
+    rotation: +(-Math.sin(angle) * 38).toFixed(6),
+    scale: mix(0.12, 1, focus),
     opacity:
-      clamp(1 - Math.abs(offset) * 0.19) * mix(0.25, 1, (cosine + 1) / 2),
-    color: 1 - smooth(0.12, 0.7, Math.abs(offset)),
-    active: index === Math.round(cursor),
+      smooth(
+        PROJECT_HELIX.bottom,
+        PROJECT_HELIX.bottom + PROJECT_HELIX.fade,
+        height,
+      ) *
+      (1 -
+        smooth(
+          PROJECT_HELIX.top - PROJECT_HELIX.fade,
+          PROJECT_HELIX.top,
+          height,
+        )),
+    color: 1 - smooth(0.12, 0.7, absolute),
+    active: index === clamp(Math.round(cursor), 0, Math.max(0, count - 1)),
   }
 }
