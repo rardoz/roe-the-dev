@@ -209,6 +209,7 @@ void main(){
 // The mesh is non-indexed, so vertex normals are flat per triangle and each
 // facet gets its own tone.
 const fragmentShader = `
+uniform float uBrightness;
 varying vec3 vNormal;
 varying vec3 vWorld;
 varying vec3 vLocal;
@@ -228,13 +229,14 @@ void main(){
   float rim=smoothstep(.0,.8,back)*edge;
   float gleam=pow(max(key,0.),16.)*.3;
   float value=(tone*cavityShade+gleam)+rim*.4+edge*.012;
-  gl_FragColor=vec4(vec3(min(value,1.)),1.);
+  gl_FragColor=vec4(vec3(min(value,1.)*uBrightness),1.);
   #include <colorspace_fragment>
 }`
 
 export const asteroidMaterial = new THREE.ShaderMaterial({
   vertexShader,
   fragmentShader,
+  uniforms: { uBrightness: { value: 1 } },
 })
 
 const ASSET_ROOT = '/assets/asteroid'

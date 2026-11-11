@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { smooth } from './motion'
+import { IMPACT_FLASH_PEAK, smooth } from './motion'
 
 // Positions are in the island's local space: negative z recedes behind the city.
 const cloudField = [
@@ -78,7 +78,7 @@ export function updateLandscapeClouds(
 ) {
   const visibility =
     smooth(0.335, 0.355, progress) * (1 - smooth(0.52, 0.64, progress))
-  group.visible = visibility > 0.001
+  group.visible = progress < IMPACT_FLASH_PEAK && visibility > 0.001
   if (!group.visible) return
   group.updateWorldMatrix(true, false)
   cameraLocal.copy(camera.position)

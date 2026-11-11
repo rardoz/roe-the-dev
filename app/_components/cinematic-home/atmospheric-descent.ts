@@ -6,6 +6,7 @@ import {
   type CloudPlacement,
 } from './atmospheric-cloud-model'
 import { ASTEROID_STENCIL_REF } from './asteroid'
+import { IMPACT_FLASH_PEAK } from './motion'
 
 export { atmosphericDescent } from './atmospheric-cloud-model'
 
@@ -180,7 +181,7 @@ export function updateAtmosphericDescent(
   cityFogDepthScale = 1,
 ) {
   const opacity = atmosphericDescent(progress, sceneProgress)
-  group.visible = opacity > 0.001
+  group.visible = sceneProgress < IMPACT_FLASH_PEAK && opacity > 0.001
   if (!group.visible) return
   camera.updateMatrixWorld()
   if (passageCamera) {

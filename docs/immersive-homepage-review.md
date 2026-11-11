@@ -41,6 +41,10 @@ Both exports use the intact city's scale and position, including on resize, pres
 
 ### Crater-centered mushroom cloud and debris
 
+Both surrounding cloud layers (landscape and atmospheric descent) are hidden at the impact flash (`0.49`) and remain hidden afterward. The mushroom cloud is unaffected. Scrolling backward before impact restores the surrounding clouds using their existing visibility rules.
+
+Explosion comet fragments use a cloned shader material at `0.08` linear brightness, bringing their highlights down to the island's charcoal palette while retaining facet contrast. The opening comet trail keeps its original brightness.
+
 The exploded export's `Impact crater | fractured sunken basin` mesh supplies the impact anchor: the horizontal center of its bounds at the basin floor. The loader finds its GLTF-sanitized `Impact_crater` name and reports an asset error if the crater geometry is missing. The anchor receives the same scale and translation as the city on every viewport fit, regardless of asset load order.
 
 The asteroid landing, mushroom-cloud base, and debris burst share that anchor. The shockwave uses the same horizontal center at foundation height. The cloud stays rooted in the crater instead of drifting to world origin; the later Portfolio camera and helix follow its translated axis, while the final Contact camera endpoint is unchanged.

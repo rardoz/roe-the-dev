@@ -377,6 +377,8 @@ export function createWorld(
   shockwave.rotation.x = -Math.PI / 2
   shockwave.position.y = 1
   const blastDebris = createDebris(blastFragmentCount)
+  blastDebris.material = blastDebris.material.clone()
+  blastDebris.material.uniforms.uBrightness.value = 0.08
   blastDebris.instanceMatrix.setUsage(THREE.DynamicDrawUsage)
   const blastPaths = Array.from(
     { length: blastFragmentCount * 2 },
