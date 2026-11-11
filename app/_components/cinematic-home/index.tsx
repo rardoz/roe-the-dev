@@ -740,16 +740,6 @@ export default function CinematicHome({
             mobile={mobile}
             blocked={menuOpen || !aboutReady}
           />
-          <section
-            id="film-impact"
-            className={`${styles['section']} ${styles['impact']}`}
-            {...visibility(
-              state.progress > 0.455 && state.progress < 0.535 ? 1 : 0,
-            )}
-            aria-label={t('impact')}
-          >
-            <p>{t('impactCaption')}</p>
-          </section>
           <div
             className={styles['impact-exposure']}
             style={{ opacity: reading || reduced ? 0 : state.flash }}

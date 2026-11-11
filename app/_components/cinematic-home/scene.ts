@@ -439,6 +439,7 @@ export async function createFilmScene({
     const pointerStrength = reduced ? 0 : 1 - smooth(0.44, 0.48, p)
     eye.x += pointer.x * 1.8 * pointerStrength
     eye.y += pointer.y * 0.8 * pointerStrength
+    camera.clearViewOffset()
     camera.position.copy(eye)
     camera.lookAt(target)
     cloudCamera.copy(camera)
@@ -467,6 +468,26 @@ export async function createFilmScene({
       }
     }
     camera.updateMatrixWorld()
+    const cityStart = world.city.userData.arrivalOffset ?? -210
+    const cityOffset =
+      smoothAtmosphere < 0 ? cityStart : mix(cityStart, 0, cityArrival)
+    if (cityFraming && world.city.userData.roof && p >= 0.315) {
+      aboutPoint.copy(world.city.userData.roof)
+      aboutPoint.y -= CITY_ISLAND_IMMERSION
+      aboutPoint.multiplyScalar(cityFraming.scale)
+      aboutPoint.x += cityFraming.offsetX
+      aboutPoint.y += cityOffset
+      aboutPoint.z += 5
+      aboutPoint.project(camera)
+      camera.setViewOffset(
+        width,
+        height,
+        aboutPoint.x * width * 0.5 * smooth(0.315, 0.335, p),
+        0,
+        width,
+        height,
+      )
+    }
     world.asteroid.position.set(
       mix(0, -3, asteroidTravel),
       mix(110, 2, asteroidTravel),
@@ -589,9 +610,6 @@ export async function createFilmScene({
       )
       sun.quaternion.copy(camera.quaternion)
     }
-    const cityStart = world.city.userData.arrivalOffset ?? -210
-    const cityOffset =
-      smoothAtmosphere < 0 ? cityStart : mix(cityStart, 0, cityArrival)
     world.city.position.y = cityOffset
     world.city.visible = postsProgress >= 0.315
     const oceanAnimating = updateCityIsland(
