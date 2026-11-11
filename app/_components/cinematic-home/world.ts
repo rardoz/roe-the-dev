@@ -6,6 +6,7 @@ import { createAtmosphericDescent } from './atmospheric-descent'
 import { createCity } from './city'
 import { createCityIsland } from './city-island'
 import { createLandscapeClouds } from './landscape-clouds'
+import { createStars } from './stars'
 
 export function seededRandom(seed: number) {
   let state = seed >>> 0
@@ -374,7 +375,9 @@ export function createWorld(
       spin: (random() < 0.5 ? -1 : 1) * (3 + random() * 9),
     }),
   )
+  const stars = createStars(seededRandom(1701))
   scene.add(
+    stars,
     asteroidGroup,
     city,
     island.group,
@@ -390,6 +393,7 @@ export function createWorld(
     blastCityDebris,
   )
   return {
+    stars,
     asteroid: asteroidGroup,
     city,
     island,
@@ -415,7 +419,12 @@ export function disposeWorld(scene: THREE.Scene) {
   const textures = new Set<THREE.Texture>()
   scene.traverse((object) => {
     object.userData.disposed = true
-    if (!(object instanceof THREE.Mesh || object instanceof THREE.Line)) return
+    if (!(
+      object instanceof THREE.Mesh ||
+      object instanceof THREE.Line ||
+      object instanceof THREE.Points
+    ))
+      return
     geometries.add(object.geometry)
     const list = Array.isArray(object.material)
       ? object.material

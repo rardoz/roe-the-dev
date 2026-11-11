@@ -10,6 +10,16 @@ Next.js App Router preserves the site's current routing, metadata, Contentful da
 
 The final override governs the color system: near-black, charcoal, ivory, one directional white source, severe geometric framing, restrained grain, and selective full-color content. Cormorant Garamond and Barlow Condensed supply the editorial/elongated typography. The real existing logo is preserved and shown monochrome.
 
+### Star field
+
+The cinematic sky uses one `THREE.Points` object containing 2,800 seeded, uniformly distributed star directions. Sizes range from 0.65 to 4.85 CSS pixels, with a fifth-power distribution keeping most stars small and reserving larger sizes for a sparse handful. Brightness varies independently. The static position/size/brightness buffers total 56,000 bytes. A small shader creates soft monochrome points without textures, lights, individual meshes, or per-frame CPU updates. The sky ignores camera translation, follows camera orientation, and sits at the far depth plane behind the planet, asteroid, city, and smoke. It does not receive local scene fog. Point sizes follow the renderer's capped pixel ratio on resize.
+
+Three shooting-star slots share one additional 18-vertex mesh and draw call. Short, tapered white trails cross the upper sky for 1.1–1.6 seconds, staggered by six seconds within a 21-second cycle. Shader-generated start positions vary each cycle. Their screen-space paths retain far-plane depth testing against scene geometry and responsive, thin trails. Only one time uniform changes per frame in the existing loop; no particles, textures, timers, or separate animation loop are added. Shooting stars hide under reduced motion, and their clock pauses with the existing visibility-aware scene. World traversal disposes the child mesh. Browser instrumentation confirmed 12 trail draws over 12 frames, advancing time, and no WebGL error; final reload had no console errors.
+
+Shooting-star origins now use a session-randomized, two-dimensional low-discrepancy sequence indexed by event instead of a sine hash. This avoids visibly repeating hash bins, spreads starts over a wider responsive sky area, and changes the sequence on reload. Fall angles vary, and stars travel inward from either side. GPU floating-point precision is finite, so this is not a mathematical guarantee against repeats over unlimited runtime. Draw calls and per-frame CPU work are unchanged.
+
+Stars use the existing render loop and never request animation themselves. Reading mode retains its existing non-WebGL presentation. World disposal now includes point geometry/materials. Desktop opening and mobile aftermath previews showed stars behind scene geometry without shader errors; temporary WebGL instrumentation observed exactly eight 2,800-point draws over eight frames and no GL error. ESLint, TypeScript, and whitespace checks passed. No device FPS benchmark was performed.
+
 ## Real content and destinations
 
 - Featured Posts uses the site's existing `linkBank` editorial content; destinations honor CMS hard routes.

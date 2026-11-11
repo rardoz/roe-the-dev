@@ -797,6 +797,8 @@ export async function createFilmScene({
       container,
       impactPoint,
     )
+    world.stars.shootingStars.visible = !reduced
+    if (!reduced) world.stars.shootingStars.material.uniforms.uTime.value += dt
     renderer.render(scene, camera)
     frames++
     projected
@@ -872,6 +874,9 @@ export async function createFilmScene({
     renderer.setPixelRatio(
       Math.min(window.devicePixelRatio || 1, mobile ? 1.35 : 1.6),
     )
+    world.stars.material.uniforms.uPixelRatio.value = renderer.getPixelRatio()
+    world.stars.shootingStars.material.uniforms.uAspect.value = width / height
+    world.stars.shootingStars.material.uniforms.uHeight.value = height
     renderer.setSize(width, height, false)
     requestDraw()
   }
