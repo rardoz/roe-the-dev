@@ -10,6 +10,7 @@ export function createMushroomCloud(
   const glowStrength = { value: 0 }
   const surgeHeight = { value: 40 }
   const surgeStrength = { value: 1 }
+  const smokeView = { value: new THREE.Matrix4() }
   const lights = [
     new THREE.PointLight('#ffffff', 0, 125, 2),
     new THREE.PointLight('#ffffff', 0, 145, 2),
@@ -24,6 +25,7 @@ export function createMushroomCloud(
       time: 0,
       lights,
     },
+    smokeView,
   })
   cloud.name = 'mushroom-cloud'
   cloud.userData.assetState = 'loading'
@@ -76,19 +78,27 @@ export function createMushroomCloud(
               shader.uniforms.cloudSurgeHeight = surgeHeight
               shader.uniforms.cloudSurgeStrength = surgeStrength
               shader.uniforms.cloudGlowWidth = { value: glowWidth }
+              shader.uniforms.cloudSmokeView = smokeView
               shader.vertexShader =
-                'attribute vec3 cloudGlowPosition;\nvarying vec3 vCloudGlowPosition;\n' +
-                shader.vertexShader.replace(
-                  '#include <begin_vertex>',
-                  '#include <begin_vertex>\nvCloudGlowPosition = cloudGlowPosition;',
-                )
+                'attribute vec3 cloudGlowPosition;\nuniform mat4 cloudSmokeView;\nvarying float vCloudSmokeDepth;\nvarying vec3 vCloudGlowPosition;\n' +
+                shader.vertexShader
+                  .replace(
+                    '#include <begin_vertex>',
+                    '#include <begin_vertex>\nvCloudGlowPosition = cloudGlowPosition;',
+                  )
+                  .replace(
+                    '#include <project_vertex>',
+                    `#include <project_vertex>
+                    vCloudSmokeDepth = -(cloudSmokeView * modelMatrix * vec4(transformed, 1.0)).z;`,
+                  )
               // Local emission suggests light diffusing through opaque smoke;
               // the point lights provide the actual spill onto nearby geometry.
               shader.fragmentShader =
-                'uniform float cloudGlowStrength;\nuniform float cloudSurgeHeight;\nuniform float cloudSurgeStrength;\nuniform vec2 cloudGlowWidth;\nvarying vec3 vCloudGlowPosition;\n' +
-                shader.fragmentShader.replace(
-                  '#include <emissivemap_fragment>',
-                  `#include <emissivemap_fragment>
+                'uniform float cloudGlowStrength;\nuniform float cloudSurgeHeight;\nuniform float cloudSurgeStrength;\nuniform vec2 cloudGlowWidth;\nvarying float vCloudSmokeDepth;\nvarying vec3 vCloudGlowPosition;\n' +
+                shader.fragmentShader
+                  .replace(
+                    '#include <emissivemap_fragment>',
+                    `#include <emissivemap_fragment>
                   vec3 shaft = (vCloudGlowPosition - vec3(0.0, 30.0, 0.0))
                     / vec3(cloudGlowWidth.x * 0.17, 32.0, cloudGlowWidth.y * 0.17);
                   vec3 cap = (vCloudGlowPosition - vec3(0.0, 65.0, 0.0))
@@ -99,10 +109,22 @@ export function createMushroomCloud(
                     + 0.6 * exp(-2.0 * dot(cap, cap))
                     + 2.8 * cloudSurgeStrength * exp(-2.0 * dot(surge, surge));
                   totalEmissiveRadiance += vec3(cloudGlowStrength * innerGlow);`,
-                )
+                  )
+                  .replace(
+                    'vec3 outgoingLight = totalDiffuse + totalSpecular + totalEmissiveRadiance;',
+                    `// Keep surface haze at least as dark as the wide view, without attenuating emission.
+                  float smokeAttenuation = 1.0;
+                  #ifdef FOG_EXP2
+                    float extraDepthSquared = max(0.0,
+                      vCloudSmokeDepth * vCloudSmokeDepth - vFogDepth * vFogDepth);
+                    smokeAttenuation = exp(-2.2 * fogDensity * fogDensity * extraDepthSquared);
+                  #endif
+                  vec3 outgoingLight = (totalDiffuse + totalSpecular) * smokeAttenuation
+                    + totalEmissiveRadiance;`,
+                  )
             }
             material.customProgramCacheKey = () =>
-              'mushroom-cloud-inner-glow-v2'
+              'mushroom-cloud-inner-glow-v3'
           }
           for (const value of Object.values(material)) {
             if (value instanceof THREE.Texture) value.anisotropy = anisotropy

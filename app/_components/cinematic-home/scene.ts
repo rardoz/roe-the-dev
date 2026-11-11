@@ -107,6 +107,7 @@ export async function createFilmScene({
   scene.add(backLight, backLight.target)
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1600)
   const cloudCamera = camera.clone()
+  const cloudSmokeCamera = camera.clone()
   const world = createWorld(scene, asteroidModel, {
     width: window.innerWidth,
     pixelRatio: window.devicePixelRatio || 1,
@@ -663,6 +664,17 @@ export async function createFilmScene({
     world.cloud.visible =
       state.impact > 0.001 && world.cloud.userData.assetState === 'ready'
     world.cloud.position.copy(impactPoint)
+    const smokeView =
+      (world.city.userData.aftermathView as CityView | undefined) ??
+      cityImpactView(mobile)
+    cloudSmokeCamera.position.fromArray(smokeView.eye)
+    cloudSmokeCamera.lookAt(
+      smokeView.target[0],
+      smokeView.target[1],
+      smokeView.target[2],
+    )
+    cloudSmokeCamera.updateMatrixWorld()
+    world.cloud.smokeView.value.copy(cloudSmokeCamera.matrixWorldInverse)
     const cloudSize = smooth(0.49, 0.57, p)
     updateMushroomCloud(
       world.cloud,
