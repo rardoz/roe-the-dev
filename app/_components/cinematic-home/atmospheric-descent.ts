@@ -231,10 +231,11 @@ export function updateAtmosphericDescent(
       : 1
     const renderedScale = pose.scale[0] * CLOUD_SCALE * skylineScale
     cloud.scale.set(renderedScale, renderedScale, 1)
-    cloud.material.userData.fadeUniform.value = Math.min(
-      1,
-      pose.opacity / (stacked ? STACKED_OPACITY : 1),
-    )
+    cloud.material.userData.fadeUniform.value =
+      Math.min(1, pose.opacity / (stacked ? STACKED_OPACITY : 1)) *
+      (cityAnchor
+        ? 1 - THREE.MathUtils.smoothstep(sceneProgress, 0.35, 0.4)
+        : 1)
     cloud.updateMatrixWorld()
   }
 }

@@ -17,6 +17,10 @@
 
 ## ANG-001 implementation and review
 
+- Reopened 2026-11-10: Roe reverted the previous cloud pass. Redistribute city-area PNG clouds naturally, with larger clouds toward the foreground, smaller clouds fading toward the horizon, and a clear city/explosion area. Preserve the earlier cloud passage, city framing, ocean, and layouts; inspect desktop and phone in the built-in browser.
+- Current pass: replaced the 64-cloud scatter with 21 individually placed PNG clouds at varied depths and sizes. Near clouds can extend beyond the viewport; distant clouds are smaller and fainter. Skyline-anchored clouds fade away after the atmospheric passage as About arrives, clearing the city for the explosion. Camera, ocean, city, and earlier passage retained.
+- Review: built-in browser at 1440×900, 713×781, and 390×844, including reverse scrolling; no captured console errors. Screenshots: `/tmp/roe-city-clouds-desktop.png`, `/tmp/roe-city-clouds-phone.png`. nvm Node v24.21.0 `npm run lint` and `git diff --check` pass. No tests, benchmarks, commits, or deployment. Awaiting Roe's visual approval.
+
 - Files: city-island.ts, landscape-clouds.ts, world.ts, scene.ts in app/_components/cinematic-home/.
 - Rock support: narrower upper plateau, lowered cliff shoulders and smaller outcrops kept below city foundations.
 - Clouds: 30 seeded small billboards share existing 20 PNG maps; slow varied drift, distance fade, reduced-motion support and About clearance. Existing atmospheric descent remains intact.

@@ -298,5 +298,8 @@
 
 - **pending** — Rebuild city-island-exploded with recognizable fractured building bases, torn Art Deco façades, collapsed structural sections, a jagged blast crater, and concentrated perimeter wreckage.
 
+- **pending** — Rework city-area clouds with natural spacing, larger foreground clouds, smaller clouds fading into the horizon, and a clear city/explosion area. Preserve the earlier cloud passage and city framing; review desktop and mobile.
+- **testing** — Replaced the scatter with 21 individually positioned PNG clouds at varied depths and sizes, with larger cropped foreground clouds and fainter distant clouds. Skyline-anchored clouds fade out as About arrives. Reviewed in the built-in browser at 1440×900, 713×781, and 390×844; Node v24.21.0 `npm run lint` and `git diff --check` pass. No tests or benchmarks. Awaiting visual approval.
+
 - **pending** — Remove the visible IMPACT label from the city scene; preserve all scene positioning and animation.
 - **testing** — Removed the caption-only film-impact section. Built-in browser confirms label absent at city progress 0.48614 (713×781). Scene animation and exposure remain unchanged. nvm Node v24.21.0 `npm run lint` and diff check pass. No tests or commits. Evidence: `/tmp/roe-city-no-impact-label.png`.
