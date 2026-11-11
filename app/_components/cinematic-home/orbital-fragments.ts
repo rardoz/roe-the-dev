@@ -73,7 +73,37 @@ export function createOrbitalFragments(
         uniform float uFocus;
         varying vec3 vLocalNormal;
         vec3 photoAt(vec2 uv) { return texture2D(uMap,(uv-.5)*uCrop+.5).rgb; }
+        float stoneHash(vec3 p) {
+          p=fract(p*.1031);
+          p+=dot(p,p.yzx+33.33);
+          return fract((p.x+p.y)*p.z);
+        }
+        float stoneNoise(vec3 p) {
+          vec3 cell=floor(p), f=fract(p);
+          f=f*f*(3.-2.*f);
+          return mix(
+            mix(mix(stoneHash(cell),stoneHash(cell+vec3(1,0,0)),f.x),
+                mix(stoneHash(cell+vec3(0,1,0)),stoneHash(cell+vec3(1,1,0)),f.x),f.y),
+            mix(mix(stoneHash(cell+vec3(0,0,1)),stoneHash(cell+vec3(1,0,1)),f.x),
+                mix(stoneHash(cell+vec3(0,1,1)),stoneHash(cell+vec3(1,1,1)),f.x),f.y),f.z);
+        }
       `,
+      )
+      .replace(
+        'vec3 normal=normalize(vNormal);',
+        `
+        float mineral=stoneNoise(vLocal*18.);
+        float grain=stoneNoise(vLocal*72.);
+        float relief=mineral*.65+grain*.35;
+        vec3 normal=normalize(vNormal);
+        vec3 dx=dFdx(vWorld), dy=dFdy(vWorld);
+        vec3 rx=cross(dy,normal), ry=cross(normal,dx);
+        float determinant=dot(dx,rx);
+        float worldScale=length(dx)/max(length(dFdx(vLocal)),.00001);
+        vec3 gradient=(dFdx(relief)*rx+dFdy(relief)*ry);
+        normal=normalize(abs(determinant)*normal-
+          sign(determinant)*gradient*worldScale*.012);
+        `,
       )
       // The debris shader deliberately assigns random facet tones. Use a
       // continuous tone here so normals cannot reveal triangular color bands.
@@ -85,8 +115,9 @@ export function createOrbitalFragments(
         vec3 p=(vLocal-uCenter)/uExtent+.5;
         vec3 image=photoAt(p.xy);
         float gray=dot(image,vec3(.2126,.7152,.0722));
-        float stone=min(value,1.)*uBrightness;
-        float photograph=gray*(.22+uFocus*.12)*(.38+lit*.62)*mix(.65,1.,vCavity);
+        float mineralTone=mix(.72,1.22,mineral)*mix(.88,1.08,grain);
+        float stone=min(value,1.)*uBrightness*mineralTone;
+        float photograph=gray*(.22+uFocus*.12)*(.38+lit*.62)*mix(.65,1.,vCavity)*mix(.9,1.05,relief);
         float photoFacing=smoothstep(.25,.75,normalize(vLocalNormal).z);
         float faceEdge=1.-smoothstep(.30,.48,length(p.xy-.5));
         float erosion=mix(.7,1.,smoothstep(.25,.85,vCavity));
