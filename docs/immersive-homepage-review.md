@@ -33,6 +33,12 @@ The final override governs the color system: near-black, charcoal, ivory, one di
 
 Inspect `[data-renderer]` for renderer/mode/progress, and the canvas for camera, asteroid, impact, flash, frame count, and cloud-axis diagnostics. Semantic links carry `data-spatial-card`, projected bounds, actual world position, and image-load diagnostics.
 
+### City impact model swap
+
+Both city GLBs load when the scene starts. At `IMPACT_FLASH_PEAK` (progress `0.49`), the intact `public/assets/city/city-island.glb` is hidden and `public/assets/city/city-island-exploded.glb` becomes visible. The flash reaches fully opaque white (opacity `1`) at that point and holds until `IMPACT_ASTEROID_GONE` (progress `0.516`), the shared cutoff that hides the asteroid. Only then does the existing Gaussian fade-out begin; the fade-in remains unchanged. Reading and reduced-motion modes still suppress the flash. Scrolling backward below the peak restores the intact city, and jumping past the impact selects the exploded model without needing to cross a particular frame.
+
+Both exports use the intact city's scale and position, including on resize, preserving the island, ocean, and camera alignment. Both receive the same fog/material treatment and scene disposal. If the exploded asset fails, the intact city remains visible and the existing city error handler reports the failure. Canvas diagnostics expose `data-city-variant` and `data-city-exploded-asset`. Tests were skipped for this pass at the owner's request.
+
 ### About Roe reveal
 
 `about.tsx` owns the About composition: professional biography on the left, the existing photograph in a neutral Art Deco frame on the right, and the city behind/below. `about-motion.ts` defines the reversible foreground window (`.3–.455`), attraction bounds, text-proximity sizing, and a silhouette hull derived from the actual asteroid mesh's projected vertices. The scene publishes the original asteroid projection and temporarily follows the foreground control; outside this window its original position, scale, rotation, and descent resume unchanged.

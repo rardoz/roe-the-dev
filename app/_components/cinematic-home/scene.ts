@@ -7,12 +7,19 @@ import {
   CITY_ISLAND_IMMERSION,
   cityImpactView,
   fitCityToViewport,
+  updateCityImpact,
   type DistantCityView,
   type CityView,
 } from './city'
 import { updateCityIsland } from './city-island'
 import { updateLandscapeClouds } from './landscape-clouds'
-import { filmState, mix, postsStacked, smooth } from './motion'
+import {
+  IMPACT_ASTEROID_GONE,
+  filmState,
+  mix,
+  postsStacked,
+  smooth,
+} from './motion'
 import { aboutReplay, filmScrollFrame } from './film-scroll'
 import { createSpatialContent, updateSpatialContent } from './spatial-content'
 import {
@@ -511,7 +518,7 @@ export async function createFilmScene({
     }
     const rockScale = entryScale(p)
     world.asteroid.scale.set(rockScale, rockScale, rockScale)
-    world.asteroid.visible = p < 0.516
+    world.asteroid.visible = p < IMPACT_ASTEROID_GONE
     const aboutPhase = aboutAsteroidState(p)
     if (
       aboutReady &&
@@ -612,6 +619,7 @@ export async function createFilmScene({
     }
     world.city.position.y = cityOffset
     world.city.visible = postsProgress >= 0.315
+    updateCityImpact(world.city, state.cityExploded)
     const oceanAnimating = updateCityIsland(
       world.island,
       world.city,
@@ -716,6 +724,8 @@ export async function createFilmScene({
       .project(camera)
     canvas.dataset.progress = p.toFixed(5)
     canvas.dataset.cityAsset = world.city.userData.assetState
+    canvas.dataset.cityExplodedAsset = world.city.userData.explodedAssetState
+    canvas.dataset.cityVariant = world.city.userData.variant
     canvas.dataset.cityBand = JSON.stringify({
       contentBottom: +aboutBottom.toFixed(1),
       skylineTop: +citySkylineTop.toFixed(1),

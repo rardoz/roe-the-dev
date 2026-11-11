@@ -174,14 +174,15 @@ export function fitCityToViewport(
     (CITY_FOUNDATION_ELEVATION - CITY_ISLAND_IMMERSION) * final.scale
   city.userData.foundationY = foundationY
   city.userData.arrivalOffset = -Math.max(210, cityHeight + 20)
-  city.children[0].scale.setScalar(
-    final.scale * (city.userData.assetUnitScale || 1),
-  )
-  city.children[0].position.set(
-    final.offsetX - ((bounds.min.x + bounds.max.x) / 2) * final.scale,
-    -city.userData.groundY * final.scale + foundationY,
-    5 - ((bounds.min.z + bounds.max.z) / 2) * final.scale,
-  )
+  // Both exports share source coordinates; keep the intact framing after impact.
+  for (const asset of city.children) {
+    asset.scale.setScalar(final.scale * (city.userData.assetUnitScale || 1))
+    asset.position.set(
+      final.offsetX - ((bounds.min.x + bounds.max.x) / 2) * final.scale,
+      -city.userData.groundY * final.scale + foundationY,
+      5 - ((bounds.min.z + bounds.max.z) / 2) * final.scale,
+    )
+  }
   const landscapeBounds = bounds.clone()
   landscapeBounds.translate(
     new THREE.Vector3(
@@ -279,6 +280,49 @@ export function fitCityToViewport(
   } satisfies DistantCityView
 }
 
+function prepareCityMaterials(
+  scene: THREE.Object3D,
+  anisotropy: number,
+  fogDepthScale: { value: number },
+) {
+  scene.traverse((object) => {
+    if (!(object instanceof THREE.Mesh)) return
+    const materials: THREE.Material[] = Array.isArray(object.material)
+      ? object.material
+      : [object.material]
+    for (const material of materials) {
+      material.onBeforeCompile = (shader) => {
+        shader.uniforms.cityFogDepthScale = fogDepthScale
+        shader.fragmentShader =
+          'uniform float cityFogDepthScale;\n' +
+          shader.fragmentShader.replace(
+            '#include <fog_fragment>',
+            THREE.ShaderChunk.fog_fragment.replaceAll(
+              'vFogDepth',
+              '(vFogDepth * cityFogDepthScale)',
+            ),
+          )
+      }
+      material.customProgramCacheKey = () => 'city-distance-haze-v1'
+      for (const value of Object.values(material)) {
+        if (value instanceof THREE.Texture) value.anisotropy = anisotropy
+      }
+    }
+  })
+}
+
+export function updateCityImpact(city: THREE.Group, exploded: boolean) {
+  const showExploded =
+    exploded &&
+    city.userData.assetState === 'ready' &&
+    city.userData.explodedAssetState === 'ready'
+  for (const asset of city.children) {
+    asset.visible =
+      asset.name === 'city-exploded-asset' ? showExploded : !showExploded
+  }
+  city.userData.variant = showExploded ? 'exploded' : 'intact'
+}
+
 export function createCity(
   anisotropy: number,
   onLoad: () => void,
@@ -287,9 +331,11 @@ export function createCity(
   const city = new THREE.Group()
   city.name = 'city'
   city.userData.assetState = 'loading'
+  city.userData.explodedAssetState = 'loading'
   const fogDepthScale = { value: 1 }
   city.userData.fogDepthScale = fogDepthScale
-  new GLTFLoader().load(
+  const loader = new GLTFLoader()
+  loader.load(
     '/assets/city/city-island.glb',
     ({ scene }) => {
       if (city.userData.disposed) {
@@ -372,28 +418,8 @@ export function createCity(
             }
           }
         }
-        const materials = Array.isArray(object.material)
-          ? object.material
-          : [object.material]
-        for (const material of materials) {
-          material.onBeforeCompile = (shader: any) => {
-            shader.uniforms.cityFogDepthScale = fogDepthScale
-            shader.fragmentShader =
-              'uniform float cityFogDepthScale;\n' +
-              shader.fragmentShader.replace(
-                '#include <fog_fragment>',
-                THREE.ShaderChunk.fog_fragment.replaceAll(
-                  'vFogDepth',
-                  '(vFogDepth * cityFogDepthScale)',
-                ),
-              )
-          }
-          material.customProgramCacheKey = () => 'city-distance-haze-v1'
-          for (const value of Object.values(material)) {
-            if (value instanceof THREE.Texture) value.anisotropy = anisotropy
-          }
-        }
       })
+      prepareCityMaterials(scene, anisotropy, fogDepthScale)
       city.add(scene)
       city.userData.sourceBounds = bounds
       city.userData.groundY = groundY
@@ -419,6 +445,38 @@ export function createCity(
       if (city.userData.disposed) return
       city.userData.assetState = 'error'
       onError(error)
+    },
+  )
+  loader.load(
+    '/assets/city/city-island-exploded.glb',
+    ({ scene }) => {
+      if (city.userData.disposed) {
+        disposeObject(scene)
+        return
+      }
+      if (new THREE.Box3().setFromObject(scene).isEmpty()) {
+        disposeObject(scene)
+        city.userData.explodedAssetState = 'error'
+        onError(new Error('Exploded city asset contains no geometry'))
+        return
+      }
+      scene.name = 'city-exploded-asset'
+      scene.visible = false
+      prepareCityMaterials(scene, anisotropy, fogDepthScale)
+      city.add(scene)
+      const { width, height } = city.userData.viewport || {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      }
+      fitCityToViewport(city, width, height)
+      city.userData.explodedAssetState = 'ready'
+      onLoad()
+    },
+    undefined,
+    (error) => {
+      if (city.userData.disposed) return
+      city.userData.explodedAssetState = 'error'
+      onError(new Error('Exploded city asset failed to load', { cause: error }))
     },
   )
   return city

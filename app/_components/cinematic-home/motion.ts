@@ -24,13 +24,19 @@ export const windowOpacity = (
   end: number,
 ) => smooth(start, enter, progress) * (1 - smooth(leave, end, progress))
 
+export const IMPACT_FLASH_PEAK = 0.49
+export const IMPACT_ASTEROID_GONE = 0.516
+
 export function filmState(progress: number) {
   const p = clamp(progress)
+  // Hold full white through the asteroid's last visible frame.
+  const flashDistance = p - clamp(p, IMPACT_FLASH_PEAK, IMPACT_ASTEROID_GONE)
   return {
     progress: p,
     descent: smooth(0.015, 0.48, p),
     impact: smooth(0.475, 0.54, p),
-    flash: 0.65 * Math.exp(-Math.pow((p - 0.49) / 0.0045, 2)),
+    flash: Math.exp(-Math.pow(flashDistance / 0.0045, 2)),
+    cityExploded: p >= IMPACT_FLASH_PEAK,
     portfolio: clamp((p - 0.655) / 0.235),
     retreat: smooth(0.89, 0.99, p),
     // Headline and divider: absent at exact top, in after scrolling starts, out before Featured Posts.

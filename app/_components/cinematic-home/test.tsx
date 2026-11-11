@@ -156,7 +156,10 @@ describe('continuous scroll film', () => {
     expect(reverse).toEqual(forward)
     expect(filmState(-2).impact).toBe(0)
     expect(filmState(3).impact).toBe(1)
-    expect(filmState(0.49).flash).toBeLessThanOrEqual(0.65)
+    for (const progress of [0.49, 0.5, 0.5159, 0.516])
+      expect(filmState(progress).flash).toBe(1)
+    expect(filmState(0.52).flash).toBeGreaterThan(0)
+    expect(filmState(0.52).flash).toBeLessThan(1)
     expect(filmState(0.6).flash).toBeLessThan(0.001)
   })
 
