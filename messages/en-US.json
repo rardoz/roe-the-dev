@@ -5,6 +5,8 @@
   },
   "Cinema": {
     "sound": "Sound",
+    "startAutoScroll": "Play guided scroll",
+    "stopAutoScroll": "Stop guided scroll",
     "skip": "Skip to content",
     "menu": "Menu",
     "close": "Close",

@@ -19,6 +19,16 @@ The final override governs the color system: near-black, charcoal, ivory, one di
 - GitHub, LinkedIn, X/Twitter, Twitch, and email use the existing destinations.
 - Existing article/project details, drawing and locking/saving flow, code playground, game, APIs, docs, and comments retain their implementation.
 
+## Guided scroll control
+
+A play control sits immediately beside the radio tower. Playback is opt-in and resumes from the current scroll position; the idle icon is a slashed play triangle. Active playback removes the slash, exposes a localized stop label and pressed state, and stops automatically at the document bottom. Sound remains independent.
+
+The guided scroll uses elapsed-time animation with fractional scroll accumulation and eased speed changes. Playback now runs at four times the original speed in both cinematic and reading modes, preserving relative section pacing and the 0.6-second speed easing. Baseline cinematic timings are 16 seconds for Arrival, at least 24 seconds for Featurettes (9 seconds per post), 24 seconds for the atmospheric/Transmissions passage, 26 seconds for About, 20 seconds for impact and cloud formation, 8 seconds per project plus 12 seconds for Portfolio, and 14 seconds for Contact; the fourfold multiplier divides these nominal durations by four. Responsive document-post distance and atmospheric replay use the existing scroll mapping. Reading/reduced-motion mode remains a document layout and now advances one viewport per two seconds only after an explicit play action.
+
+Touch/pointer contact outside the play control, wheel input, keyboard interaction, manual scrollbar movement, resize, loss of focus, or a hidden page immediately cancels playback without blocking the user's gesture. The play control itself toggles playback without restarting it on pointer-down. Animation frames and listeners are removed on stop/unmount; returning to the tab never resumes automatically.
+
+Browser checks confirmed desktop movement and wheel cancellation, button pause/resume, keyboard cancellation, stopping precisely at the bottom, and cancellation by a native mobile touch event with no subsequent drift. Section samples measured approximately 115/97/84/134/62/91 pixels per second across Arrival/Featurettes/About/impact/Portfolio/Contact, respectively, and explicit playback was checked in reduced-motion reading mode. ESLint, module Stylelint, TypeScript, and whitespace checks passed. A full uninterrupted timed playback and physical-device testing were not performed.
+
 ## Scroll review landmarks
 
 | Fraction                     | Moment                                                                           |

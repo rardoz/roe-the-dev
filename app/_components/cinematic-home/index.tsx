@@ -35,6 +35,7 @@ import { aboutReplay, filmScrollFrame, filmScrollOffset } from './film-scroll'
 import { keyRotation } from './tumble'
 import { useAmbientSound } from './ambient-audio'
 import { SoundIcon } from './sound-icon'
+import { useAutoScroll } from './use-auto-scroll'
 import { headingInkBottom } from './heading'
 import { editorialFramePath } from './post-frame'
 import { AboutRoe } from './about'
@@ -290,6 +291,11 @@ export default function CinematicHome({
   const locale = useLocale()
   const { isPlaying, toggle } = useAmbientSound()
   const container = useRef<HTMLDivElement>(null)
+  const {
+    playing: autoScrolling,
+    button: autoScrollButton,
+    toggle: toggleAutoScroll,
+  } = useAutoScroll(container, posts.length, projects.length)
   const canvas = useRef<HTMLCanvasElement>(null)
   const handle = useRef<HTMLDivElement>(null)
   const menuButton = useRef<HTMLButtonElement>(null)
@@ -612,6 +618,7 @@ export default function CinematicHome({
       ref={container}
       className={`${styles['film']} ${className}`}
       data-renderer={renderer}
+      data-auto-scroll={autoScrolling}
       data-mode={reading ? 'reading' : 'cinema'}
       data-progress={progress.toFixed(5)}
       data-atmosphere={atmosphere.toFixed(5)}
@@ -648,6 +655,21 @@ export default function CinematicHome({
           />
         </UnstyledLink>
         <div className={styles['header-controls']}>
+          <button
+            ref={autoScrollButton}
+            type="button"
+            className={styles['autoplay-button']}
+            aria-label={t(autoScrolling ? 'stopAutoScroll' : 'startAutoScroll')}
+            aria-pressed={autoScrolling}
+            disabled={menuOpen}
+            title={t(autoScrolling ? 'stopAutoScroll' : 'startAutoScroll')}
+            onClick={toggleAutoScroll}
+          >
+            <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <path d="M10 6 26 16 10 26Z" />
+              {!autoScrolling && <path d="M5 5 28 28" />}
+            </svg>
+          </button>
           <button
             type="button"
             className={styles['sound-button']}

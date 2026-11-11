@@ -5,6 +5,8 @@
   },
   "Cinema": {
     "sound": "Sonido",
+    "startAutoScroll": "Iniciar recorrido automático",
+    "stopAutoScroll": "Detener recorrido automático",
     "skip": "Saltar al contenido",
     "menu": "Menú",
     "close": "Cerrar",
