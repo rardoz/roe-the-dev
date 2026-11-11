@@ -1,6 +1,6 @@
 # Angie — Homepage
 
-## Active task ANG-001
+## Previous task ANG-001 — paused for ANG-002
 
 - [ ] **awaiting_visual_approval / testing** — Refine city grounding, ocean direction, and horizon clouds.
   - Source: Roe's current landscape feedback. City should rest on rocks rather than appear buried; add about 30 small drifting clouds fading toward the horizon; waves travel toward the city.
@@ -142,3 +142,27 @@
 
 - **pending** — Remove the visible IMPACT label from the city scene; preserve all scene positioning and animation.
 - **testing** — Removed the caption-only film-impact section. Built-in browser confirms label absent at city progress 0.48614 (713×781). Scene animation and exposure remain unchanged. nvm Node v24.21.0 `npm run lint` and diff check pass. No tests or commits. Evidence: `/tmp/roe-city-no-impact-label.png`.
+
+## Active task ANG-002 — Orbital Fragments Featurettes
+
+- [ ] **in_progress** — 2026-11-11. Implement the user’s complete task brief and supplied middle “Orbital Fragments” reference in this dedicated Featurettes task chat. ANG-001 remains pending prior visual approval; its landscape work is outside this task.
+- Approved direction: three actual featured images fused into genuine shallow 3D stone fragments; first upper left, second lower center, third upper right. Monochrome handmade silent-film miniatures, restrained Art Deco numbered HTML titles and fine leaders, generous negative space, foreground clouds. Source: current user message and attached middle preview.
+- Scope: Featurettes geometry, image material, composition, HTML links, motion and mobile/fallback presentation. Preserve asteroid, camera, atmospheric passage, navigation, post destinations and other sections.
+- Acceptance: visible closed sides/back and chipped rims, aspect-correct photos without rectangular edges, gentle independent drift/scroll parallax, hover/focus turn and brightness, accessible native links, mobile stagger, reduced motion, offscreen pause and resource disposal.
+- Validation planned: built-in browser 1440×900 / 390×844, keyboard and links, fallback, Node 24 via nvm lint, TypeScript and diff check. No tests, benchmarks, commits or deployment.
+- Handoff: user supplied one specific implementation task with full scope and approved reference directly in this chat; no additional task chat needed.
+- Approval: pending review of implemented revision.
+
+- 2026-11-11 refinement: user requests removing the clouds added around the fragments. Removed the three fragment-specific cloud meshes and their animation; original atmospheric and landscape clouds remain unchanged. This supersedes the foreground-cloud part of the original brief.
+- Current revision verified at 1440×900 and 390×844 after removing added clouds. Earlier checks also covered 1024×768, keyboard focus, original external destinations from both rock and title, and HTML reading mode. Fragment clocks freeze offscreen. Reduced-motion preference uses the existing static reading path (reviewed in source; OS preference not changed).
+- Validation: nvm Node v24.21.0, npm run lint, npm run tsc, git diff --check pass. No tests, benchmarks, commits or deployment. Files: index.tsx, scene.ts, orbital-featurettes.tsx, orbital-fragments.ts, style.module.css. Review images: design-specs/home/shots/orbital-fragments-desktop.png and orbital-fragments-mobile.png. Awaiting visual approval of current revision.
+
+- New direction: orbit the actual asteroid in 3D, reveal numbered titles/leaders only on the centered front pass, use deeper rock geometry and the debris lighting/material. Supersedes static asymmetric arrangement; retain no added clouds, actual photos and native links.
+- Orbit revision: genuine world-space orbit anchored to the animated asteroid bounds; scroll plus slow time progression, actual rear occlusion, projected HTML hit areas. Keyboard focus eases a chosen rock to the front and holds it. Titles/numbers/leaders only appear near the centered front pass. Mobile uses the same orbit; static reading/reduced-motion layout retains all titles.
+- Rock geometry now uses the surrounding debris’s seeded sculpting function and its exact lighting shader, with solid irregular volume and a carved photographic facet. No added clouds. Previewed 1440×900 and 390×844, confirmed only centered caption visible and keyboard selection, no horizontal mobile overflow or new console errors. Node 24 lint, TypeScript and diff checks pass. No tests, commits or deployment. Current visual approval pending.
+
+- Current feedback: eliminate triangle artifacts, cover all sides with photography, darken rocks, make scroll the primary orbit input with barely perceptible idle drift, prevent surrounding debris intersections. Implementing welded smooth normals, blended triplanar photographs, darker exposure, 0.006 rad/s idle motion and deterministic debris clearance.
+
+- Five refinements implemented and reviewed: welded normals and continuous shading remove triangular patches; blended triplanar photographs cover the entire closed rock; darker exposure; idle orbit 0.006 rad/s with scroll factor 42; debris displacement enforces world-space and projected clearance, restoring authored placement outside Featurettes. Desktop/mobile and forward scroll inspected, centered keyboard selection verified, no new console errors. Node v24.21.0 lint, TypeScript, and diff checks pass. Current screenshots updated; visual approval pending. No tests, commits or deployment performed by the agent.
+
+- New refinement: replace rock entrance opacity with staggered scroll-driven flights from upper left, bottom, and upper right. All rocks arrive fully opaque and settle into the orbit by progress 0.19; centered captions wait for arrival. Existing exit transition retained.

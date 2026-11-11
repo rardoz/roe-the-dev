@@ -1989,3 +1989,352 @@
     outline-offset: 5px;
   }
 }
+
+/* Photographic relics: HTML remains the interaction and text layer. */
+.posts .orbital-stage {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.posts.section .orbital-fragment {
+  position: absolute;
+  display: block;
+  width: min(29vw, 44svh);
+  color: #d4d4d4;
+  scroll-margin-block: 100px;
+  text-decoration: none;
+  pointer-events: none;
+  outline: none;
+}
+
+.orbital-fragment[data-fragment="0"] {
+  left: 17%;
+  top: 22%;
+}
+
+.orbital-fragment[data-fragment="1"] {
+  left: 40%;
+  top: 55%;
+}
+
+.posts .orbital-fragment[data-fragment="2"] {
+  left: 70%;
+  top: 22%;
+  width: min(23vw, 34svh);
+}
+
+.fragment-surface {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1.36;
+  clip-path: var(
+    --fragment-outline,
+    polygon(
+      5% 23%,
+      20% 2%,
+      43% 8%,
+      58% 0,
+      82% 18%,
+      100% 45%,
+      87% 68%,
+      69% 83%,
+      34% 100%,
+      0 76%
+    )
+  );
+  pointer-events: auto;
+}
+
+[data-fragment="1"] .fragment-surface {
+  aspect-ratio: 1.22;
+}
+
+[data-fragment="2"] .fragment-surface {
+  aspect-ratio: 0.91;
+}
+
+.fragment-surface img {
+  object-fit: cover;
+  filter: grayscale(1) brightness(0.8) contrast(1.08);
+  transition: filter 600ms ease;
+}
+
+.film[data-renderer="webgl"][data-mode="cinema"]
+  [data-fragment-ready="true"]
+  .fragment-surface
+  img {
+  visibility: hidden;
+}
+
+.fragment-caption {
+  position: absolute;
+  top: 28%;
+  left: -48%;
+  width: 49%;
+  display: block;
+  min-height: 48px;
+  pointer-events: auto;
+  font-family: "Avenir Next Condensed", "Arial Narrow", sans-serif;
+  text-transform: uppercase;
+  text-shadow:
+    0 2px 12px #000,
+    0 1px 4px #000;
+  transition: color 500ms ease;
+}
+
+.fragment-caption strong {
+  display: block;
+  font-size: clamp(20px, 2.1vw, 31px);
+  font-weight: 400;
+  line-height: 1.13;
+  letter-spacing: 0.055em;
+  text-wrap: balance;
+}
+
+.fragment-number {
+  display: block;
+  margin-bottom: 13px;
+  font-size: 17px;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  color: #a9a9a9;
+}
+
+.fragment-leader {
+  position: absolute;
+  top: 21px;
+  left: 0;
+  width: 112%;
+  height: 26px;
+  overflow: visible;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 0.8;
+  opacity: 0.65;
+  pointer-events: none;
+  transition: opacity 500ms ease;
+}
+
+.fragment-leader path {
+  vector-effect: non-scaling-stroke;
+}
+
+[data-fragment="1"] .fragment-caption {
+  left: -60%;
+  top: 35%;
+  width: 59%;
+}
+
+[data-fragment="2"] .fragment-caption {
+  left: 52%;
+  top: 98%;
+  width: 72%;
+}
+
+[data-fragment="2"] .fragment-leader {
+  left: -28%;
+  top: -8px;
+  width: 125%;
+  transform: rotate(180deg);
+}
+
+.posts .orbital-fragment:is(:hover, :focus-visible) {
+  color: #fff;
+}
+
+.orbital-fragment:is(:hover, :focus-visible) .fragment-leader {
+  opacity: 1;
+}
+
+.orbital-fragment:is(:hover, :focus-visible) .fragment-surface img {
+  filter: grayscale(1) brightness(1) contrast(1.08);
+}
+
+.orbital-fragment:focus-visible .fragment-caption {
+  outline: 1px solid #ddd;
+  outline-offset: 9px;
+}
+
+.film .posts .section-title {
+  transform: none;
+  opacity: 1;
+  font-size: clamp(25px, 2.5vw, 35px);
+  letter-spacing: 0.23em;
+}
+
+.posts .section-title::before,
+.posts .section-title::after {
+  height: 1px;
+  width: 60px;
+  border-bottom: 0;
+  border-top-color: #8c8c8c;
+}
+
+.film .posts .text-link {
+  transform: none;
+  opacity: 1;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+}
+
+.film[data-mode="reading"] .posts .orbital-stage,
+.film[data-posts-document="true"] .posts .orbital-stage {
+  position: relative;
+  inset: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 90px;
+  width: min(100%, 650px);
+  margin: 35px auto 0;
+}
+
+.film[data-mode="reading"] .posts .orbital-fragment,
+.film[data-posts-document="true"] .posts .orbital-fragment {
+  position: relative;
+  inset: auto;
+  width: 86%;
+  max-width: 420px;
+  align-self: flex-start;
+}
+
+.film[data-mode="reading"] .orbital-fragment:nth-child(2),
+.film[data-posts-document="true"] .orbital-fragment:nth-child(2) {
+  align-self: flex-end;
+}
+
+.film[data-mode="reading"] .posts .fragment-caption,
+.film[data-posts-document="true"] .posts .fragment-caption {
+  position: relative;
+  inset: auto;
+  width: 85%;
+  margin: 10px 0 0 8%;
+}
+
+.film[data-mode="reading"] .posts .fragment-caption strong,
+.film[data-posts-document="true"] .posts .fragment-caption strong {
+  font-size: clamp(25px, 6.4vw, 32px);
+}
+
+.film[data-mode="reading"] .posts .fragment-leader,
+.film[data-posts-document="true"] .posts .fragment-leader {
+  top: -3px;
+  left: 0;
+  width: 85%;
+  transform: scaleY(-1);
+}
+
+.film[data-mode="reading"] .posts .fragment-surface {
+  clip-path: polygon(
+    5% 23%,
+    20% 2%,
+    43% 8%,
+    58% 0,
+    82% 18%,
+    100% 45%,
+    87% 68%,
+    69% 83%,
+    34% 100%,
+    0 76%
+  );
+}
+
+@media (width <= 1000px) {
+  .film[data-posts-document="true"] > main > .posts {
+    padding-inline: 24px;
+  }
+
+  .film .posts .section-title {
+    font-size: 27px;
+    letter-spacing: 0.15em;
+  }
+
+  .posts .section-title::before,
+  .posts .section-title::after {
+    width: 25px;
+  }
+
+  .film[data-posts-document="true"] .posts .text-link {
+    margin-top: 65px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fragment-caption,
+  .fragment-leader,
+  .fragment-surface img {
+    transition: none;
+  }
+}
+
+@media (width > 1000px) {
+  .film[data-mode="cinema"] .posts .text-link {
+    inset: auto 5vw 8svh auto;
+  }
+
+  [data-fragment="0"] .fragment-leader {
+    width: 123%;
+  }
+}
+
+@media (width > 1000px) and (height <= 650px) {
+  .film[data-mode="cinema"] .posts .section-title {
+    inset: 24px 0 auto;
+    width: 100%;
+    display: flex;
+    text-align: center;
+    font-size: 25px;
+  }
+
+  .film[data-mode="cinema"] .posts .section-title::before,
+  .film[data-mode="cinema"] .posts .section-title::after {
+    position: static;
+    width: 45px;
+    height: 1px;
+  }
+
+  .posts .fragment-caption strong {
+    font-size: 19px;
+  }
+}
+
+/* The cinematic orbit projects the real mesh silhouette onto its HTML link. */
+.film[data-mode="cinema"] .posts .orbital-fragment {
+  position: absolute;
+  left: var(--orbit-x, -1000px);
+  top: var(--orbit-y, -1000px);
+  width: var(--orbit-width, 0);
+  height: var(--orbit-height, 0);
+}
+
+.film[data-mode="cinema"] .posts .fragment-surface {
+  height: 100%;
+  aspect-ratio: auto;
+  pointer-events: var(--orbit-hit, auto);
+}
+
+.film[data-mode="cinema"] .posts .fragment-caption {
+  left: var(--orbit-label-x, 0);
+  top: var(--orbit-label-y, 100%);
+  width: 200px;
+  margin: 0;
+  opacity: var(--orbit-label, 0);
+  pointer-events: none;
+  transition: opacity 300ms ease;
+}
+
+.film[data-mode="cinema"] [data-orbit-centered="true"] .fragment-caption {
+  pointer-events: auto;
+}
+
+.film[data-mode="cinema"] .posts .fragment-caption strong {
+  font-size: clamp(23px, 2.2vw, 29px);
+}
+
+.film[data-mode="cinema"] .posts .fragment-leader {
+  left: 0;
+  top: -4px;
+  width: 105%;
+  transform: scaleY(-1);
+}

@@ -19,24 +19,13 @@ import {
 } from 'react-icons/fa6'
 import { UnstyledLink } from '../next-intl'
 import { socialLinks, type EditorialItem } from './content'
-import {
-  clamp,
-  POST_FRAME,
-  crossingCard,
-  filmState,
-  helixCard,
-  mobilePostWidth,
-  postRow,
-  postsHeadingOffset,
-  postsStacked,
-  sectionPositions,
-} from './motion'
+import { clamp, filmState, helixCard, sectionPositions } from './motion'
 import { aboutReplay, filmScrollFrame, filmScrollOffset } from './film-scroll'
 import { keyRotation } from './tumble'
 import { useAmbientSound } from './ambient-audio'
 import { SoundIcon } from './sound-icon'
 import { useAutoScroll } from './use-auto-scroll'
-import { headingInkBottom } from './heading'
+import { OrbitalFeaturettes } from './orbital-featurettes'
 import { editorialFramePath } from './post-frame'
 import { AboutRoe } from './about'
 import styles from './style.module.css'
@@ -307,13 +296,11 @@ export default function CinematicHome({
   const [scrollFraction, setScrollFraction] = useState(0)
   const [atmosphereExtra, setAtmosphereExtra] = useState(0)
   const [mobile, setMobile] = useState(false)
-  const [viewportWidth, setViewportWidth] = useState(1440)
   const [reduced, setReduced] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [readingSelected, setReadingSelected] = useState(false)
   const [postsExtra, setPostsExtra] = useState(0)
   const [postsTop, setPostsTop] = useState(0)
-  const [mobileEntries, setMobileEntries] = useState<number[]>([])
   const reading =
     reduced || readingSelected || (renderer === 'fallback' && !hadWebGL)
   const postsState = filmState(postsProgress)
@@ -325,18 +312,7 @@ export default function CinematicHome({
     postsRise: postsState.postsRise,
     aboutOpacity: aboutReady ? filmState(progress).aboutOpacity : 0,
   }
-  const postsStack = postsStacked(viewportWidth)
-  useEffect(() => {
-    if (postsStack || reading || renderer === 'webgl') return
-    const section = container.current?.querySelector<HTMLElement>('#film-posts')
-    const heading = section?.querySelector<HTMLElement>('h2')
-    const card = section?.querySelector<HTMLElement>('[data-spatial-card]')
-    if (!heading || !card) return
-    heading.style.setProperty(
-      '--posts-heading-offset',
-      `${postsHeadingOffset(card.getBoundingClientRect().top - 11, heading.offsetTop, headingInkBottom(heading))}px`,
-    )
-  }, [postsStack, reading, renderer, progress, viewportWidth])
+  const postsStack = false
 
   useEffect(() => {
     let disposed = false
@@ -375,7 +351,6 @@ export default function CinematicHome({
     const sync = () => {
       setReduced(query.matches)
       setMobile(window.innerWidth < 700)
-      setViewportWidth(window.innerWidth)
       scroll()
     }
     let frame = 0
@@ -416,23 +391,6 @@ export default function CinematicHome({
         if (Math.abs(neededAtmosphere - atmosphereExtra) > 1)
           setAtmosphereExtra(neededAtmosphere)
         if (postsStack && !reading && section) {
-          const cards = section.querySelectorAll<HTMLElement>(
-            '[data-spatial-card]',
-          )
-          setMobileEntries(
-            Array.from(cards, (card) =>
-              clamp(
-                (window.innerHeight * 0.8 -
-                  (section.offsetTop +
-                    card.offsetTop +
-                    ((card.offsetParent as HTMLElement | null)?.offsetTop ||
-                      0) +
-                    container.current!.offsetTop -
-                    window.scrollY)) /
-                  (window.innerHeight * 0.5),
-              ),
-            ),
-          )
           const needed = Math.max(
             0,
             section.offsetHeight + 100 - distance * 0.175,
@@ -541,7 +499,6 @@ export default function CinematicHome({
         {
           '--section-opacity': reading || postsStack ? 1 : state.postsOpacity,
           '--rise': reading || postsStack ? 0 : state.postsRise,
-          '--post-outer-width': `${mobilePostWidth(viewportWidth)}px`,
         } as CSSProperties
       }
     >
@@ -551,62 +508,7 @@ export default function CinematicHome({
           <span data-heading-baseline aria-hidden="true" />
         </span>
       </h2>
-      <div
-        className={styles['spatial-stage']}
-        style={
-          {
-            '--post-unit': `${postRow(viewportWidth, posts.length).unit}px`,
-          } as CSSProperties
-        }
-      >
-        {posts.map((item, index) => {
-          const pose = crossingCard(
-            index,
-            posts.length,
-            progress,
-            postsStack,
-            postsStack
-              ? undefined
-              : viewportWidth / 2 / postRow(viewportWidth, posts.length).unit +
-                  POST_FRAME.width / 2 +
-                  0.15,
-          )
-          pose.x +=
-            (index - (posts.length - 1) / 2) *
-            (postRow(viewportWidth, posts.length).pitch - 1.4) *
-            1
-          const entry = mobileEntries[index] || 0
-          const settled = reading || (postsStack ? entry === 1 : pose.active)
-          return (
-            <EditorialFrame
-              key={item.href}
-              item={item}
-              spatialId={`posts-${index}`}
-              active={settled}
-              hidden={!reading && !postsStack && pose.opacity === 0}
-              tabIndex={reading || postsStack || pose.interactive ? 0 : -1}
-              style={
-                {
-                  '--card-x': postsStack
-                    ? `${(index % 2 ? 1 : -1) * (1 - entry) * 100}vw`
-                    : `calc(var(--post-unit) * ${pose.x})`,
-                  '--card-y': postsStack
-                    ? `${(1 - entry) * 70}px`
-                    : `calc(var(--post-unit) * ${pose.y})`,
-                  '--card-opacity': reading || postsStack ? 1 : pose.opacity,
-                  '--card-scale': postsStack ? 1 : pose.scale,
-                  visibility:
-                    !reading && !postsStack && pose.opacity === 0
-                      ? 'hidden'
-                      : 'visible',
-                  pointerEvents:
-                    reading || postsStack || pose.interactive ? 'auto' : 'none',
-                } as CSSProperties
-              }
-            />
-          )
-        })}
-      </div>
+      <OrbitalFeaturettes items={posts} />
       <UnstyledLink href="/blog" className={styles['text-link']}>
         {t('allArticles')} ↗
       </UnstyledLink>

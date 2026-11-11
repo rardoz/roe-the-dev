@@ -27,6 +27,11 @@ import {
 import { aboutReplay, filmScrollFrame } from './film-scroll'
 import { createSpatialContent, updateSpatialContent } from './spatial-content'
 import {
+  clearOrbitalDebris,
+  createOrbitalFragments,
+  updateOrbitalFragments,
+} from './orbital-fragments'
+import {
   createTumble,
   dragAxis,
   dragTumble,
@@ -160,12 +165,8 @@ export async function createFilmScene({
     openingHeight = 110
     canvas.dataset.openingAsteroidPx = openingPixels.toFixed(0)
   }
-  const postFrames = createSpatialContent(
-    posts,
-    scene,
-    'posts',
-    () => requestDraw(),
-    displayFont,
+  const postFragments = createOrbitalFragments(posts, scene, () =>
+    requestDraw(),
   )
   const projectFrames = createSpatialContent(
     projects,
@@ -780,14 +781,16 @@ export async function createFilmScene({
       (reduced ? 0 : state.flash * 3)
     ;(scene.fog as THREE.FogExp2).density = fogDensity
     camera.updateMatrixWorld()
-    const postsAnimating = updateSpatialContent(
-      postFrames,
+    const postsAnimating = updateOrbitalFragments(
+      postFragments,
       camera,
-      atmosphere >= 0 ? Math.max(0.315, p) : p,
-      mobile,
-      'posts',
       container,
+      world.asteroid,
+      atmosphere >= 0 ? Math.max(0.315, p) : p,
+      dt,
+      reduced,
     )
+    clearOrbitalDebris(world.debris, postFragments, camera)
     updateSpatialContent(
       projectFrames,
       camera,
