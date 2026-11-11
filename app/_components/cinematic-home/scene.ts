@@ -683,6 +683,22 @@ export async function createFilmScene({
       reduced,
       smooth(0.63, 0.69, p),
     )
+    const cityBounds: unknown = world.city.userData.sourceBounds
+    if (world.cloud.mist && cityBounds instanceof THREE.Box3 && cityFraming) {
+      const uniforms = world.cloud.mist.material.uniforms
+      uniforms.uFloorSpan.value.set(
+        (cityBounds.max.x - cityBounds.min.x) * cityFraming.scale * 0.5,
+        (cityBounds.max.z - cityBounds.min.z) * cityFraming.scale * 0.5,
+      )
+      uniforms.uFloorCenter.value
+        .set(
+          cityFraming.offsetX,
+          world.city.userData.foundationY + cityOffset,
+          5,
+        )
+        .sub(impactPoint)
+        .divideScalar(Math.max(cloudSize, 0.001))
+    }
     world.cloud.rotation.y = 0
     canvas.dataset.mushroomCloudAsset = world.cloud.userData.assetState
     canvas.dataset.mushroomCloudGlow =

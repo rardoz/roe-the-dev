@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { disposeObject } from './asteroid'
+import { createMushroomCloudMist } from './mushroom-cloud-mist'
 
 export function createMushroomCloud(
   anisotropy: number,
@@ -26,6 +27,7 @@ export function createMushroomCloud(
       lights,
     },
     smokeView,
+    mist: null as ReturnType<typeof createMushroomCloudMist> | null,
   })
   cloud.name = 'mushroom-cloud'
   cloud.userData.assetState = 'loading'
@@ -131,6 +133,8 @@ export function createMushroomCloud(
           }
         }
       })
+      cloud.mist = createMushroomCloudMist(glowWidth)
+      cloud.add(cloud.mist)
       cloud.add(scene)
       cloud.userData.assetState = 'ready'
       onLoad()
@@ -167,4 +171,8 @@ export function updateMushroomCloud(
     light.distance = (index === 0 ? 125 : 145) * size
   })
   cloud.glow.lights[1].position.y = cloud.glow.surgeHeight.value
+  if (cloud.mist) {
+    cloud.mist.material.uniforms.uTime.value = reduced ? 0 : cloud.glow.time
+    cloud.mist.material.uniforms.uOpacity.value = 0.55 * strength
+  }
 }
