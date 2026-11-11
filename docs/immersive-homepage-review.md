@@ -6,7 +6,7 @@ The homepage follows the user's new attached composition and final cinematic noi
 
 Next.js App Router preserves the site's current routing, metadata, Contentful data source, en-US/es-US localization, and secondary feature pages. The homepage uses a semantic React shell, native document scrolling, and one lazy-loaded Three.js 0.186.1 WebGL scene. Existing-page noir changes retain each page's layout and behavior.
 
-`motion.ts` defines the reversible scroll state and section landmarks. `world.ts` authors the faceted asteroid, spherical planet, unified industrial city, debris, cracked terrain, sign, scorpion, and tumbleweed. `cloud-shader.ts` defines the billowing cloud volume and monochrome planetary geography. `spatial-content.ts` creates real CMS image planes, framed text artifacts, color focus, and matching projected link targets in the same camera space. `scene.ts` coordinates these objects, the camera, input, resizing, visibility, and resource lifecycle. The React shell retains semantic content, menu focus handling, navigation, and the independent Transmissions carousel.
+`motion.ts` defines the reversible scroll state and section landmarks. `world.ts` authors the faceted asteroid, spherical planet, unified industrial city, debris, cracked terrain, sign, scorpion, and tumbleweed. `mushroom-cloud.ts` loads the optimized explosion sculpture. `spatial-content.ts` creates real CMS image planes, framed text artifacts, color focus, and matching projected link targets in the same camera space. `scene.ts` coordinates these objects, the camera, input, resizing, visibility, and resource lifecycle. The React shell retains semantic content, menu focus handling, navigation, and the independent Transmissions carousel.
 
 The final override governs the color system: near-black, charcoal, ivory, one directional white source, severe geometric framing, restrained grain, and selective full-color content. Cormorant Garamond and Barlow Condensed supply the editorial/elongated typography. The real existing logo is preserved and shown monochrome.
 
@@ -21,17 +21,19 @@ The final override governs the color system: near-black, charcoal, ivory, one di
 
 ## Scroll review landmarks
 
-| Fraction                | Moment                                                          |
-| ----------------------- | --------------------------------------------------------------- |
-| 0                       | Intro above the asteroid and curved planetary horizon           |
-| .19 / .225 / .275       | Opposing editorial trajectories with depth and color focus      |
-| .36 / .405              | Real portrait/bio above the single monumental city              |
-| .475 / .49 / .515 / .54 | Final descent, bounded flash, shockwave/debris, cloud formation |
-| .565                    | Transmissions carousel, circular arrows, touch/mouse dragging   |
-| .67 through .885        | Portfolio helix moves from the cloud head down the same shaft   |
-| .945 / .99              | Camera retreats into the final wasteland and integrated contact |
+| Fraction                     | Moment                                                          |
+| ---------------------------- | --------------------------------------------------------------- |
+| 0                            | Intro above the asteroid and curved planetary horizon           |
+| .19 / .225 / .275            | Opposing editorial trajectories with depth and color focus      |
+| .36 / .405                   | Real portrait/bio above the single monumental city              |
+| .475 / .49 / .515 / .54      | Final descent, bounded flash, shockwave/debris, cloud formation |
+| Atmospheric passage midpoint | Transmissions carousel between Featurettes and About            |
+| .67 through .885             | Portfolio helix moves from the cloud head down the same shaft   |
+| .945 / .99                   | Camera retreats into the final wasteland and integrated contact |
 
 Inspect `[data-renderer]` for renderer/mode/progress, and the canvas for camera, asteroid, impact, flash, frame count, and cloud-axis diagnostics. Semantic links carry `data-spatial-card`, projected bounds, actual world position, and image-load diagnostics.
+
+Transmissions is centered in the atmospheric scroll passage after Featurettes and before About, not in the city aftermath. Its opacity uses passage progress: fade in from `0.15` to `0.35`, remain fully visible through `0.65`, and fade out by `0.85`. The equal fade intervals are reversible and independent of the main cinematic progress, which pauses during this passage. Outside the passage the carousel is hidden and inert; reading mode places it between Featurettes and About in document order. City impact and debris are now unobstructed by Transmissions, without changing their timing or the mushroom cloud.
 
 ### City impact model swap
 
@@ -42,6 +44,12 @@ Both exports use the intact city's scale and position, including on resize, pres
 ### Crater-centered mushroom cloud and debris
 
 Both surrounding cloud layers (landscape and atmospheric descent) are hidden at the impact flash (`0.49`) and remain hidden afterward. The mushroom cloud is unaffected. Scrolling backward before impact restores the surrounding clouds using their existing visibility rules.
+
+The mushroom cloud loads `public/assets/city/mushroom-cloud.glb`, optimized locally from the supplied Meshy sculpture. The export contains 80,000 triangles (down from 1,195,552), one mesh/primitive, and three embedded 1024×1024 JPEG textures at quality 85. Its size is 2,805,556 bytes, compared with approximately 61 MB for the source. Standard glTF geometry avoids requiring an additional compression decoder. Original textured PBR materials are retained and receive the scene's existing lights.
+
+The editable companion `public/assets/city/mushroom-cloud.blend` contains the optimized mesh and all three packed textures. It is grounded at Z=0 with a height of 90 Blender units; the GLB exports to glTF's Y-up convention. The runtime centers X/Z and grounds the model's minimum Y at the crater, normalizing its height to 90 world units. It replaces the canvas illustration with a genuine 3D model and no longer turns to face the camera. Growth remains reversible and scroll-driven from `0.49` to `0.57`; the rooted impact position and Portfolio path are unchanged. Geometry/materials/textures use the scene's existing disposal traversal, and late loads dispose their model rather than reviving a destroyed scene. Asset failures are logged and exposed as `data-asset-error="mushroom-cloud"`; `data-mushroom-cloud-asset` reports `loading`, `ready`, or `error`.
+
+Export inspection verified the 80,000-triangle count, all three embedded 1K images, and the Blender companion's packed images and 90-unit height. Browser verification covered desktop (`1440x900`) and mobile (`390x844`) at progress `0.635` and `0.8`: the GLB loaded successfully, cloud origin matched the crater anchor, and Portfolio cards remained readable. The large cap fills and slightly exceeds the mobile frame during the close-up. Targeted ESLint, TypeScript, and whitespace checks passed. Automated tests remain skipped at the owner's request.
 
 Explosion comet fragments use a cloned shader material at `0.08` linear brightness, bringing their highlights down to the island's charcoal palette while retaining facet contrast. The opening comet trail keeps its original brightness.
 

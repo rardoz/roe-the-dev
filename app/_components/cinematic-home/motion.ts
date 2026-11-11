@@ -3,7 +3,6 @@ export const sectionPositions = {
   posts: 0.19,
   about: 0.36,
   impact: 0.485,
-  transmissions: 0.565,
   portfolio: 0.68,
   contact: 0.965,
 } as const
@@ -49,7 +48,6 @@ export function filmState(progress: number) {
     postsRise: 1 - smooth(0.12, 0.2, p),
     postsBackdropClear: p >= 0.315,
     aboutOpacity: windowOpacity(p, 0.3, 0.335, 0.405, 0.455),
-    transmissionsOpacity: windowOpacity(p, 0.535, 0.555, 0.615, 0.65),
     portfolioOpacity: windowOpacity(p, 0.645, 0.67, 0.875, 0.91),
     contactOpacity: smooth(0.93, 0.975, p),
   }

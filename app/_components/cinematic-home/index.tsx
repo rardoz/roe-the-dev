@@ -313,6 +313,7 @@ export default function CinematicHome({
   const postsState = filmState(postsProgress)
   const state = {
     ...filmState(progress),
+    transmissionsOpacity: scrollFrame.transmissionsOpacity,
     postsOpacity: postsState.postsOpacity,
     postsCardsOpacity: postsState.postsCardsOpacity,
     postsRise: postsState.postsRise,
@@ -733,6 +734,15 @@ export default function CinematicHome({
             </p>
           </section>
           {(!postsStack || reading) && postsSection}
+          <section
+            id="film-transmissions"
+            className={`${styles['section']} ${styles['transmissions']}`}
+            {...visibility(state.transmissionsOpacity)}
+          >
+            <h2 className={styles['section-title']}>{t('transmissions')}</h2>
+            <p className={styles['subtitle']}>{t('transmissionCaption')}</p>
+            <Transmissions items={transmissions} reading={reading} />
+          </section>
           <AboutRoe
             progress={progress}
             opacity={state.aboutOpacity}
@@ -745,15 +755,6 @@ export default function CinematicHome({
             style={{ opacity: reading || reduced ? 0 : state.flash }}
             aria-hidden="true"
           />
-          <section
-            id="film-transmissions"
-            className={`${styles['section']} ${styles['transmissions']}`}
-            {...visibility(state.transmissionsOpacity)}
-          >
-            <h2 className={styles['section-title']}>{t('transmissions')}</h2>
-            <p className={styles['subtitle']}>{t('transmissionCaption')}</p>
-            <Transmissions items={transmissions} reading={reading} />
-          </section>
           <section
             id="film-portfolio"
             className={`${styles['section']} ${styles['portfolio']}`}

@@ -303,3 +303,7 @@
 
 - **pending** — Remove the visible IMPACT label from the city scene; preserve all scene positioning and animation.
 - **testing** — Removed the caption-only film-impact section. Built-in browser confirms label absent at city progress 0.48614 (713×781). Scene animation and exposure remain unchanged. nvm Node v24.21.0 `npm run lint` and diff check pass. No tests or commits. Evidence: `/tmp/roe-city-no-impact-label.png`.
+
+- **done** — Created a separate 3D Art Deco mushroom cloud from the supplied preview, with a scalloped cap, radial shading, fluted updraft and smaller base clouds. Saved design/city/mushroom-cloud.blend and public/assets/city/mushroom-cloud.glb (61,748 triangles, about 1.5 MB). Rendered in city context, inspected multiple angles, and reimported the GLB to verify geometry, vertex colors, materials and bounds. Original city and website files preserved.
+
+- **pending** — Rebuild the rejected mushroom cloud to closely follow the supplied reference: fuller overlapping billows, broad rounded cap, continuous fluted updraft, softer asymmetric ground clouds; verify the new render before replacing the asset.

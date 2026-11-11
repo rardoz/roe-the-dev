@@ -116,6 +116,11 @@ export async function createFilmScene({
       canvas.dataset.assetError = 'city'
       requestDraw()
     },
+    onCloudError: (error: unknown) => {
+      console.error('Mushroom cloud artwork failed to load', error)
+      canvas.dataset.assetError = 'mushroom-cloud'
+      requestDraw()
+    },
   })
   const asteroidVertices: THREE.Vector3[] = []
   world.asteroid.updateMatrixWorld()
@@ -654,11 +659,13 @@ export async function createFilmScene({
       world.island.uniforms.uTime.value,
       p,
     )
-    world.cloud.visible = state.impact > 0.001
+    world.cloud.visible =
+      state.impact > 0.001 && world.cloud.userData.assetState === 'ready'
     world.cloud.position.copy(impactPoint)
     const cloudSize = smooth(0.49, 0.57, p)
     world.cloud.scale.setScalar(cloudSize)
-    world.cloud.rotation.y = state.portfolio * -0.28
+    world.cloud.rotation.y = 0
+    canvas.dataset.mushroomCloudAsset = world.cloud.userData.assetState
     updateAtmosphericDescent(
       world.atmosphericClouds,
       smoothAtmosphere,
@@ -732,18 +739,6 @@ export async function createFilmScene({
       (reduced ? 0 : state.flash * 3)
     ;(scene.fog as THREE.FogExp2).density = fogDensity
     camera.updateMatrixWorld()
-    world.cloud.updateMatrixWorld()
-    const cloudUniforms = (world.cloud.material as THREE.ShaderMaterial)
-      .uniforms
-    cloudUniforms.uCamera.value
-      .copy(camera.position)
-      .applyMatrix4(world.cloud.matrixWorld.clone().invert())
-    cloudUniforms.uProgress.value = state.impact
-    cloudUniforms.uViewProjection.value.multiplyMatrices(
-      camera.projectionMatrix,
-      camera.matrixWorldInverse,
-    )
-    cloudUniforms.uModel.value.copy(world.cloud.matrixWorld)
     const postsAnimating = updateSpatialContent(
       postFrames,
       camera,

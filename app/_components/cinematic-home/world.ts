@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { cloudVertex, cloudFragment } from './cloud-shader'
+import { createMushroomCloud } from './mushroom-cloud'
 import { createPlanet } from './planet'
 import { createDebris } from './asteroid'
 import { createAtmosphericDescent } from './atmospheric-descent'
@@ -55,27 +55,6 @@ function openingLight() {
   light.position.set(0, 33, -135)
   group.add(light)
   return group
-}
-
-function mushroomCloud() {
-  const material = new THREE.ShaderMaterial({
-    vertexShader: cloudVertex,
-    fragmentShader: cloudFragment,
-    transparent: true,
-    depthWrite: true,
-    side: THREE.BackSide,
-    uniforms: {
-      uCamera: { value: new THREE.Vector3() },
-      uProgress: { value: 0 },
-      uViewProjection: { value: new THREE.Matrix4() },
-      uModel: { value: new THREE.Matrix4() },
-    },
-  })
-  const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(72, 78, 62).translate(0, 37, 0),
-    material,
-  )
-  return mesh
 }
 
 function wasteland() {
@@ -245,6 +224,7 @@ export function createWorld(
     anisotropy: 1,
     onLoad: () => {},
     onCityError: (error: unknown) => console.error(error),
+    onCloudError: (error: unknown) => console.error(error),
   },
 ) {
   const asteroidGroup = new THREE.Group()
@@ -329,7 +309,11 @@ export function createWorld(
     },
   )
   const arrivalLight = openingLight()
-  const cloud = mushroomCloud()
+  const cloud = createMushroomCloud(
+    planetOptions.anisotropy,
+    planetOptions.onLoad,
+    planetOptions.onCloudError,
+  )
   const desert = wasteland()
   const island = createCityIsland(
     planetOptions.width,

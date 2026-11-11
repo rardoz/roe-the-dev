@@ -4,6 +4,7 @@ import {
   documentFilmProgress,
   mix,
   smooth,
+  windowOpacity,
 } from './motion'
 
 export const atmosphereStart = 0.315
@@ -40,6 +41,10 @@ export function filmScrollFrame(
         : mix(atmosphereStart, aboutResume, smooth(0, 1, atmosphere)),
     atmosphere: before ? -1 : atmosphere,
     aboutReady: atmosphereDistance === 0 || aboutReady,
+    transmissionsOpacity:
+      !before && !aboutReady
+        ? windowOpacity(atmosphere, 0.15, 0.35, 0.65, 0.85)
+        : 0,
   }
 }
 
