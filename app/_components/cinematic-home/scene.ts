@@ -13,6 +13,7 @@ import {
 } from './city'
 import { updateCityIsland } from './city-island'
 import { updateLandscapeClouds } from './landscape-clouds'
+import { updateMushroomCloud } from './mushroom-cloud'
 import {
   IMPACT_ASTEROID_GONE,
   IMPACT_FLASH_PEAK,
@@ -663,9 +664,19 @@ export async function createFilmScene({
       state.impact > 0.001 && world.cloud.userData.assetState === 'ready'
     world.cloud.position.copy(impactPoint)
     const cloudSize = smooth(0.49, 0.57, p)
-    world.cloud.scale.setScalar(cloudSize)
+    updateMushroomCloud(
+      world.cloud,
+      cloudSize,
+      dt,
+      reduced,
+      smooth(0.63, 0.69, p),
+    )
     world.cloud.rotation.y = 0
     canvas.dataset.mushroomCloudAsset = world.cloud.userData.assetState
+    canvas.dataset.mushroomCloudGlow =
+      world.cloud.glow.strength.value.toFixed(3)
+    canvas.dataset.mushroomCloudSurge =
+      world.cloud.glow.surgeHeight.value.toFixed(3)
     updateAtmosphericDescent(
       world.atmosphericClouds,
       smoothAtmosphere,
@@ -794,6 +805,7 @@ export async function createFilmScene({
     if (
       !reduced &&
       (world.asteroid.visible ||
+        world.cloud.visible ||
         oceanAnimating ||
         postsAnimating ||
         Math.abs(progress - smoothProgress) > 0.000001 ||
