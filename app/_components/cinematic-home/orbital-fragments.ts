@@ -5,7 +5,7 @@ import { silhouetteHull } from './about-motion'
 import { rockGeometry, asteroidMaterial } from './asteroid'
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 
-// Closed sculpted rocks with welded smooth normals and an all-sided photo material.
+// Closed sculpted rocks with welded smooth normals and a front-facing photo material.
 export function createOrbitalFragments(
   items: EditorialItem[],
   scene: THREE.Scene,
@@ -83,12 +83,15 @@ export function createOrbitalFragments(
         'gl_FragColor=vec4(vec3(min(value,1.)*uBrightness),1.);',
         `
         vec3 p=(vLocal-uCenter)/uExtent+.5;
-        vec3 weights=pow(abs(normalize(vLocalNormal)),vec3(4.));
-        weights/=max(dot(weights,vec3(1.)),.0001);
-        vec3 image=photoAt(p.zy)*weights.x+photoAt(p.xz)*weights.y+photoAt(p.xy)*weights.z;
+        vec3 image=photoAt(p.xy);
         float gray=dot(image,vec3(.2126,.7152,.0722));
-        float photograph=gray*(.18+uFocus*.10)*(.38+lit*.62);
-        gl_FragColor=vec4(vec3(mix(min(value,1.)*uBrightness,photograph,.86)),uOpacity);
+        float stone=min(value,1.)*uBrightness;
+        float photograph=gray*(.22+uFocus*.12)*(.38+lit*.62)*mix(.65,1.,vCavity);
+        float photoFacing=smoothstep(.25,.75,normalize(vLocalNormal).z);
+        float faceEdge=1.-smoothstep(.30,.48,length(p.xy-.5));
+        float erosion=mix(.7,1.,smoothstep(.25,.85,vCavity));
+        float inlay=photoFacing*faceEdge*erosion;
+        gl_FragColor=vec4(vec3(mix(stone,photograph,.82*inlay)),uOpacity);
       `,
       )
     const rock = new THREE.Mesh(geometry, material)
@@ -105,9 +108,11 @@ export function createOrbitalFragments(
         texture.colorSpace = THREE.SRGBColorSpace
         texture.anisotropy = 4
         const ratio = texture.image.width / texture.image.height
+        const faceRatio =
+          material.uniforms.uExtent.value.x / material.uniforms.uExtent.value.y
         material.uniforms.uCrop.value.set(
-          Math.min(1, 1 / ratio),
-          Math.min(1, ratio),
+          Math.min(1, faceRatio / ratio),
+          Math.min(1, ratio / faceRatio),
         )
         material.uniforms.uMap.value = texture
         placeholder.dispose()
@@ -126,6 +131,8 @@ const right = new THREE.Vector3()
 const up = new THREE.Vector3()
 const center = new THREE.Vector3()
 const point = new THREE.Vector3()
+const exitDirection = new THREE.Vector3()
+const exitPoint = new THREE.Vector3()
 const box = new THREE.Box3()
 const size = new THREE.Vector3()
 
@@ -135,15 +142,13 @@ export function updateOrbitalFragments(
   container: HTMLElement,
   asteroid: THREE.Group,
   progress: number,
-  dt: number,
   reduced: boolean,
 ) {
   const width = window.innerWidth,
     height = window.innerHeight
-  const opacity = 1 - smooth(0.285, 0.315, progress)
   const state = fragments[0]?.rock.userData
   if (!state) return false
-  if (progress < 0.12 || opacity < 0.005) {
+  if (progress < 0.12) {
     fragments.forEach(({ rock }) => {
       rock.visible = false
     })
@@ -170,22 +175,13 @@ export function updateOrbitalFragments(
   if (Math.abs(window.scrollY - (state.focusScrollY ?? window.scrollY)) > 2)
     state.focusHeld = false
   const holdingFocus = focused && state.focusHeld
-  const hovering = fragments.some(({ index }) =>
-    container
-      .querySelector(`[data-fragment="${index}"]`)
-      ?.matches('[data-orbit-centered="true"]:hover'),
-  )
-  if (!reduced && !holdingFocus && !hovering)
-    state.time = (state.time || 0) + dt
+  const orbitPhase =
+    Math.PI / 3 -
+    THREE.MathUtils.clamp((progress - 0.19) / 0.11, 0, 1) * Math.PI * 2
   const requested = holdingFocus
     ? (-focused.index * Math.PI * 2) / 3
-    : (state.time || 0) * 0.006 + (Math.max(0.19, progress) - 0.19) * 42
-  const current = state.angle ?? requested
-  const delta = Math.atan2(
-    Math.sin(requested - current),
-    Math.cos(requested - current),
-  )
-  state.angle = current + delta * (1 - Math.exp(-dt * 3))
+    : orbitPhase
+  state.angle = requested
   fragments.forEach(({ rock, index }) => {
     const link = container.querySelector<HTMLElement>(
       `[data-fragment="${index}"]`,
@@ -197,7 +193,7 @@ export function updateOrbitalFragments(
     const angle = state.angle + (index * Math.PI * 2) / 3
     const front = Math.cos(angle)
     const entry = smooth(0.12 + index * 0.005, 0.18 + index * 0.005, progress)
-    const focus = smooth(0.975, 0.998, front) * smooth(0.96, 1, entry)
+    const exit = smooth(0.3, 0.315, progress)
     rock.position
       .copy(center)
       .addScaledVector(right, Math.sin(angle) * radius)
@@ -219,11 +215,50 @@ export function updateOrbitalFragments(
       point.copy(destination).project(camera)
       const horizontal = 1.2 + extent / (halfHeight * camera.aspect)
       const vertical = 1.2 + extent / halfHeight
-      if (index === 0) point.set(-horizontal, 0.65, point.z)
+      // Enter from the same side as the destination, never across another lane.
+      if (index === 0) point.set(horizontal, 0.65, point.z)
       else if (index === 1) point.set(0.3, -vertical, point.z)
-      else point.set(horizontal, 0.85, point.z)
+      else point.set(-horizontal, 0.85, point.z)
       point.unproject(camera)
       rock.position.copy(point).lerp(destination, entry)
+    }
+    if (exit > 0) {
+      // Continue each rock along its projected orbital tangent to the viewport edge.
+      point.copy(rock.position).project(camera)
+      exitPoint
+        .copy(rock.position)
+        .addScaledVector(right, Math.cos(angle) * radius * 0.01)
+        .addScaledVector(direction, Math.sin(angle) * radius * 0.0085)
+        .addScaledVector(up, Math.cos(angle) * radius * 0.0022)
+        .project(camera)
+      exitDirection.set(exitPoint.x - point.x, exitPoint.y - point.y, 0)
+      if (exitDirection.lengthSq() < 1e-12)
+        exitDirection.set(point.x, point.y, 0)
+      if (exitDirection.lengthSq() < 1e-12)
+        exitDirection.set(Math.cos(angle), -Math.cos(angle) * 0.22, 0)
+      if (exitDirection.lengthSq() < 1e-12)
+        exitDirection.set(0, Math.sin(angle), 0)
+      exitDirection.normalize()
+      const edgeDistance = Math.min(
+        exitDirection.x > 0
+          ? (1.25 - point.x) / exitDirection.x
+          : exitDirection.x < 0
+            ? (-1.25 - point.x) / exitDirection.x
+            : Infinity,
+        exitDirection.y > 0
+          ? (1.25 - point.y) / exitDirection.y
+          : exitDirection.y < 0
+            ? (-1.25 - point.y) / exitDirection.y
+            : Infinity,
+      )
+      exitPoint
+        .set(
+          point.x + exitDirection.x * Math.max(0, edgeDistance),
+          point.y + exitDirection.y * Math.max(0, edgeDistance),
+          point.z,
+        )
+        .unproject(camera)
+      rock.position.lerp(exitPoint, exit)
     }
     link.dataset.orbitEntry = entry.toFixed(3)
     rock.quaternion.copy(camera.quaternion)
@@ -233,12 +268,23 @@ export function updateOrbitalFragments(
       Math.sin(angle + index) * 0.22 + (1 - entry) * [-0.65, 0.5, 0.7][index],
     )
     rock.scale.setScalar(radius * (width < 700 ? 0.36 : 0.42))
-    rock.material.uniforms.uOpacity.value = opacity
-    rock.material.uniforms.uFocus.value = focus
     rock.updateMatrixWorld()
     point.copy(rock.position).project(camera)
     const px = (point.x * 0.5 + 0.5) * width,
       py = (-point.y * 0.5 + 0.5) * height
+    const centerDistance = Math.hypot(point.x, point.y)
+    const orbitAlignment =
+      1 -
+      smooth(0.55, 1.1, Math.abs(Math.atan2(Math.sin(angle), Math.cos(angle))))
+    const screenAlignment = 1 - smooth(0.12, 0.48, centerDistance)
+    const centerFocus = Math.max(orbitAlignment, screenAlignment)
+    const focus =
+      smooth(0.55, 0.9, front) *
+      smooth(0.96, 1, entry) *
+      centerFocus *
+      (1 - exit)
+    rock.material.uniforms.uOpacity.value = 1
+    rock.material.uniforms.uFocus.value = focus
     const projected: { x: number; y: number }[] = []
     const positions = rock.geometry.getAttribute('position')
     for (let i = 0; i < positions.count; i++) {
@@ -263,14 +309,11 @@ export function updateOrbitalFragments(
     link.style.setProperty('--orbit-label', `${focus}`)
     link.style.setProperty(
       '--orbit-label-x',
-      `${Math.min(width - 220, Math.max(24, px - 100)) - minX}px`,
+      `${Math.min(width - 220, Math.max(8, px - 206)) - minX}px`,
     )
-    link.style.setProperty(
-      '--orbit-label-y',
-      `${Math.min(height - 155, maxY + 18) - minY}px`,
-    )
+    link.style.setProperty('--orbit-label-y', `${maxY + 4 - minY}px`)
     link.dataset.orbitCentered = String(focus > 0.5)
-    link.dataset.fragmentTime = (state.time || 0).toFixed(2)
+    link.dataset.fragmentTime = progress.toFixed(3)
     surface.style.setProperty(
       '--fragment-outline',
       `polygon(${hull.map((p) => `${((p.x - minX) / (maxX - minX)) * 100}% ${((p.y - minY) / (maxY - minY)) * 100}%`).join(',')})`,

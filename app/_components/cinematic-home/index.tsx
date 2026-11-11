@@ -502,16 +502,7 @@ export default function CinematicHome({
         } as CSSProperties
       }
     >
-      <h2 className={styles['section-title']}>
-        <span data-heading-label>
-          {t('featuredPosts')}
-          <span data-heading-baseline aria-hidden="true" />
-        </span>
-      </h2>
       <OrbitalFeaturettes items={posts} />
-      <UnstyledLink href="/blog" className={styles['text-link']}>
-        {t('allArticles')} ↗
-      </UnstyledLink>
     </section>
   )
 

@@ -787,7 +787,6 @@ export async function createFilmScene({
       container,
       world.asteroid,
       atmosphere >= 0 ? Math.max(0.315, p) : p,
-      dt,
       reduced,
     )
     clearOrbitalDebris(world.debris, postFragments, camera)

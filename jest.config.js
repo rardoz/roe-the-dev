@@ -49,7 +49,7 @@ module.exports = {
     ],
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(flowbite-react|next-intl|use-intl|intl-messageformat|@formatjs|debounce)/)',
+    '/node_modules/(?!(three|flowbite-react|next-intl|use-intl|intl-messageformat|@formatjs|debounce)/)',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
 }
